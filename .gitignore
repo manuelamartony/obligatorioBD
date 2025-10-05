@@ -1,0 +1,53 @@
+# Archivos de entorno
+.env
+
+# Backups de base de datos
+*.sql.backup
+migrations/backups/
+*.dump
+database_backup/
+
+# Sistema operativo
+.DS_Store
+Thumbs.db
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Dependencies
+node_modules/
+dist/
+build/
+
+# Logs
+*.log
+logs/# Archivos de entorno
+.env
+
+# Backups de base de datos
+*.sql.backup
+migrations/backups/
+*.dump
+database_backup/
+
+# Sistema operativo
+.DS_Store
+Thumbs.db
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Dependencies
+node_modules/
+dist/
+build/
+
+# Logs
+*.log
+logs/
