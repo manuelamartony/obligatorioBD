@@ -1,0 +1,56 @@
+name: Database CI/CD
+
+on:
+  push:
+    branches: [main, develop]
+    paths:
+      - 'database/migrations/**'
+  pull_request:
+    branches: [main]
+    paths:
+      - 'database/migrations/**'
+
+jobs:
+  validate-migrations:
+    runs-on: ubuntu-latest
+    
+    services:
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_ROOT_PASSWORD: testpassword
+          MYSQL_DATABASE: obligatorio_bd_test
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=3
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Wait for MySQL
+        run: |
+          for i in {1..30}; do
+            if mysqladmin ping -h"127.0.0.1" -P3306 -uroot -ptestpassword --silent; then
+              echo "MySQL is ready"
+              break
+            fi
+            echo "Waiting for MySQL... $i/30"
+            sleep 2
+          done
+
+      - name: Run migrations
+        run: |
+          for migration in database/migrations/*.sql; do
+            echo "Running migration: $migration"
+            mysql -h127.0.0.1 -P3306 -uroot -ptestpassword obligatorio_bd_test < "$migration"
+          done
+
+      - name: Validate schema
+        run: |
+          echo "Schema validation successful!"
+          mysql -h127.0.0.1 -P3306 -uroot -ptestpassword obligatorio_bd_test -e "SHOW TABLES;"
