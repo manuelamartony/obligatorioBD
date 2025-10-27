@@ -1,7 +1,17 @@
 -- ======================================================
--- CREAR TIPOS
+-- ELIMINAR TABLAS EXISTENTES (en orden correcto)
 -- ======================================================
 
+DROP TABLE IF EXISTS reserva_participante;
+DROP TABLE IF EXISTS reserva;
+DROP TABLE IF EXISTS turno;
+DROP TABLE IF EXISTS sala;
+DROP TABLE IF EXISTS edificio;
+DROP TABLE IF EXISTS participante_programa_académico;
+DROP TABLE IF EXISTS programa_academico;
+DROP TABLE IF EXISTS facultad;
+DROP TABLE IF EXISTS participante;
+DROP TABLE IF EXISTS login;
 
 -- ======================================================
 -- CREAR TABLAS
