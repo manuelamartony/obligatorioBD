@@ -91,3 +91,11 @@ CREATE TABLE reserva_participante(
     asistencia BOOLEAN,
     PRIMARY KEY (ci,id_reserva)
 );
+
+CREATE TABLE sancion_participante(
+    ci INT,
+    fecha_inicio DATE,
+    fecha_fin DATE,
+    PRIMARY KEY (ci,fecha_inicio,fecha_fin),
+    FOREIGN KEY (ci) REFERENCES participante(ci)
+);
