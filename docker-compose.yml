@@ -1,0 +1,41 @@
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: obligatorio_bd_mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD:-rootpassword}
+      MYSQL_DATABASE: ${DB_NAME:-obligatorio_bd}
+      MYSQL_USER: ${DB_USER:-dbuser}
+      MYSQL_PASSWORD: ${DB_PASSWORD:-dbpassword}
+    ports:
+      - "${DB_PORT:-3306}:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./database/migrations:/docker-entrypoint-initdb.d
+    networks:
+      - app-network
+
+  # Cuando tengas backend:
+  # backend:
+  #   build: ./backend
+  #   ports:
+  #     - "3000:3000"
+  #   depends_on:
+  #     - mysql
+  #   networks:
+  #     - app-network
+
+  # Cuando tengas frontend:
+  # frontend:
+  #   build: ./frontend
+  #   ports:
+  #     - "5173:5173"
+  #   networks:
+  #     - app-network
+
+volumes:
+  mysql_data:
+
+networks:
+  app-network:
+    driver: bridge
