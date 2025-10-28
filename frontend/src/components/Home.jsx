@@ -1,5 +1,6 @@
 import React from 'react'
 import UCULogo from '../../public/Logo-Universidad-Catolica-cropped.svg'
+import { Link } from 'react-router-dom'
 
 
 const Home = () => {
@@ -10,7 +11,7 @@ const Home = () => {
                     <h1>RESERVÁ<br />TU<br />SALA</h1>
                 </div>
                 <div className="login-card">
-                    <button className="login-btn">INGRESA</button>
+                    <Link to="/login" className="login-btn">INGRESA</Link>
                 </div>
             </div>
 
