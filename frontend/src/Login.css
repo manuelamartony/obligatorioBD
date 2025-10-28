@@ -1,0 +1,58 @@
+/* Login.css */
+.login-body {
+  background-color: pink;
+  width: 100vw;     /* 100% del ancho visible */
+  height: 100vh;    /* 100% de la altura visible */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 0;        /* elimina cualquier margen interno */
+  padding: 0;
+}
+
+
+.login-container {
+  background-color: white;
+  padding: 2rem;
+  border-radius: 1rem;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+  width: 400px;
+  text-align: center;
+}
+
+.interface-input {
+  width: 100%;
+  padding: 0.5rem;
+  margin-top: 0.25rem;
+  margin-bottom: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+#login-title {
+    margin-bottom: 20px;
+}
+
+.interface-btn {
+    margin-top: 10px;
+    background-color: #89e4c9;
+    padding: 10px 30px;
+    border: none;
+    border-bottom-left-radius: 70px;
+    border-top-right-radius: 70px;
+    border-top-left-radius: 15px;
+    border-bottom-right-radius: 15px;
+    font-size: 23px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: .2s ease;
+}
+
+.interface-btn:hover {
+    transform: scale(1.05);
+    background-color: #7dcfb6;
+}
+
+.interface-title {
+    font-size: 16px;
+}
