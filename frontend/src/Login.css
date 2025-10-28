@@ -1,6 +1,6 @@
 /* Login.css */
 .login-body {
-  background-color: pink;
+  background-color: #c084fc;
   width: 100vw;     /* 100% del ancho visible */
   height: 100vh;    /* 100% de la altura visible */
   display: flex;
