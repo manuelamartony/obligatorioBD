@@ -1,6 +1,9 @@
 import React from 'react'
 import '../styles/NuevaReserva.css'
 import { useNavigate } from 'react-router-dom'
+import Popup from 'reactjs-popup';
+import 'reactjs-popup/dist/index.css';
+import TurnosPopup from '../components/TurnosPopup';
 
 const salas = [
     { id: 1, name: 'SALÓN 1', color: 'lavender' },
@@ -11,7 +14,10 @@ const salas = [
     { id: 6, name: 'SALÓN 6', color: 'lavender' }
 ]
 
+
+
 const NuevaReserva = () => {
+
     const navigate = useNavigate();
     return (
         <div className="nueva-reserva-page">
@@ -21,13 +27,18 @@ const NuevaReserva = () => {
                 <button className="pill-btn profile">MI PERFIL</button>
             </header>
 
-            <div className="search-wrap">
-                <input className="search-input" placeholder="Buscar sala" aria-label="Buscar sala" />
-            </div>
-
             <main className="salas-grid">
+
                 {salas.map((s) => (
-                    <button key={s.id} className={`sala-btn ${s.color}`}>{s.name}</button>
+                    <Popup
+                        trigger={<button key={s.id} className={`sala-btn ${s.color}`}>{s.name}</button>}
+                        modal
+                        nested
+                        className="turnos-modal"
+                    >
+                        <TurnosPopup />
+                    </Popup>
+
                 ))}
             </main>
         </div>
