@@ -1,48 +1,43 @@
-import { useState } from 'react'
 import './styles/App.css'
-import { createBrowserRouter, RouterProvider, } from "react-router-dom";
-import Panel from './components/Panel'
-import Home from './components/Home'
-import Login from './components/Login'
-import MisReservas from './components/MisReservas';
-import NuevaReserva from './components/NuevaReserva';
-import Reportes from './components/Reportes';
+import { BrowserRouter, Routes, Route, createBrowserRouter, RouterProvider } from "react-router-dom";
+import Panel from './pages/Panel'
+import Home from './pages/Home'
+import Login, { loginAction } from './pages/Login'
+import MisReservas from './pages/MisReservas';
+import NuevaReserva from './pages/NuevaReserva';
+import Reportes from './pages/Reportes';
+import { AuthProvider } from './context/AuthContext';
+import ProtectedRoutes from './components/ProtectedRoutes';
+
 
 
 function App() {
-
   const router = createBrowserRouter([
     {
       path: "/",
       element: <Home />,
-
     },
     {
       path: "/login",
-      element: <Login />
+      element: <Login />,
+      action: loginAction, // <-- action del login
     },
     {
-      path: "/my/panel",
-      element: <Panel />
+      element: <ProtectedRoutes />,
+      children: [
+        { path: "/my/panel", element: <Panel /> },
+        { path: "/my/panel/mis-reservas", element: <MisReservas /> },
+        { path: "/my/panel/nueva-reserva", element: <NuevaReserva /> },
+        { path: "/my/panel/reportes", element: <Reportes /> },
+      ],
     },
-    {
-      path: "/my/panel/mis-reservas",
-      element: <MisReservas />
-    },
-    {
-      path: "/my/panel/nueva-reserva",
-      element: <NuevaReserva />
-    },
-    {
-      path: "/my/panel/reportes",
-      element: <Reportes />
-    }
-  ])
+  ]);
 
   return (
-    <RouterProvider router={router} />
+    <AuthProvider>
+      <RouterProvider router={router} />
+    </AuthProvider>
   )
-
 }
 
 export default App

@@ -22,19 +22,19 @@ const Panel = () => {
                         Buenas, Usuario!
                     </button>
                 </div>
-                <Link to="/my/panel/mis-reservas" className='link'>
+                <Link to="mis-reservas" className='link'>
                     <div className="my-reserves">
                         <hr />
                         MIS RESERVAS
                     </div>
                 </Link>
-                <Link to="/my/panel/nueva-reserva" className='link'>
+                <Link to="nueva-reserva" className='link'>
                     <div className="new-reserve">
                         <hr />
                         NUEVA RESERVA
                     </div>
                 </Link>
-                <Link to="/my/panel/reportes" className='link'>
+                <Link to="reportes" className='link'>
                     <div className="available-rooms">
                         <hr />
                         REPORTES
