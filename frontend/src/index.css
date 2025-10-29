@@ -1,156 +1,162 @@
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
 
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: #fff;
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: #fff;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
 
-        .container {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 80px;
-            max-width: 1200px;
-            width: 100%;
-            align-items: center;
-        }
+.container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 80px;
+    max-width: 1200px;
+    width: 100%;
+    align-items: center;
+}
 
-        .left-section {
-            display: flex;
-            flex-direction: column;
-            gap: 40px;
-        }
+.left-section {
+    display: flex;
+    flex-direction: column;
+    gap: 40px;
+}
 
-        .hero-card {
-            background: linear-gradient(135deg, #d8b5ff 0%, #c084fc 100%);
-            padding: 60px 50px;
-            border-radius: 30px;
-            transform: rotate(-2deg);
-            transition: transform 0.3s ease;
-        }
+.hero-card {
+    background: linear-gradient(135deg, #d8b5ff 0%, #c084fc 100%);
+    padding: 60px 50px;
+    border-radius: 30px;
+    transform: rotate(-2deg);
+    transition: transform 0.3s ease;
+}
 
-        .hero-card h1 {
-            font-size: 4rem;
-            font-weight: 900;
-            color: #1a1a1a;
-            line-height: 1.1;
-            text-transform: uppercase;
-            letter-spacing: -2px;
-        }
+.hero-card h1 {
+    font-size: 4rem;
+    font-weight: 900;
+    color: #1a1a1a;
+    line-height: 1.1;
+    text-transform: uppercase;
+    letter-spacing: -2px;
+}
 
-        .login-card {
-            background: linear-gradient(135deg, #7dd3c0 0%, #5eead4 100%);
-            padding: 40px;
-            border-radius: 30px;
-            position: relative;
-            display: flex;
-            align-items: center;
-            gap: 20px;
-        }
+.login-card {
+    background: linear-gradient(135deg, #7dd3c0 0%, #5eead4 100%);
+    padding: 40px;
+    border-radius: 30px;
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
 
-        .login-btn {
-            flex: 1;
-            background: rgba(255, 255, 255, 0.9);
-            border: 3px solid #1a1a1a;
-            padding: 20px 30px;
-            border-radius: 50px;
-            font-size: 1.3rem;
-            font-weight: 700;
-            color: #1a1a1a;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            display: flex;
-            justify-content: center;
-            text-decoration: none;
-        }
+.login-btn {
+    flex: 1;
+    background: rgba(255, 255, 255, 0.9);
+    border: 3px solid #1a1a1a;
+    padding: 20px 30px;
+    border-radius: 50px;
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: #1a1a1a;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    display: flex;
+    justify-content: center;
+    text-decoration: none;
+}
 
-        .login-btn:hover {
-            background: #1a1a1a;
-            color: white;
-            transform: translateY(-2px);
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-        }
+.login-btn:hover {
+    background: #1a1a1a;
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+}
 
-        .arrow-btn {
-            width: 60px;
-            height: 60px;
-            background: white;
-            border: 3px solid #1a1a1a;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            flex-shrink: 0;
-        }
+.arrow-btn {
+    width: 60px;
+    height: 60px;
+    background: white;
+    border: 3px solid #1a1a1a;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    flex-shrink: 0;
+}
 
-        .right-section {
-            display: flex;
-            flex-direction: column;
-            gap: 30px;
-            align-items: center;
-            
-        }
+.right-section {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    gap: 30px;
+    align-items: center;
+    
+}
 
-        .top-bar {
-            width: 100%;
-            max-width: 400px;
-            height: 80px;
-            background: #f26e26;
-            border-radius: 20px;
-            animation: float 3s ease-in-out infinite;
-        }
+.top-bar {
+    width: 100%;
+    max-width: 400px;
+    height: 80px;
+    background: #f26e26;
+    border-radius: 20px;
+    animation: float 3s ease-in-out infinite;
+}
 
-        .home-logo {
-          height: 400px;
-          width: 400px;
-        }
+.home-logo {
+    height: 400px;
+    width: 400px;
+}
 
 
-        @media (max-width: 968px) {
-            .container {
-                grid-template-columns: 1fr;
-                gap: 30px;
-            }
 
-            .right-section {
-                align-items: center;
-            }
 
-            .hero-card h1 {
-                font-size: 3rem;
-            }
 
-            .top-bar {
-                max-width: 100%;
-            }
-        }
 
-        @media (max-width: 480px) {
-            .hero-card {
-                padding: 40px 30px;
-            }
+@media (max-width: 968px) {
+    .container {
+        grid-template-columns: 1fr;
+        gap: 30px;
+    }
 
-            .hero-card h1 {
-                font-size: 2.5rem;
-            }
+    .right-section {
+        align-items: center;
+    }
 
-            .login-card {
-                padding: 25px;
-            }
+    .hero-card h1 {
+        font-size: 3rem;
+    }
 
-            .login-btn {
-                font-size: 1.2rem;
-                padding: 15px 30px;
-            }
-        }
+    .top-bar {
+        max-width: 100%;
+    }
+}
+
+@media (max-width: 480px) {
+    .hero-card {
+        padding: 40px 30px;
+    }
+
+    .hero-card h1 {
+        font-size: 2.5rem;
+    }
+
+    .login-card {
+        padding: 25px;
+    }
+
+    .login-btn {
+        font-size: 1.2rem;
+        padding: 15px 30px;
+    }
+}
+
