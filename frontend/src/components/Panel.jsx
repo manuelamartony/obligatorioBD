@@ -17,13 +17,13 @@ const Panel = () => {
 
             <div className="right-section">
                 <div className="my-reserves">
-                    MIS RESERVAS
+                    <Link to="/my/panel/mis-reservas">MIS RESERVAS</Link>
                 </div>
                 <div className="new-reserve">
-                    NUEVA RESERVA
+                    <Link to="">NUEVA RESERVA</Link>
                 </div>
                 <div className="available-rooms">
-                    SALAS DISPONIBLES
+                    <Link to="">SALAS DISPONIBLES</Link>
                 </div>
             </div>
         </div>
