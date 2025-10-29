@@ -1,0 +1,91 @@
+/* Reportes component styles */
+
+.reportes-page {
+  padding: 2.5rem 4rem 4rem 4rem;
+  min-height: 100vh;
+  background: #fff;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+}
+
+.rp-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 2rem;
+}
+
+.pill-btn {
+  background: #fff;
+  border: 1px solid #111;
+  padding: 0.45rem 1.1rem;
+  border-radius: 28px;
+  font-size: 0.85rem;
+  cursor: pointer;
+}
+
+.rp-title {
+  font-size: 3.2rem;
+  text-align: center;
+  margin: 0;
+  font-weight: 700;
+  font-family: 'Caprasimo', Georgia, 'Times New Roman', serif;
+}
+
+.search-wrap {
+  display: flex;
+  justify-content: center;
+  margin: 1.75rem 0 2.25rem 0;
+}
+
+.search-input {
+  width: 64%;
+  max-width: 900px;
+  min-width: 260px;
+  padding: 0.9rem 1.1rem;
+  border-radius: 40px;
+  border: 2px solid #111;
+  font-size: 1rem;
+  outline: none;
+}
+
+.reports-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1.5rem 2.5rem;
+  justify-items: center;
+  align-items: center;
+  padding: 0 6rem;
+}
+
+.report-btn {
+  width: 420px;
+  max-width: 90%;
+  padding: 1.25rem 2rem;
+  border-radius: 18px;
+  border: none;
+  font-size: 1.15rem;
+  font-weight: 700;
+  cursor: pointer;
+  color: #111;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  text-align: center;
+}
+
+.report-btn.lavender { background: #E5D1FA }
+.report-btn.mint { background: #98D8AA }
+.report-btn.orange { background: #F16A18 }
+
+/* text wrap/size tweaks for multi-line report titles */
+.report-btn { line-height: 1.05; }
+.report-btn { white-space: pre-wrap; }
+
+
+@media (max-width: 980px) {
+  .reports-grid { grid-template-columns: repeat(1, 1fr); padding: 0 2rem }
+  .search-input { width: 90% }
+  .report-btn { width: 100%; max-width: 760px }
+  .report-btn::after { display: none }
+}

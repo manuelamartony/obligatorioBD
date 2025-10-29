@@ -1,6 +1,6 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
-import "../Panel.css"
+import "../styles/Panel.css"
 import PanelImage from "../../public/gente-feliz.avif"
 
 
@@ -22,20 +22,26 @@ const Panel = () => {
                         Buenas, Usuario!
                     </button>
                 </div>
-                <div className="my-reserves">
-                    <hr />
-                    MIS RESERVAS
-                </div>
-                <div className="new-reserve">
-                    <hr />
-                    NUEVA RESERVA
-                </div>
-                <div className="available-rooms">
-                    <hr />
-                    REPORTES
-                </div>
+                <Link to="/my/panel/mis-reservas" className='link'>
+                    <div className="my-reserves">
+                        <hr />
+                        MIS RESERVAS
+                    </div>
+                </Link>
+                <Link to="/my/panel/nueva-reserva" className='link'>
+                    <div className="new-reserve">
+                        <hr />
+                        NUEVA RESERVA
+                    </div>
+                </Link>
+                <Link to="/my/panel/reportes" className='link'>
+                    <div className="available-rooms">
+                        <hr />
+                        REPORTES
+                    </div>
+                </Link>
             </div>
-        </div>
+        </div >
     )
 }
 

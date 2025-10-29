@@ -1,9 +1,12 @@
 import { useState } from 'react'
-import './App.css'
+import './styles/App.css'
 import { createBrowserRouter, RouterProvider, } from "react-router-dom";
 import Panel from './components/Panel'
 import Home from './components/Home'
 import Login from './components/Login'
+import MisReservas from './components/MisReservas';
+import NuevaReserva from './components/NuevaReserva';
+import Reportes from './components/Reportes';
 
 
 function App() {
@@ -21,6 +24,18 @@ function App() {
     {
       path: "/my/panel",
       element: <Panel />
+    },
+    {
+      path: "/my/panel/mis-reservas",
+      element: <MisReservas />
+    },
+    {
+      path: "/my/panel/nueva-reserva",
+      element: <NuevaReserva />
+    },
+    {
+      path: "/my/panel/reportes",
+      element: <Reportes />
     }
   ])
 
