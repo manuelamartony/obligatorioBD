@@ -1,5 +1,5 @@
 import React from 'react';
-import './TurnosPopup.css';
+import '../styles/TurnosPopup.css';
 
 const TurnosPopup = () => {
     const hours = [
@@ -7,10 +7,18 @@ const TurnosPopup = () => {
         '9:00 A.M.',
         '10:00 A.M.',
         '11:00 A.M.',
-        '12:00 NOON',
-        '1:00 P.M.',
-        '2:00 P.M.',
-        '3:00 P.M.',
+        '12:00 P.M',
+        '13:00 P.M.',
+        '14:00 P.M.',
+        '15:00 P.M.',
+        '16:00 P.M.',
+        '17:00 P.M.',
+        '18:00 P.M.',
+        '19:00 P.M.',
+        '20:00 P.M.',
+        '21:00 P.M.',
+        '22:00 P.M.',
+        '23:00 P.M.',
     ];
 
     const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
