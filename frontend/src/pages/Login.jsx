@@ -1,13 +1,25 @@
-import React from 'react'
-import "../styles/Login.css"
+import React from "react";
+import { Form, useActionData, redirect, Link } from "react-router-dom";
+import "../styles/Login.css";
 
-const Login = () => {
+// Action que recibe los datos del formulario
+export async function loginAction({ request }) {
+    const formData = await request.formData();
+    const email = formData.get("userOrEmail"); //Obtener email
+    const password = formData.get("password"); //Obtener password
+
+    console.log("Email:", email, "Password:", password);
+}
+
+export default function Login() {
+    const data = useActionData();
+
     return (
         <div className='login-body'>
             <div className='login-container'>
                 <h1 id="login-title">LOGIN</h1>
 
-                <form className='loginInterface-container' >
+                <Form method="post" className='loginInterface-container'>
                     <h3 className="interface-title">USUARIO</h3>
                     <input
                         className="interface-input"
@@ -25,14 +37,14 @@ const Login = () => {
                         name="password"
                         required
                     />
+                    <Link to="/my/panel">
+                        <button type="submit" className="interface-btn">
+                            Ingresar
+                        </button>
+                    </Link>
 
-                    <button type="submit" className="interface-btn">
-                        Ingresar
-                    </button>
-                </form>
+                </Form>
             </div>
         </div>
-    )
+    );
 }
-
-export default Login
