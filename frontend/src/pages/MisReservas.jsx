@@ -1,5 +1,6 @@
 import React from 'react'
 import '../styles/MisReservas.css'
+import { useNavigate } from 'react-router-dom'
 
 const reservations = [
     {
@@ -46,13 +47,16 @@ const reservations = [
     }
 ]
 
+
 const MisReservas = () => {
+    const navigate = useNavigate();
+
     return (
         <div className="misreservas-page">
             <header className="mr-header">
-                <button className="pill-btn back">VOLVER</button>
+
+                <button className="pill-btn back" onClick={() => { navigate(-1) }}>VOLVER</button>
                 <div className="header-center">
-                    <div className="icon-circle">🌱</div>
                     <h1 className="page-title">MIS RESERVAS</h1>
                 </div>
                 <button className="pill-btn profile">MI PERFIL</button>

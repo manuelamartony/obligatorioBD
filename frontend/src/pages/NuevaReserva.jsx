@@ -1,5 +1,6 @@
 import React from 'react'
 import '../styles/NuevaReserva.css'
+import { useNavigate } from 'react-router-dom'
 
 const salas = [
     { id: 1, name: 'SALÓN 1', color: 'lavender' },
@@ -11,10 +12,11 @@ const salas = [
 ]
 
 const NuevaReserva = () => {
+    const navigate = useNavigate();
     return (
         <div className="nueva-reserva-page">
             <header className="nr-header">
-                <button className="pill-btn back">VOLVER</button>
+                <button className="pill-btn back" onClick={() => { navigate(-1) }}>VOLVER</button>
                 <h1 className="nr-title">NUEVA RESERVA</h1>
                 <button className="pill-btn profile">MI PERFIL</button>
             </header>
