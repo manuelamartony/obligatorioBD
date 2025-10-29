@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import './App.css'
+import './styles/App.css'
 import { createBrowserRouter, RouterProvider, } from "react-router-dom";
 import Panel from './components/Panel'
 import Home from './components/Home'

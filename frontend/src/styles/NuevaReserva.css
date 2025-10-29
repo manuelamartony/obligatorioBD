@@ -1,0 +1,94 @@
+/* NuevaReserva styles */
+
+.nueva-reserva-page {
+  padding: 2.5rem 4rem 4rem 4rem;
+  min-height: 100vh;
+  background: #fff;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+}
+
+.nr-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 2rem;
+}
+
+.pill-btn {
+  background: #fff;
+  border: 1px solid #111;
+  padding: 0.45rem 1.1rem;
+  border-radius: 28px;
+  font-size: 0.85rem;
+  cursor: pointer;
+}
+
+.nr-title {
+  font-size: 3.2rem;
+  text-align: center;
+  margin: 0;
+  font-weight: 700;
+  font-family: 'Caprasimo', Georgia, 'Times New Roman', serif;
+}
+
+.search-wrap {
+  display: flex;
+  justify-content: center;
+  margin: 1.75rem 0 2.25rem 0;
+}
+
+.search-input {
+  width: 64%;
+  max-width: 900px;
+  min-width: 260px;
+  padding: 0.9rem 1.1rem;
+  border-radius: 40px;
+  border: 2px solid #111;
+  font-size: 1rem;
+  outline: none;
+}
+
+.salas-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1.5rem 2.5rem;
+  justify-items: center;
+  align-items: center;
+  padding: 0 6rem; /* center grid a bit */
+}
+
+.sala-btn {
+  width: 320px;
+  max-width: 80%;
+  padding: 1.15rem 2rem;
+  border-radius: 18px;
+  border: none;
+  font-size: 1.35rem;
+  font-weight: 600;
+  cursor: pointer;
+  color: #111;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  text-align: center;
+}
+
+
+/* Colors matching design */
+.sala-btn.lavender { background: #E5D1FA; }
+.sala-btn.mint { background: #98D8AA; }
+.sala-btn.orange { background: #F16A18; color: #0b0b0b }
+
+.salas-grid button:nth-child(1) { justify-self: start; }
+.salas-grid button:nth-child(2) { justify-self: end; }
+.salas-grid button:nth-child(3) { justify-self: start; }
+.salas-grid button:nth-child(4) { justify-self: end; }
+.salas-grid button:nth-child(5) { justify-self: start; }
+.salas-grid button:nth-child(6) { justify-self: end; }
+
+@media (max-width: 900px) {
+  .salas-grid { grid-template-columns: repeat(1, 1fr); padding: 0 2rem }
+  .search-input { width: 90% }
+  .sala-btn { width: 100%; max-width: 760px }
+}

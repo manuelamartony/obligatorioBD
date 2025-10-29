@@ -1,3 +1,8 @@
+a {
+  -webkit-user-drag: none;
+}
+
+
 * {
     margin: 0;
     padding: 0;
@@ -117,7 +122,10 @@ body {
     width: 400px;
 }
 
-
+.link {
+    text-decoration: none;
+    color: black;
+}
 
 
 
