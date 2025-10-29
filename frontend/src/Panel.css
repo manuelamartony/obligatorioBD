@@ -1,0 +1,62 @@
+.my-reserves {
+    background-color: #d9b8f3;
+}
+.new-reserve {
+    background-color: #f26e26;
+}
+
+.available-rooms {
+    background-color: #7dcfb6;
+}
+
+.my-reserves, .new-reserve, .available-rooms {
+    font-size: 25px;
+    font-weight: bold;
+    width: 350px;
+    padding: 30px 40px;
+    border-top-left-radius: 20px;
+    border-bottom-right-radius: 20px;
+    border-top-right-radius: 100px;
+    border-bottom-left-radius: 100px;
+    cursor: pointer;
+}
+
+hr {
+    border: 1px solid black;
+    width: 70px;
+}
+
+.panel-card h2 {
+    font-size: 53px;
+}
+
+.panel-imgCard {
+    width: 400px;
+    border-radius: 20px;
+}
+
+.profile-container {
+    width: 80%;
+    display: flex;
+    justify-content: end;
+}
+
+.profile {
+    background: none;
+    padding: 5px 10px;
+    border: 2px solid black;
+    border-radius: 20px;
+}
+
+.panelIcon {
+    border: 2px solid black;
+    border-radius: 50%;
+    height: 40px;
+    width: 40px;
+}
+
+.panel-card {
+    display: flex;
+    align-items: center;
+    gap: 40px;
+}
