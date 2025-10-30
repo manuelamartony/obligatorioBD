@@ -1,39 +1,74 @@
-/* TurnosPopup styles */
+/* Contenedor overlay: use flex para centrar, pero permite scroll en pantallas pequeñas */
+.popup-overlay {
+    background: rgba(0, 0, 0, 0.7);
+    position: fixed;
+    inset: 0; /* top:0; right:0; bottom:0; left:0; */
+    display: flex;
+    align-items: center;      /* centrado vertical en pantallas grandes */
+    justify-content: center;  /* centrado horizontal */
+    padding: 20px;            /* espacio para que el popup no toque bordes */
+    overflow: auto;           /* permite scroll si el contenido excede viewport */
+    -webkit-overflow-scrolling: touch;
+}
+
+/* Popup principal */
 .turnos-popup {
     background: white;
     padding: 1.5rem;
     border-radius: 20px;
-    min-width: 800px;
-    max-width: 95vw;
+    width: min(95vw, 900px);             /* adaptativo: nunca más ancho que 900px ni que 95vw */
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+    box-sizing: border-box;
+    position: relative;
+
+    /* IMPORTANT: limitar altura y permitir scroll interno */
+    max-height: calc(100vh - 40px);      /* deja 20px arriba y abajo */
+    overflow-y: auto;                    /* scroll interno si contenido alto */
+    -webkit-overflow-scrolling: touch;
 }
 
+/* Título: mantener visible (opcional) */
 .popup-title {
     font-family: 'Caprasimo', Georgia, serif;
-    font-size: 2.5rem;
+    font-size: clamp(1.6rem, 2.5vw, 2.5rem);
     text-align: center;
-    margin-bottom: 2rem;
+    margin: 0 0 1.25rem 0;
     color: #111;
+    /* Si querés que el header quede fijo mientras scroll interno, descomenta:
+    position: sticky;
+    top: 0;
+    background: white;
+    z-index: 3;
+    padding-top: 0.5rem;
+    */
 }
 
+/* Tabla: horizontal scroll si es necesario */
 .schedule-table {
     overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
 }
 
+/* Asegúrate de no forzar min-width grande en el table */
 table {
     width: 100%;
     border-collapse: separate;
     border-spacing: 4px;
     margin: 0 auto;
+    /* no pongas min-width grande que cause overflow fuera del popup */
+    min-width: 0;
 }
 
+/* Celdas */
 th, td {
     text-align: center;
     padding: 0.5rem;
-    font-size: 0.9rem;
+    font-size: clamp(0.75rem, 1.2vw, 0.95rem);
     border-radius: 8px;
+    word-break: break-word;
 }
 
+/* Estilos de estado */
 th {
     background: #E5D1FA;
     color: #111;
@@ -62,7 +97,7 @@ th {
     color: #111;
 }
 
-/* Estilos para el contenedor del popup de reactjs-popup */
+/* React Popup content wrapper */
 .popup-content {
     margin: auto;
     background: transparent;
@@ -70,25 +105,43 @@ th {
     padding: 0;
 }
 
-/* Overlay personalizado */
-.popup-overlay {
-    background: rgba(0, 0, 0, 0.7);
+/* Breakpoint: pantallas medianas (tablets / laptops pequeñas) */
+@media (max-width: 900px) {
+    .popup-overlay {
+        align-items: flex-start; /* no centrar verticalmente; deja espacio para scroll */
+        padding: 16px;
+    }
+
+    .turnos-popup {
+        width: 95vw;
+        max-height: calc(100vh - 32px);
+        padding: 1rem;
+        border-radius: 16px;
+    }
 }
 
-@media (max-width: 900px) {
+/* Breakpoint: móviles pequeños */
+@media (max-width: 420px) {
+    .popup-overlay {
+        align-items: flex-start;
+        padding: env(safe-area-inset-top, 8px) 8px 16px; /* safe-area para iOS */
+    }
+
     .turnos-popup {
-        min-width: unset;
-        width: 95vw;
-        padding: 1rem;
+        width: 100%;
+        max-width: 100%;
+        height: auto;
+        max-height: calc(100vh - 16px);
+        border-radius: 12px;
+        padding: 0.75rem;
     }
 
     .popup-title {
-        font-size: 2rem;
-        margin-bottom: 1.5rem;
+        font-size: clamp(1.2rem, 6vw, 1.6rem);
+        margin-bottom: 0.75rem;
     }
 
-    th, td {
-        padding: 0.5rem;
-        font-size: 0.8rem;
+    table {
+        min-width: 360px; /* permite scroll horizontal en móviles */
     }
 }
