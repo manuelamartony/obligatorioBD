@@ -329,6 +329,25 @@ Error: listen EADDRINUSE: address already in use :::3000
 ```
 **Solución**: Cambiar el puerto en `.env` o terminar el proceso que usa el puerto 3000.
 
+## Documentación Swagger/OpenAPI
+
+- UI interactiva: `http://localhost:3000/api/docs`
+- Esquema JSON: `http://localhost:3000/api/docs.json`
+- Archivo fuente: `backend/openapi.yaml`
+
+### Instalación de dependencias para Swagger
+
+Agregar dependencias e instalar:
+
+```bash
+cd backend
+npm install swagger-ui-express yamljs
+```
+
+### Importar en Postman usando OpenAPI
+
+En Postman, importá `backend/openapi.yaml` o la URL `http://localhost:3000/api/docs.json` para crear automáticamente la colección con variables.
+
 ## Próximos pasos (futuras mejoras)
 
 - [ ] Implementar autenticación JWT real

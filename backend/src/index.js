@@ -2,6 +2,10 @@ import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import { testConnection } from './config/database.js';
+import swaggerUi from 'swagger-ui-express';
+import YAML from 'yamljs';
+import path from 'path';
+import { fileURLToPath } from 'url';
 
 // Importar rutas
 import authRoutes from './routes/authRoutes.js';
@@ -42,6 +46,15 @@ app.use('/api/turnos', turnosRoutes);
 app.use('/api/reportes', reportesRoutes);
 app.use('/api', facultadesRoutes);
 app.use('/api/participantes', participantesRoutes);
+
+// Swagger UI
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+const swaggerDocument = YAML.load(path.join(__dirname, '../openapi.yaml'));
+app.use('/api/docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+app.get('/api/docs.json', (req, res) => {
+  res.json(swaggerDocument);
+});
 
 // Ruta de health check
 app.get('/api/health', (req, res) => {

@@ -1,0 +1,496 @@
+openapi: 3.0.3
+info:
+  title: API - Sistema de Reservas de Salones
+  version: 1.0.0
+  description: |
+    API REST para gestionar reservas de salones académicos.
+    Autenticación actualmente mockeada: usar query `ci` o header `X-User-CI`.
+servers:
+  - url: http://localhost:3000
+    description: Local
+  - url: http://localhost:3000/api
+    description: Local (prefijo /api)
+tags:
+  - name: Auth
+  - name: Reservas
+  - name: Salas
+  - name: Turnos
+  - name: Reportes
+  - name: Facultades
+  - name: Participantes
+  - name: Health
+paths:
+  /api/auth/login:
+    post:
+      tags: [Auth]
+      summary: Iniciar sesión (mock)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [correo, contrasena]
+              properties:
+                correo:
+                  type: string
+                  example: usuario@ejemplo.com
+                contrasena:
+                  type: string
+                  example: password123
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiSuccess"
+  /api/auth/logout:
+    post:
+      tags: [Auth]
+      summary: Cerrar sesión (mock)
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiSuccess"
+  /api/auth/me:
+    get:
+      tags: [Auth]
+      summary: Obtener usuario actual (mock)
+      parameters:
+        - in: query
+          name: ci
+          schema: { type: integer }
+          required: false
+          description: CI del usuario
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiSuccess"
+
+  /api/reservas:
+    get:
+      tags: [Reservas]
+      summary: Obtener reservas del usuario
+      parameters:
+        - in: query
+          name: ci
+          schema: { type: integer }
+          required: true
+      responses:
+        "200": { $ref: "#/components/responses/Ok" }
+    post:
+      tags: [Reservas]
+      summary: Crear reserva
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/NuevaReserva"
+      responses:
+        "201": { $ref: "#/components/responses/Created" }
+  /api/reservas/{id}:
+    get:
+      tags: [Reservas]
+      summary: Obtener detalle de reserva
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: integer }
+      responses:
+        "200": { $ref: "#/components/responses/Ok" }
+    put:
+      tags: [Reservas]
+      summary: Actualizar estado de reserva
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: integer }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [estado]
+              properties:
+                estado:
+                  type: string
+                  enum: [activa, cancelada, sin_asistencia, finalizada]
+      responses:
+        "200": { $ref: "#/components/responses/Ok" }
+    delete:
+      tags: [Reservas]
+      summary: Cancelar reserva
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: integer }
+      responses:
+        "200": { $ref: "#/components/responses/Ok" }
+  /api/reservas/asistencia:
+    post:
+      tags: [Reservas]
+      summary: Marcar asistencia a una reserva
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [id_reserva, ci]
+              properties:
+                id_reserva: { type: integer, example: 10 }
+                ci: { type: integer, example: 12345678 }
+      responses:
+        "200": { $ref: "#/components/responses/Ok" }
+
+  /api/salas:
+    get:
+      tags: [Salas]
+      summary: Listar salas
+      parameters:
+        - in: query
+          name: tipo_sala
+          schema: { type: string, example: aula }
+          required: false
+      responses:
+        "200": { $ref: "#/components/responses/Ok" }
+  /api/salas/{nombre}/disponibilidad:
+    get:
+      tags: [Salas]
+      summary: Disponibilidad de sala por fecha y edificio
+      parameters:
+        - in: path
+          name: nombre
+          required: true
+          schema: { type: string }
+        - in: query
+          name: fecha
+          required: true
+          schema: { type: string, format: date }
+        - in: query
+          name: edificio
+          required: false
+          schema: { type: string }
+      responses:
+        "200": { $ref: "#/components/responses/Ok" }
+  /api/salas/edificios/todos:
+    get:
+      tags: [Salas]
+      summary: Listar todos los edificios
+      responses:
+        "200": { $ref: "#/components/responses/Ok" }
+  /api/salas/edificio/{edificio}:
+    get:
+      tags: [Salas]
+      summary: Listar salas por edificio
+      parameters:
+        - in: path
+          name: edificio
+          required: true
+          schema: { type: string }
+      responses:
+        "200": { $ref: "#/components/responses/Ok" }
+
+  /api/turnos:
+    get:
+      tags: [Turnos]
+      summary: Listar turnos
+      responses:
+        "200": { $ref: "#/components/responses/Ok" }
+  /api/turnos/disponibles:
+    get:
+      tags: [Turnos]
+      summary: Turnos disponibles para sala/fecha
+      parameters:
+        - in: query
+          name: fecha
+          schema: { type: string, format: date }
+          required: true
+        - in: query
+          name: sala
+          schema: { type: string }
+          required: true
+        - in: query
+          name: edificio
+          schema: { type: string }
+          required: false
+      responses:
+        "200": { $ref: "#/components/responses/Ok" }
+  /api/turnos/{id}/disponibilidad:
+    get:
+      tags: [Turnos]
+      summary: Verificar disponibilidad de un turno
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: integer }
+        - in: query
+          name: fecha
+          required: true
+          schema: { type: string, format: date }
+        - in: query
+          name: sala
+          required: true
+          schema: { type: string }
+      responses:
+        "200": { $ref: "#/components/responses/Ok" }
+
+  /api/reportes/salas-mas-reservadas:
+    get:
+      tags: [Reportes]
+      summary: Salas más reservadas
+      parameters:
+        - $ref: "#/components/parameters/fecha_inicio"
+        - $ref: "#/components/parameters/fecha_fin"
+      responses:
+        "200": { $ref: "#/components/responses/Ok" }
+  /api/reportes/turnos-demandados:
+    get:
+      tags: [Reportes]
+      summary: Turnos más usados
+      parameters:
+        - $ref: "#/components/parameters/fecha_inicio"
+        - $ref: "#/components/parameters/fecha_fin"
+      responses:
+        "200": { $ref: "#/components/responses/Ok" }
+  /api/reportes/promedio-participantes:
+    get:
+      tags: [Reportes]
+      summary: Promedio de participantes por sala
+      parameters:
+        - $ref: "#/components/parameters/fecha_inicio"
+        - $ref: "#/components/parameters/fecha_fin"
+      responses:
+        "200": { $ref: "#/components/responses/Ok" }
+  /api/reportes/reservas-por-facultad:
+    get:
+      tags: [Reportes]
+      summary: Reservas por facultad
+      parameters:
+        - $ref: "#/components/parameters/fecha_inicio"
+        - $ref: "#/components/parameters/fecha_fin"
+      responses:
+        "200": { $ref: "#/components/responses/Ok" }
+  /api/reportes/ocupacion-edificios:
+    get:
+      tags: [Reportes]
+      summary: Ocupación por edificios
+      parameters:
+        - in: query
+          name: fecha
+          required: true
+          schema: { type: string, format: date }
+      responses:
+        "200": { $ref: "#/components/responses/Ok" }
+  /api/reportes/cantidad-reservas:
+    get:
+      tags: [Reportes]
+      summary: Cantidad total de reservas en periodo
+      parameters:
+        - $ref: "#/components/parameters/fecha_inicio"
+        - $ref: "#/components/parameters/fecha_fin"
+      responses:
+        "200": { $ref: "#/components/responses/Ok" }
+  /api/reportes/general:
+    get:
+      tags: [Reportes]
+      summary: Reporte general
+      parameters:
+        - $ref: "#/components/parameters/fecha_inicio"
+        - $ref: "#/components/parameters/fecha_fin"
+      responses:
+        "200": { $ref: "#/components/responses/Ok" }
+
+  /api/facultades:
+    get:
+      tags: [Facultades]
+      summary: Listar facultades
+      responses:
+        "200": { $ref: "#/components/responses/Ok" }
+  /api/programas:
+    get:
+      tags: [Facultades]
+      summary: Listar programas (filtros)
+      parameters:
+        - in: query
+          name: id_facultad
+          schema: { type: integer }
+        - in: query
+          name: tipo
+          schema: { type: string }
+      responses:
+        "200": { $ref: "#/components/responses/Ok" }
+  /api/programas/tipos:
+    get:
+      tags: [Facultades]
+      summary: Listar tipos de programas
+      responses:
+        "200": { $ref: "#/components/responses/Ok" }
+  /api/facultades/{id}/programas:
+    get:
+      tags: [Facultades]
+      summary: Programas por facultad
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: integer }
+      responses:
+        "200": { $ref: "#/components/responses/Ok" }
+
+  /api/participantes:
+    get:
+      tags: [Participantes]
+      summary: Listar participantes
+      parameters:
+        - in: query
+          name: rol
+          schema: { type: string, example: estudiante }
+        - in: query
+          name: limit
+          schema: { type: integer, example: 50 }
+      responses:
+        "200": { $ref: "#/components/responses/Ok" }
+  /api/participantes/{ci}:
+    get:
+      tags: [Participantes]
+      summary: Obtener participante por CI
+      parameters:
+        - in: path
+          name: ci
+          required: true
+          schema: { type: integer }
+      responses:
+        "200": { $ref: "#/components/responses/Ok" }
+  /api/participantes/{ci}/sanciones:
+    get:
+      tags: [Participantes]
+      summary: Listar sanciones
+      parameters:
+        - in: path
+          name: ci
+          required: true
+          schema: { type: integer }
+      responses:
+        "200": { $ref: "#/components/responses/Ok" }
+  /api/participantes/{ci}/sanciones/activas:
+    get:
+      tags: [Participantes]
+      summary: Verificar sanciones activas
+      parameters:
+        - in: path
+          name: ci
+          required: true
+          schema: { type: integer }
+      responses:
+        "200": { $ref: "#/components/responses/Ok" }
+  /api/participantes/{ci}/historial-reservas:
+    get:
+      tags: [Participantes]
+      summary: Historial de reservas
+      parameters:
+        - in: path
+          name: ci
+          required: true
+          schema: { type: integer }
+        - in: query
+          name: estado
+          required: false
+          schema:
+            {
+              type: string,
+              enum: [activa, cancelada, sin_asistencia, finalizada],
+            }
+      responses:
+        "200": { $ref: "#/components/responses/Ok" }
+
+  /api/health:
+    get:
+      tags: [Health]
+      summary: Estado del servidor
+      responses:
+        "200": { $ref: "#/components/responses/Ok" }
+  /:
+    get:
+      tags: [Health]
+      summary: Información de la API
+      responses:
+        "200": { $ref: "#/components/responses/Ok" }
+
+components:
+  schemas:
+    ApiSuccess:
+      type: object
+      properties:
+        success:
+          type: boolean
+          example: true
+        data:
+          nullable: true
+    ApiError:
+      type: object
+      properties:
+        error:
+          type: string
+          example: Mensaje descriptivo del error
+    NuevaReserva:
+      type: object
+      required: [nombre_sala, edificio, fecha, id_turno, ci]
+      properties:
+        nombre_sala:
+          type: string
+          example: M103
+        edificio:
+          type: string
+          example: Edificio M
+        fecha:
+          type: string
+          format: date
+          example: 2024-12-15
+        id_turno:
+          type: integer
+          example: 1
+        ci:
+          type: integer
+          example: 12345678
+        participantes:
+          type: array
+          items: { type: integer }
+          example: [87654321, 11223344]
+  responses:
+    Ok:
+      description: Operación exitosa
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ApiSuccess"
+    Created:
+      description: Recurso creado
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ApiSuccess"
+  parameters:
+    fecha_inicio:
+      in: query
+      name: fecha_inicio
+      schema: { type: string, format: date }
+      required: true
+    fecha_fin:
+      in: query
+      name: fecha_fin
+      schema: { type: string, format: date }
+      required: true
