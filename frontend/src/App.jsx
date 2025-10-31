@@ -9,7 +9,9 @@ import Reportes from './pages/Reportes';
 import { AuthProvider } from './context/AuthContext';
 import ProtectedRoutes from './components/ProtectedRoutes';
 
-
+async function getData() {
+  const datos = fetch("http://localhost:5173")
+}
 
 function App() {
   const router = createBrowserRouter([

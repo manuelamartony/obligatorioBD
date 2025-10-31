@@ -1,4 +1,4 @@
--- ======================================================
+﻿-- ======================================================
 -- ELIMINAR TABLAS EXISTENTES (en orden correcto)
 -- ======================================================
 
@@ -7,7 +7,7 @@ DROP TABLE IF EXISTS reserva;
 DROP TABLE IF EXISTS turno;
 DROP TABLE IF EXISTS sala;
 DROP TABLE IF EXISTS edificio;
-DROP TABLE IF EXISTS participante_programa_académico;
+DROP TABLE IF EXISTS participante_programa_academico;
 DROP TABLE IF EXISTS programa_academico;
 DROP TABLE IF EXISTS facultad;
 DROP TABLE IF EXISTS participante;
@@ -41,7 +41,7 @@ CREATE TABLE programa_academico (
 
 );
 
-CREATE TABLE participante_programa_académico (
+CREATE TABLE participante_programa_academico (
     id_alumno_programa INT NOT NULL PRIMARY KEY ,
     ci INT NOT NULL ,
     nombre_programa VARCHAR(100),
