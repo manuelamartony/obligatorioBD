@@ -33,10 +33,10 @@ export const login = async (req, res) => {
       });
     }
 
-    // Buscar datos del participante
+    // Buscar datos del participante usando el email del login
     const [participanteRows] = await pool.query(
-      'SELECT ci, nombre, apellido, email, rol FROM participante WHERE ci = ?',
-      [login.ci]
+      'SELECT ci, nombre, apellido, email FROM participante WHERE email = ?',
+      [correo]
     );
 
     if (participanteRows.length === 0) {
@@ -46,6 +46,14 @@ export const login = async (req, res) => {
     }
 
     const participante = participanteRows[0];
+    
+    // Obtener el rol del participante desde participante_programa_académico
+    const [rolRows] = await pool.query(
+      'SELECT rol FROM participante_programa_académico WHERE ci = ? LIMIT 1',
+      [participante.ci]
+    );
+    
+    const rol = rolRows.length > 0 ? rolRows[0].rol : null;
 
     // Mock token (en producción sería JWT)
     const token = `mock-token-${participante.ci}-${Date.now()}`;
@@ -58,14 +66,16 @@ export const login = async (req, res) => {
         nombre: participante.nombre,
         apellido: participante.apellido,
         email: participante.email,
-        rol: participante.rol
+        rol: rol
       }
     });
 
   } catch (error) {
     console.error('Error en login:', error);
+    console.error('Error stack:', error.stack);
     res.status(500).json({
-      error: 'Error en el servidor'
+      error: 'Error en el servidor',
+      details: process.env.NODE_ENV === 'development' ? error.message : undefined
     });
   }
 };
@@ -99,7 +109,7 @@ export const me = async (req, res) => {
     }
 
     const [participanteRows] = await pool.query(
-      'SELECT ci, nombre, apellido, email, rol FROM participante WHERE ci = ?',
+      'SELECT ci, nombre, apellido, email FROM participante WHERE ci = ?',
       [ci]
     );
 
@@ -110,6 +120,14 @@ export const me = async (req, res) => {
     }
 
     const participante = participanteRows[0];
+    
+    // Obtener el rol del participante desde participante_programa_académico
+    const [rolRows] = await pool.query(
+      'SELECT rol FROM participante_programa_académico WHERE ci = ? LIMIT 1',
+      [ci]
+    );
+    
+    const rol = rolRows.length > 0 ? rolRows[0].rol : null;
 
     res.json({
       success: true,
@@ -118,14 +136,16 @@ export const me = async (req, res) => {
         nombre: participante.nombre,
         apellido: participante.apellido,
         email: participante.email,
-        rol: participante.rol
+        rol: rol
       }
     });
 
   } catch (error) {
     console.error('Error en me:', error);
+    console.error('Error stack:', error.stack);
     res.status(500).json({
-      error: 'Error en el servidor'
+      error: 'Error en el servidor',
+      details: process.env.NODE_ENV === 'development' ? error.message : undefined
     });
   }
 };

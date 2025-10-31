@@ -125,6 +125,33 @@ export const crearReserva = async (req, res) => {
     // Normalizar fecha a DATE (YYYY-MM-DD)
     const fechaDate = typeof fecha === 'string' ? fecha.split('T')[0] : fecha;
 
+    // Verificar que el participante (creador) existe
+    const [participanteExiste] = await connection.query(
+      'SELECT ci FROM participante WHERE ci = ?',
+      [ci]
+    );
+
+    if (participanteExiste.length === 0) {
+      await connection.rollback();
+      return res.status(400).json({
+        error: 'El participante no existe'
+      });
+    }
+
+    // Verificar que la sala existe en el edificio especificado
+    const [salaExiste] = await connection.query(
+      `SELECT nombre_sala FROM sala 
+       WHERE nombre_sala = ? AND edificio = ?`,
+      [nombre_sala, edificio]
+    );
+
+    if (salaExiste.length === 0) {
+      await connection.rollback();
+      return res.status(400).json({
+        error: 'La sala no existe en el edificio especificado'
+      });
+    }
+
     // Verificar disponibilidad de la sala en ese turno y fecha
     const [existentes] = await connection.query(
       `SELECT id_reserva FROM reserva
@@ -155,10 +182,11 @@ export const crearReserva = async (req, res) => {
     }
 
     // Generar nuevo id_reserva manualmente (sin AUTO_INCREMENT en SQL)
-    const [[{ maxId }]] = await connection.query(
+    const [maxIdRows] = await connection.query(
       'SELECT COALESCE(MAX(id_reserva), 0) AS maxId FROM reserva'
     );
-    const id_reserva = (maxId || 0) + 1;
+    const maxId = maxIdRows[0]?.maxId || 0;
+    const id_reserva = maxId + 1;
 
     // Crear la reserva (sin columnas inexistentes en SQL)
     await connection.query(
@@ -167,13 +195,39 @@ export const crearReserva = async (req, res) => {
       [id_reserva, nombre_sala, edificio, fechaDate, id_turno]
     );
 
-    // Agregar participantes adicionales si existen
+    // Agregar el creador de la reserva como participante
+    await connection.query(
+      `INSERT INTO reserva_participante (id_reserva, ci, fecha_solicitud_reserva, asistencia)
+       VALUES (?, ?, ?, FALSE)`,
+      [id_reserva, ci, fechaDate]
+    );
+
+    // Validar y agregar participantes adicionales si existen
     if (participantes && Array.isArray(participantes)) {
+      // Verificar que todos los participantes existan
+      const placeholders = participantes.map(() => '?').join(',');
+      const [participantesExistentes] = await connection.query(
+        `SELECT ci FROM participante WHERE ci IN (${placeholders})`,
+        participantes
+      );
+
+      const participantesValidos = participantesExistentes.map(p => p.ci);
+      const participantesInvalidos = participantes.filter(ci => !participantesValidos.includes(ci));
+
+      if (participantesInvalidos.length > 0) {
+        await connection.rollback();
+        return res.status(400).json({
+          error: 'Algunos participantes no existen',
+          participantesInvalidos
+        });
+      }
+
+      // Agregar participantes adicionales
       for (const participanteCi of participantes) {
         await connection.query(
-          `INSERT INTO reserva_participante (id_reserva, ci, asistencia)
-           VALUES (?, ?, FALSE)`,
-          [id_reserva, participanteCi]
+          `INSERT INTO reserva_participante (id_reserva, ci, fecha_solicitud_reserva, asistencia)
+           VALUES (?, ?, ?, FALSE)`,
+          [id_reserva, participanteCi, fechaDate]
         );
       }
     }
@@ -190,19 +244,32 @@ export const crearReserva = async (req, res) => {
   } catch (error) {
     await connection.rollback();
     console.error('Error al crear reserva:', error);
+    console.error('Error stack:', error.stack);
+    console.error('Error code:', error.code);
+    console.error('Error message:', error.message);
+    
     // Errores comunes por FK/PK
     if (error && error.code === 'ER_NO_REFERENCED_ROW_2') {
       return res.status(400).json({
-        error: 'Sala o edificio no existen o no coinciden'
+        error: 'Sala o edificio no existen o no coinciden',
+        details: process.env.NODE_ENV === 'development' ? error.message : undefined
       });
     }
     if (error && (error.errno === 1364 || error.code === 'ER_BAD_NULL_ERROR')) {
       return res.status(400).json({
-        error: 'Falta un valor requerido para crear la reserva'
+        error: 'Falta un valor requerido para crear la reserva',
+        details: process.env.NODE_ENV === 'development' ? error.message : undefined
+      });
+    }
+    if (error && error.code === 'ER_DUP_ENTRY') {
+      return res.status(409).json({
+        error: 'Ya existe una reserva con estos datos',
+        details: process.env.NODE_ENV === 'development' ? error.message : undefined
       });
     }
     res.status(500).json({
-      error: 'Error en el servidor'
+      error: 'Error en el servidor',
+      details: process.env.NODE_ENV === 'development' ? error.message : undefined
     });
   } finally {
     connection.release();

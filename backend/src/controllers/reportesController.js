@@ -146,7 +146,7 @@ export const reservasPorFacultad = async (req, res) => {
         COUNT(DISTINCT p.ci) as participantes_unicos
       FROM reserva r
       INNER JOIN participante p ON r.ci = p.ci
-      INNER JOIN participante_programa_academico ppa ON p.ci = ppa.ci
+      INNER JOIN participante_programa_académico ppa ON p.ci = ppa.ci
       INNER JOIN programa_academico pa ON ppa.nombre_programa = pa.nombre_programa
       INNER JOIN facultad f ON pa.id_facultad = f.id_facultad
       WHERE r.fecha BETWEEN ? AND ?

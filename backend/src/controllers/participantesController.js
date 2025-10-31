@@ -7,7 +7,7 @@ export const obtenerParticipante = async (req, res) => {
 
     // Obtener datos del participante
     const [participanteRows] = await pool.query(
-      'SELECT ci, nombre, apellido, email, rol FROM participante WHERE ci = ?',
+      'SELECT ci, nombre, apellido, email FROM participante WHERE ci = ?',
       [ci]
     );
 
@@ -26,7 +26,7 @@ export const obtenerParticipante = async (req, res) => {
         pa.tipo,
         pa.id_facultad,
         f.nombre_facultad
-      FROM participante_programa_academico ppa
+      FROM participante_programa_académico ppa
       INNER JOIN programa_academico pa ON ppa.nombre_programa = pa.nombre_programa
       INNER JOIN facultad f ON pa.id_facultad = f.id_facultad
       WHERE ppa.ci = ?`,
@@ -120,11 +120,15 @@ export const obtenerTodosParticipantes = async (req, res) => {
   try {
     const { rol, limit = 50, offset = 0 } = req.query;
 
-    let query = 'SELECT ci, nombre, apellido, email, rol FROM participante';
+    let query = `
+      SELECT DISTINCT p.ci, p.nombre, p.apellido, p.email
+      FROM participante p
+      LEFT JOIN participante_programa_académico ppa ON p.ci = ppa.ci
+    `;
     const params = [];
 
     if (rol) {
-      query += ' WHERE rol = ?';
+      query += ' WHERE ppa.rol = ?';
       params.push(rol);
     }
 
@@ -134,9 +138,9 @@ export const obtenerTodosParticipantes = async (req, res) => {
     const [participantes] = await pool.query(query, params);
 
     // Contar total
-    let countQuery = 'SELECT COUNT(*) as total FROM participante';
+    let countQuery = 'SELECT COUNT(DISTINCT p.ci) as total FROM participante p';
     if (rol) {
-      countQuery += ' WHERE rol = ?';
+      countQuery += ' INNER JOIN participante_programa_académico ppa ON p.ci = ppa.ci WHERE ppa.rol = ?';
       const [countResult] = await pool.query(countQuery, [rol]);
       var total = countResult[0].total;
     } else {
@@ -167,25 +171,26 @@ export const obtenerHistorialReservas = async (req, res) => {
     const { estado, fecha_inicio, fecha_fin } = req.query;
 
     let query = `
-      SELECT
+      SELECT DISTINCT
         r.id_reserva,
         r.nombre_sala,
         r.edificio,
         r.fecha,
         r.estado,
-        r.fecha_solicitud,
+        rp.fecha_solicitud_reserva as fecha_solicitud,
         t.hora_inicio,
         t.hora_fin,
-        CASE WHEN r.ci = ? THEN TRUE ELSE FALSE END as es_organizador
+        CASE 
+          WHEN rp.ci = ? AND rp.fecha_solicitud_reserva IS NOT NULL THEN TRUE 
+          ELSE FALSE 
+        END as es_organizador
       FROM reserva r
       INNER JOIN turno t ON r.id_turno = t.id_turno
-      WHERE (r.ci = ? OR EXISTS (
-        SELECT 1 FROM reserva_participante rp
-        WHERE rp.id_reserva = r.id_reserva AND rp.ci = ?
-      ))
+      INNER JOIN reserva_participante rp ON r.id_reserva = rp.id_reserva
+      WHERE rp.ci = ?
     `;
 
-    const params = [ci, ci, ci];
+    const params = [ci, ci];
 
     if (estado) {
       query += ' AND r.estado = ?';

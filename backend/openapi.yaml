@@ -4,7 +4,8 @@ info:
   version: 1.0.0
   description: |
     API REST para gestionar reservas de salones académicos.
-    Autenticación actualmente mockeada: usar query `ci` o header `X-User-CI`.
+    Para testear cada uno de los endpoints para el front facilmente.
+
 servers:
   - url: http://localhost:3000
     description: Local

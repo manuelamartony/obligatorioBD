@@ -40,7 +40,7 @@ PORT=3000
 DB_HOST=localhost
 DB_USER=root
 DB_PASSWORD=tu_password
-DB_NAME=obligatorioBD
+DB_NAME=obligatorio_bd
 DB_PORT=3306
 CORS_ORIGIN=http://localhost:5173
 ```
