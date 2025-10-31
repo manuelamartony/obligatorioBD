@@ -343,27 +343,3 @@ Agregar dependencias e instalar:
 cd backend
 npm install swagger-ui-express yamljs
 ```
-
-### Importar en Postman usando OpenAPI
-
-En Postman, importá `backend/openapi.yaml` o la URL `http://localhost:3000/api/docs.json` para crear automáticamente la colección con variables.
-
-## Próximos pasos (futuras mejoras)
-
-- [ ] Implementar autenticación JWT real
-- [ ] Agregar middleware de autorización
-- [ ] Implementar paginación en todos los endpoints
-- [ ] Agregar rate limiting
-- [ ] Implementar logs estructurados
-- [ ] Agregar tests unitarios y de integración
-- [ ] Implementar cache con Redis (opcional)
-- [ ] WebSockets para notificaciones en tiempo real (opcional)
-- [ ] Documentación con Swagger/OpenAPI
-
-## Licencia
-
-Proyecto académico - Universidad Católica del Uruguay
-
-## Autor
-
-Desarrollado para el curso de Bases de Datos

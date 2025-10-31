@@ -19,16 +19,15 @@ export const obtenerReservas = async (req, res) => {
         r.fecha,
         r.id_turno,
         r.estado,
-        r.fecha_solicitud,
         COUNT(rp.ci) as participantes
       FROM reserva r
       LEFT JOIN reserva_participante rp ON r.id_reserva = rp.id_reserva
-      WHERE r.ci = ? OR rp.ci = ?
-      GROUP BY r.id_reserva, r.nombre_sala, r.edificio, r.fecha, r.id_turno, r.estado, r.fecha_solicitud
+      WHERE rp.ci = ?
+      GROUP BY r.id_reserva, r.nombre_sala, r.edificio, r.fecha, r.id_turno, r.estado
       ORDER BY r.fecha DESC
     `;
 
-    const [reservas] = await pool.query(query, [ci, ci]);
+    const [reservas] = await pool.query(query, [ci]);
 
     res.json({
       success: true,
@@ -57,8 +56,6 @@ export const obtenerReservaPorId = async (req, res) => {
         r.fecha,
         r.id_turno,
         r.estado,
-        r.fecha_solicitud,
-        r.ci as ci_solicitante,
         t.hora_inicio,
         t.hora_fin,
         s.capacidad,
@@ -125,12 +122,15 @@ export const crearReserva = async (req, res) => {
       });
     }
 
+    // Normalizar fecha a DATE (YYYY-MM-DD)
+    const fechaDate = typeof fecha === 'string' ? fecha.split('T')[0] : fecha;
+
     // Verificar disponibilidad de la sala en ese turno y fecha
     const [existentes] = await connection.query(
       `SELECT id_reserva FROM reserva
        WHERE nombre_sala = ? AND edificio = ? AND fecha = ? AND id_turno = ?
        AND estado IN ('activa', 'finalizada')`,
-      [nombre_sala, edificio, fecha, id_turno]
+      [nombre_sala, edificio, fechaDate, id_turno]
     );
 
     if (existentes.length > 0) {
@@ -154,14 +154,18 @@ export const crearReserva = async (req, res) => {
       });
     }
 
-    // Crear la reserva
-    const [result] = await connection.query(
-      `INSERT INTO reserva (nombre_sala, edificio, fecha, id_turno, ci, estado, fecha_solicitud)
-       VALUES (?, ?, ?, ?, ?, 'activa', NOW())`,
-      [nombre_sala, edificio, fecha, id_turno, ci]
+    // Generar nuevo id_reserva manualmente (sin AUTO_INCREMENT en SQL)
+    const [[{ maxId }]] = await connection.query(
+      'SELECT COALESCE(MAX(id_reserva), 0) AS maxId FROM reserva'
     );
+    const id_reserva = (maxId || 0) + 1;
 
-    const id_reserva = result.insertId;
+    // Crear la reserva (sin columnas inexistentes en SQL)
+    await connection.query(
+      `INSERT INTO reserva (id_reserva, nombre_sala, edificio, fecha, id_turno, estado)
+       VALUES (?, ?, ?, ?, ?, 'activa')`,
+      [id_reserva, nombre_sala, edificio, fechaDate, id_turno]
+    );
 
     // Agregar participantes adicionales si existen
     if (participantes && Array.isArray(participantes)) {
@@ -186,6 +190,17 @@ export const crearReserva = async (req, res) => {
   } catch (error) {
     await connection.rollback();
     console.error('Error al crear reserva:', error);
+    // Errores comunes por FK/PK
+    if (error && error.code === 'ER_NO_REFERENCED_ROW_2') {
+      return res.status(400).json({
+        error: 'Sala o edificio no existen o no coinciden'
+      });
+    }
+    if (error && (error.errno === 1364 || error.code === 'ER_BAD_NULL_ERROR')) {
+      return res.status(400).json({
+        error: 'Falta un valor requerido para crear la reserva'
+      });
+    }
     res.status(500).json({
       error: 'Error en el servidor'
     });
@@ -200,7 +215,7 @@ export const actualizarReserva = async (req, res) => {
     const { id } = req.params;
     const { estado } = req.body;
 
-    const estadosValidos = ['activa', 'cancelada', 'sin_asistencia', 'finalizada'];
+    const estadosValidos = ['activa', 'cancelada', 'sin asistencia', 'finalizada'];
 
     if (!estado || !estadosValidos.includes(estado)) {
       return res.status(400).json({
