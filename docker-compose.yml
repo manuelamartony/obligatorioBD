@@ -15,23 +15,35 @@ services:
     networks:
       - app-network
 
-  # Cuando tengas backend:
-  # backend:
-  #   build: ./backend
-  #   ports:
-  #     - "3000:3000"
-  #   depends_on:
-  #     - mysql
-  #   networks:
-  #     - app-network
+  backend:
+    build:
+      context: ./backendPython
+      dockerfile: Dockerfile
+    container_name: backend_ucu
+    ports:
+      - "8000:8000"
+    environment:
+      DB_HOST: mysql
+      DB_USER: dbuser
+      DB_PASSWORD: dbpassword
+      DB_NAME: obligatorio_bd
+    depends_on:
+      - mysql
+    networks:
+      - app-network
 
-  # Cuando tengas frontend:
-  # frontend:
-  #   build: ./frontend
-  #   ports:
-  #     - "5173:5173"
-  #   networks:
-  #     - app-network
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: frontend_ucu
+    ports:
+      # Serve static files from nginx (container port 80). Map to host 3000.
+      - "3000:80"
+    depends_on:
+      - backend
+    networks:
+      - app-network
 
 volumes:
   mysql_data:
