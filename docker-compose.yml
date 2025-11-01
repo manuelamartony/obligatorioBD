@@ -14,12 +14,19 @@ services:
       - ./database/migrations:/docker-entrypoint-initdb.d
     networks:
       - app-network
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   backend:
     build: ./backendPython
     container_name: obligatorio_bd_backend
     depends_on:
       - mysql
+    networks:
+      - app-network
     environment:
       DB_HOST: mysql
       DB_USER: root
@@ -37,7 +44,6 @@ services:
       [
         "/wait-for-it.sh",
         "mysql:3306",
-
         "uvicorn",
         "src.main:app",
         "--host",
@@ -45,6 +51,18 @@ services:
         "--port",
         "3000",
       ]
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: frontend_ucu
+    ports:
+      # Serve static files from nginx (container port 80). Map to host 3001.
+      - "3001:80"
+    depends_on:
+      - backend
+
     networks:
       - app-network
 
