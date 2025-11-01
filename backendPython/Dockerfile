@@ -17,6 +17,11 @@ COPY src/ ./src/
 COPY wait-for-it.sh wait-for-it.sh
 RUN chmod +x wait-for-it.sh
 
+# Crear y activar el entorno virtual
+RUN python3 -m venv /venv
+ENV VIRTUAL_ENV=/venv
+ENV PATH="$VIRTUAL_ENV/bin:$PATH"
+
 # Exponer el puerto
 EXPOSE 3000
 

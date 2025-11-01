@@ -8,7 +8,8 @@ alias deactivate 'test $?_OLD_VIRTUAL_PATH != 0 && setenv PATH "$_OLD_VIRTUAL_PA
 # Unset irrelevant variables.
 deactivate nondestructive
 
-setenv VIRTUAL_ENV /Users/manuellorenzo/Downloads/obligatorio_bd/backendPython/venv
+# setenv VIRTUAL_ENV /Users/manuellorenzo/Downloads/obligatorio_bd/backendPython/venv
+# The virtual environment will be set automatically in the Dockerfile.
 
 set _OLD_VIRTUAL_PATH="$PATH"
 setenv PATH "$VIRTUAL_ENV/"bin":$PATH"

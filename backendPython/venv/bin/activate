@@ -35,7 +35,9 @@ deactivate () {
 # unset irrelevant variables
 deactivate nondestructive
 
-VIRTUAL_ENV=/Users/manuellorenzo/Downloads/obligatorio_bd/backendPython/venv
+# VIRTUAL_ENV=/Users/manuellorenzo/Downloads/obligatorio_bd/backendPython/venv
+# The virtual environment will be set automatically in the Dockerfile.
+
 export VIRTUAL_ENV
 
 _OLD_VIRTUAL_PATH="$PATH"
