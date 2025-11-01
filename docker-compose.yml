@@ -15,15 +15,26 @@ services:
     networks:
       - app-network
 
-  # Cuando tengas backend:
-  # backend:
-  #   build: ./backend
-  #   ports:
-  #     - "3000:3000"
-  #   depends_on:
-  #     - mysql
-  #   networks:
-  #     - app-network
+  backend:
+    build: ./backend
+    container_name: obligatorio_bd_backend
+    ports:
+      - "${PORT:-3000}:3000"
+    environment:
+      - DB_HOST=mysql
+      - DB_USER=${DB_USER:-dbuser}
+      - DB_PASSWORD=${DB_PASSWORD:-dbpassword}
+      - DB_NAME=${DB_NAME:-obligatorio_bd}
+      - DB_PORT=3306
+      - PORT=3000
+      - CORS_ORIGIN=${CORS_ORIGIN:-http://localhost:5173}
+      - NODE_ENV=${NODE_ENV:-development}
+    depends_on:
+      - mysql
+    networks:
+      - app-network
+    volumes:
+      - ./backend/src:/app/src
 
   # Cuando tengas frontend:
   # frontend:
