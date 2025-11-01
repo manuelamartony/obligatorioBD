@@ -1,0 +1,12 @@
+# Ignorar node modules y archivos locales en la imagen
+node_modules
+npm-debug.log
+.env
+.env.local
+.env.*
+.git
+.gitignore
+Dockerfile
+.dockerignore
+README.md
+database/migrations
