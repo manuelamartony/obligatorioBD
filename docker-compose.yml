@@ -3,34 +3,52 @@ services:
     image: mysql:8.0
     container_name: obligatorio_bd_mysql
     environment:
-      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD:-rootpassword}
-      MYSQL_DATABASE: ${DB_NAME:-obligatorio_bd}
-      MYSQL_USER: ${DB_USER:-dbuser}
-      MYSQL_PASSWORD: ${DB_PASSWORD:-dbpassword}
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: obligatorio_bd
     ports:
-      - "${DB_PORT:-3306}:3306"
+      - "3306:3306"
     volumes:
       - mysql_data:/var/lib/mysql
       - ./database/migrations:/docker-entrypoint-initdb.d
     networks:
       - app-network
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   backend:
-    build:
-      context: ./backendPython
-      dockerfile: Dockerfile
-    container_name: backend_ucu
-    ports:
-      - "8000:8000"
-    environment:
-      DB_HOST: mysql
-      DB_USER: dbuser
-      DB_PASSWORD: dbpassword
-      DB_NAME: obligatorio_bd
+    build: ./backendPython
+    container_name: obligatorio_bd_backend
     depends_on:
       - mysql
     networks:
       - app-network
+    environment:
+      DB_HOST: mysql
+      DB_USER: root
+      DB_PASSWORD: rootpassword
+      DB_NAME: obligatorio_bd
+      DB_PORT: 3306
+      PORT: 3000
+      CORS_ORIGIN: http://localhost:5173
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./backendPython/src:/app/src
+    command:
+      [
+        "/wait-for-it.sh",
+        "mysql:3306",
+        "--",
+        "uvicorn",
+        "src.main:app",
+        "--host",
+        "0.0.0.0",
+        "--port",
+        "3000"
+      ]
 
   frontend:
     build:
@@ -38,8 +56,7 @@ services:
       dockerfile: Dockerfile
     container_name: frontend_ucu
     ports:
-      # Serve static files from nginx (container port 80). Map to host 3000.
-      - "3000:80"
+      - "3001:80"
     depends_on:
       - backend
     networks:

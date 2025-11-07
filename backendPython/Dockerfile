@@ -1,28 +1,23 @@
-# 1. Imagen base: Python
-FROM python:3.12-slim
+FROM python:3.11-alpine
 
-# Directorio de trabajo dentro del contenedor
 WORKDIR /app
 
-# Copiar sólo requirements primero para aprovechar cache de Docker
-COPY requirements.txt ./
+# Instalar dependencias del sistema (incluye netcat)
+RUN apk add --no-cache netcat-openbsd
 
-# Instalar dependencias del sistema necesarias para compilar extensiones (si hacen falta)
-RUN apt-get update \
-	&& apt-get install -y --no-install-recommends build-essential gcc libc-dev \
-	&& rm -rf /var/lib/apt/lists/*
-
-# Instalar dependencias Python
+# Copiar dependencias y instalarlas
+COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copiar el resto del proyecto
-COPY . .
+# Copiar el código del backend
+COPY src ./src
 
-# Verificación rápida: fallará la build si uvicorn no se puede importar
-RUN python -c "import uvicorn; print('uvicorn OK:', uvicorn.__version__)"
+# Copiar el wait-for-it y darle permisos
+COPY wait-for-it.sh /wait-for-it.sh
+RUN chmod +x /wait-for-it.sh
 
-# Exponer el puerto 8000 (FastAPI por defecto)
-EXPOSE 8000
+# Exponer el puerto de la API (ajustá si usás otro)
+EXPOSE 3000
 
-# Usar el módulo python para ejecutar uvicorn (más robusto que depender del binario en PATH)
-CMD ["python", "-m", "uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
+# Usar wait-for-it para esperar a MySQL antes de iniciar la API
+CMD ["/wait-for-it.sh", "mysql:3306", "--", "uvicorn", "src.main:app", "--host", "0.0.0.0", "--port", "3000"]

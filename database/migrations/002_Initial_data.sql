@@ -26,7 +26,7 @@ VALUES ('Ingenieria-2021',1,'grado'),
        ('Derecho',4,'grado'),
        ('Master en Gestion',5,'postgrado');
 
-INSERT INTO obligatorio_bd.participante_programa_académico(id_alumno_programa, ci, nombre_programa, rol)
+INSERT INTO obligatorio_bd.participante_programa_academico(id_alumno_programa, ci, nombre_programa, rol)
 VALUES (1, 12345678, 'Ingenieria-2021', 'alumno'),
        (2, 23456789, 'MBA', 'alumno'),
        (3, 34567890, 'Derecho', 'docente'),
