@@ -1,29 +1,23 @@
-FROM python:3.11
+FROM python:3.11-alpine
 
 WORKDIR /app
 
-# Instalar dependencias del sistema
-RUN apt-get update && apt-get install -y gcc netcat-traditional && rm -rf /var/lib/apt/lists/*
+# Instalar dependencias del sistema (incluye netcat)
+RUN apk add --no-cache netcat-openbsd
 
-
-# Copiar requirements e instalarlos
+# Copiar dependencias y instalarlas
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copiar el código de la aplicación
-COPY src/ ./src/
+# Copiar el código del backend
+COPY src ./src
 
-# Copiar y dar permisos al script wait-for-it.sh
-COPY wait-for-it.sh wait-for-it.sh
-RUN chmod +x wait-for-it.sh
+# Copiar el wait-for-it y darle permisos
+COPY wait-for-it.sh /wait-for-it.sh
+RUN chmod +x /wait-for-it.sh
 
-# Crear y activar el entorno virtual
-RUN python3 -m venv /venv
-ENV VIRTUAL_ENV=/venv
-ENV PATH="$VIRTUAL_ENV/bin:$PATH"
-
-# Exponer el puerto
+# Exponer el puerto de la API (ajustá si usás otro)
 EXPOSE 3000
 
-# Comando para ejecutar el servidor (espera a MySQL)
+# Usar wait-for-it para esperar a MySQL antes de iniciar la API
 CMD ["/wait-for-it.sh", "mysql:3306", "--", "uvicorn", "src.main:app", "--host", "0.0.0.0", "--port", "3000"]
