@@ -1,28 +1,21 @@
-# Multi-stage Dockerfile para el frontend (Vite + React)
-# Stage 1: build
-FROM node:18-alpine AS build
+# Usa Node 18
+FROM node:18-alpine
+
+# Directorio de trabajo
 WORKDIR /app
 
-# Copiar archivos de dependencias y aprovechar cache
+# Copiar archivos de dependencias e instalarlas
 COPY package*.json ./
-RUN npm ci --silent
+RUN npm install
 
-# Copiar el resto y construir
+# Copiar todo el código (aunque montaremos un volumen después)
 COPY . .
-RUN npm run build
 
-# Stage 2: servir con nginx
-FROM nginx:stable-alpine
+# Permitir hot reload en WSL/Windows
+ENV CHOKIDAR_USEPOLLING=true
 
-# Limpiar contenido por defecto
-RUN rm -rf /usr/share/nginx/html/*
+# Exponer el puerto de Vite
+EXPOSE 5173
 
-# Copiar build al html de nginx
-COPY --from=build /app/dist /usr/share/nginx/html
-
-# Copiar configuración de nginx para SPA (history API fallback)
-COPY nginx.conf /etc/nginx/conf.d/default.conf
-
-EXPOSE 80
-
-CMD ["nginx", "-g", "daemon off;"]
+# Ejecutar Vite con acceso externo (necesario para Docker)
+CMD ["npm", "run", "dev", "--", "--host"]

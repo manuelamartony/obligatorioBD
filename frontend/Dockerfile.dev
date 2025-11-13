@@ -1,0 +1,18 @@
+FROM node:22-alpine
+
+WORKDIR /app
+
+# Copiamos dependencias y las instalamos
+COPY package*.json ./
+RUN npm install
+
+# Copiamos el resto del código fuente
+COPY . .
+
+# Necesario para hot reload en entornos Docker
+ENV CHOKIDAR_USEPOLLING=true
+
+EXPOSE 5173
+
+# Lanzamos Vite con modo desarrollo y accesible desde la red
+CMD ["npm", "run", "dev", "--", "--host"]
