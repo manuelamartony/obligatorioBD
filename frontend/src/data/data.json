@@ -1,0 +1,176 @@
+{
+  "login": [
+    {
+      "correo": "juan.perez@ucu.edu.uy",
+      "contrasena": "hashedpassword123"
+    },
+    {
+      "correo": "maria.lopez@ucu.edu.uy",
+      "contrasena": "hashedpassword456"
+    }
+  ],
+  "participante": [
+    {
+      "ci": "51234567",
+      "nombre": "Juan",
+      "apellido": "Pérez",
+      "email": "juan.perez@ucu.edu.uy"
+    },
+    {
+      "ci": "48987654",
+      "nombre": "María",
+      "apellido": "López",
+      "email": "maria.lopez@ucu.edu.uy"
+    },
+    {
+      "ci": "50123456",
+      "nombre": "Carlos",
+      "apellido": "Rodríguez",
+      "email": "carlos.rodriguez@ucu.edu.uy"
+    }
+  ],
+  "facultad": [
+    {
+      "id_facultad": 1,
+      "nombre": "Facultad de Ingeniería"
+    },
+    {
+      "id_facultad": 2,
+      "nombre": "Facultad de Ciencias Empresariales"
+    }
+  ],
+  "programa_academico": [
+    {
+      "nombre_programa": "Ingeniería en Informática",
+      "id_facultad": 1,
+      "tipo": "grado"
+    },
+    {
+      "nombre_programa": "MBA en Dirección de Empresas",
+      "id_facultad": 2,
+      "tipo": "posgrado"
+    }
+  ],
+  "participante_programa_academico": [
+    {
+      "id_alumno_programa": 1,
+      "ci_participante": "51234567",
+      "nombre_programa": "Ingeniería en Informática",
+      "rol": "alumno"
+    },
+    {
+      "id_alumno_programa": 2,
+      "ci_participante": "48987654",
+      "nombre_programa": "MBA en Dirección de Empresas",
+      "rol": "alumno"
+    },
+    {
+      "id_alumno_programa": 3,
+      "ci_participante": "50123456",
+      "nombre_programa": "Ingeniería en Informática",
+      "rol": "docente"
+    }
+  ],
+  "edificio": [
+    {
+      "nombre_edificio": "Edificio Central",
+      "direccion": "Av. 8 de Octubre 2738",
+      "departamento": "Montevideo"
+    },
+    {
+      "nombre_edificio": "Campus Pocitos",
+      "direccion": "Bvar. España 2500",
+      "departamento": "Montevideo"
+    }
+  ],
+  "sala": [
+    {
+      "nombre_sala": "Sala A101",
+      "edificio": "Edificio Central",
+      "capacidad": 40,
+      "tipo_sala": "libre"
+    },
+    {
+      "nombre_sala": "Sala P201",
+      "edificio": "Campus Pocitos",
+      "capacidad": 25,
+      "tipo_sala": "posgrado"
+    },
+    {
+      "nombre_sala": "Sala D301",
+      "edificio": "Edificio Central",
+      "capacidad": 20,
+      "tipo_sala": "docente"
+    }
+  ],
+  "turno": [
+    {
+      "id_turno": 1,
+      "hora_inicio": "08:00",
+      "hora_fin": "10:00"
+    },
+    {
+      "id_turno": 2,
+      "hora_inicio": "10:00",
+      "hora_fin": "12:00"
+    },
+    {
+      "id_turno": 3,
+      "hora_inicio": "14:00",
+      "hora_fin": "16:00"
+    }
+  ],
+  "reserva": [
+    {
+      "id_reserva": 1001,
+      "nombre_sala": "Sala A101",
+      "edificio": "Edificio Central",
+      "fecha": "2025-11-15",
+      "id_turno": 1,
+      "estado": "activa"
+    },
+    {
+      "id_reserva": 1002,
+      "nombre_sala": "Sala P201",
+      "edificio": "Campus Pocitos",
+      "fecha": "2025-11-16",
+      "id_turno": 3,
+      "estado": "finalizada"
+    },
+    {
+      "id_reserva": 1003,
+      "nombre_sala": "Sala D301",
+      "edificio": "Edificio Central",
+      "fecha": "2025-11-10",
+      "id_turno": 2,
+      "estado": "sin asistencia"
+    }
+  ],
+  "reserva_participante": [
+    {
+      "ci_participante": "51234567",
+      "id_reserva": 1001,
+      "fecha_solicitud_reserva": "2025-11-10",
+      "asistencia": true
+    },
+    {
+      "ci_participante": "48987654",
+      "id_reserva": 1002,
+      "fecha_solicitud_reserva": "2025-11-12",
+      "asistencia": true
+    },
+    {
+      "ci_participante": "50123456",
+      "id_reserva": 1003,
+      "fecha_solicitud_reserva": "2025-11-09",
+      "asistencia": false
+    }
+  ],
+  "sancion_participante": [
+    {
+      "ci_participante": "50123456",
+      "fecha_inicio": "2025-11-11",
+      "fecha_fin": "2025-11-25"
+    }
+  ]
+}

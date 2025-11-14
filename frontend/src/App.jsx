@@ -6,7 +6,7 @@ import Login, { loginAction } from './pages/Login'
 import MisReservas from './pages/MisReservas';
 import NuevaReserva from './pages/NuevaReserva';
 import Reportes from './pages/Reportes';
-import { AuthProvider } from './context/AuthContext';
+
 import ProtectedRoutes from './components/ProtectedRoutes';
 import { useEffect, useState } from 'react';
 
@@ -35,9 +35,9 @@ function App() {
   ]);
 
   return (
-    <AuthProvider>
-      <RouterProvider router={router} />
-    </AuthProvider>
+
+    <RouterProvider router={router} />
+
   )
 }
 
