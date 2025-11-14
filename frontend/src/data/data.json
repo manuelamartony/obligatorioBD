@@ -85,19 +85,19 @@
   ],
   "sala": [
     {
-      "nombre_sala": "Sala A101",
+      "nombre_sala": "Salon TI3",
       "edificio": "Edificio Central",
       "capacidad": 40,
       "tipo_sala": "libre"
     },
     {
-      "nombre_sala": "Sala P201",
+      "nombre_sala": "Salon 205",
       "edificio": "Campus Pocitos",
       "capacidad": 25,
       "tipo_sala": "posgrado"
     },
     {
-      "nombre_sala": "Sala D301",
+      "nombre_sala": "Salon 301",
       "edificio": "Edificio Central",
       "capacidad": 20,
       "tipo_sala": "docente"

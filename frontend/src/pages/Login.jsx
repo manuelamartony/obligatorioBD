@@ -54,9 +54,8 @@ export default function Login() {
 
     useEffect(() => {
         if (data?.user) {
-            console.log("✔️ Login.jsx recibió user desde action:", data.user);
             login(data.user);        // <-- actualiza contexto Y localStorage
-            navigate("/my/panel");   // <-- navega ahora sí
+            navigate("/my/panel");
         }
     }, [data]);
     return (
