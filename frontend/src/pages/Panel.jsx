@@ -1,10 +1,12 @@
-import React from 'react'
+import React, { useContext } from 'react'
 import { Link } from 'react-router-dom'
 import "../styles/Panel.css"
 import PanelImage from "../../public/gente-feliz.avif"
+import { AuthContext } from '../context/AuthContext'
 
 
 const Panel = () => {
+    const { user } = useContext(AuthContext);
     return (
         <div className="container">
             <div className="left-section">
@@ -19,7 +21,7 @@ const Panel = () => {
             <div className="right-section">
                 <div className="profile-container">
                     <button className="profile">
-                        Buenas, Usuario!
+                        Buenas, {user.nombre + " " + user.apellido}!
                     </button>
                 </div>
                 <Link to="mis-reservas" className='link'>

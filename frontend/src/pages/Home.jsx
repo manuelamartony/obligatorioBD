@@ -3,17 +3,6 @@ import UCULogo from '../../public/Logo-Universidad-Catolica-cropped.svg'
 import { Link } from 'react-router-dom'
 
 const Home = () => {
-    const [reserva, setReserva] = useState([])
-    const getReservas = async () => {
-        const allReservas = await fetch('http://localhost:3000/api/reservas')
-        const reservasJSON = await allReservas.json()
-        console.log('Reservas:', reservasJSON);
-    }
-
-    useEffect(() => {
-        getReservas()
-    }, [])
-
     return (
         <div className="container">
             <div className="left-section">

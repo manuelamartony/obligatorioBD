@@ -1,18 +1,21 @@
-import { useContext } from "react"
-import { AuthContext } from "../context/AuthContext"
-import { Outlet } from "react-router-dom"
+import { useContext } from "react";
+import { AuthContext } from "../context/AuthContext";
+import { Outlet, Navigate } from "react-router-dom";
 
+const ProtectedRoutes = () => {
+    const { user } = useContext(AuthContext);
 
-const ProtectedRoutes = ({ children }) => {
-    const { user } = useContext(AuthContext) //Desestructuracion de un objeto. En la llave voy a recibir la informacion que pase en context {value}
+    // 1. Si no hay usuario → debe ir al login
+    if (!user) {
+        return <Navigate to="/login" replace />;
+    }
 
+    // 2. Si hay usuario pero no es student
+    if (user.role !== "alumno") {
+        return <div>Error: no sos estudiante</div>;
+    }
 
-    return (
-        <>
-            {user.role === "student" ? <Outlet /> : <div>Error, no sos estudiante</div>}
-        </>
+    return <Outlet />;
+};
 
-    )
-}
-
-export default ProtectedRoutes
+export default ProtectedRoutes;
