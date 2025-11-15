@@ -11,17 +11,6 @@ export async function getSalones() {
     return await resSalones.json();
 }
 
-const salas = [
-    { id: 1, name: 'SALÓN 1', color: 'lavender' },
-    { id: 2, name: 'SALÓN 2', color: 'mint' },
-    { id: 3, name: 'SALÓN 3', color: 'mint' },
-    { id: 4, name: 'SALÓN 4', color: 'orange' },
-    { id: 5, name: 'SALÓN 5', color: 'orange' },
-    { id: 6, name: 'SALÓN 6', color: 'lavender' }
-]
-
-
-
 
 const NuevaReserva = () => {
     const [salones, setSalones] = useState([])

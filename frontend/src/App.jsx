@@ -21,7 +21,7 @@ function App() {
     {
       path: "/login",
       element: <Login />,
-      action: loginAction, // <-- action del login
+      action: loginAction, // <-- action del login, para el form
     },
     {
       element: <ProtectedRoutes />,

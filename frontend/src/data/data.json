@@ -172,5 +172,46 @@
       "fecha_inicio": "2025-11-11",
       "fecha_fin": "2025-11-25"
     }
-  ]
+  ],
+  "schedule_sala": {
+    "Salon TI3": {
+      "Monday": {
+        "8:00 A.M.": "DISPONIBLE",
+        "12:00 P.M": "DISPONIBLE",
+        "1:00 P.M.": "DISPONIBLE",
+        "2:00 P.M.": "DISPONIBLE"
+      },
+      "Tuesday": {
+        "8:00 A.M.": "OCUPADO",
+        "9:00 A.M.": "DISPONIBLE",
+        "12:00 P.M": "DISPONIBLE",
+        "1:00 P.M.": "DISPONIBLE"
+      }
+    },
+
+    "Salon 205": {
+      "Monday": {
+        "8:00 A.M.": "OCUPADO",
+        "12:00 P.M": "DISPONIBLE",
+        "1:00 P.M.": "DISPONIBLE",
+        "2:00 P.M.": "DISPONIBLE"
+      },
+      "Wednesday": {
+        "12:00 P.M": "DISPONIBLE",
+        "1:00 P.M.": "DISPONIBLE",
+        "2:00 P.M.": "OCUPADO",
+        "3:00 P.M.": "OCUPADO"
+      }
+    },
+
+    "Salon 301": {
+      "Friday": {
+        "8:00 A.M.": "DISPONIBLE",
+        "9:00 A.M.": "OCUPADO",
+        "10:00 A.M.": "OCUPADO",
+        "11:00 A.M.": "OCUPADO",
+        "12:00 P.M": "DISPONIBLE"
+      }
+    }
+  }
 }
