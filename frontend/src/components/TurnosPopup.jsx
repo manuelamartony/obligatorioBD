@@ -1,7 +1,12 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import '../styles/TurnosPopup.css';
+export async function getReservas() {
+    const resReservas = await fetch("http://localhost:3001/schedule_sala");
+    return await resReservas.json();
+}
 
-const TurnosPopup = () => {
+
+const TurnosPopup = ({ sala }) => {
     const hours = [
         '8:00 A.M.',
         '9:00 A.M.',
@@ -59,6 +64,20 @@ const TurnosPopup = () => {
         }
     };
 
+    const [reservas, setReservas] = useState([])
+
+    useEffect(() => {
+        async function fetchReservas() {
+            const data = await getReservas();
+            setReservas(data);
+        }
+        fetchReservas();
+    }, []);
+    console.log(sala)
+    console.log("reservas", reservas[sala.nombre_sala]
+    );
+    console.log("schedule", schedule);
+
     return (
         <div className="turnos-popup">
             <h2 className="popup-title">TURNOS DISPONIBLES</h2>
@@ -77,8 +96,12 @@ const TurnosPopup = () => {
                             <tr key={hour}>
                                 <td className="hour-cell">{hour}</td>
                                 {days.map(day => (
-                                    <td key={`${day}-${hour}`} className={`status-cell ${schedule[day]?.[hour]?.toLowerCase() || ''}`}>
-                                        {schedule[day]?.[hour] || ''}
+                                    <td
+                                        key={`${day}-${hour}`}
+                                        className={`status-cell ${reservas?.[sala.nombre_sala]?.[day]?.[hour]?.toLowerCase() || ''
+                                            }`}
+                                    >
+                                        {reservas?.[sala.nombre_sala]?.[day]?.[hour] || ''}
                                     </td>
                                 ))}
                             </tr>

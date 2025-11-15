@@ -1,9 +1,12 @@
 import { useContext } from "react";
-import { AuthContext } from "../context/AuthContext";
+import { AuthContext, useAuth } from "../context/AuthContext";
 import { Outlet, Navigate } from "react-router-dom";
 
-const ProtectedRoutes = () => {
-    const { user } = useContext(AuthContext);
+
+
+
+const ProtectedRoutes = ({ roles = [] }) => {
+    const { user } = useAuth();
 
     // 1. Si no hay usuario → debe ir al login
     if (!user) {
