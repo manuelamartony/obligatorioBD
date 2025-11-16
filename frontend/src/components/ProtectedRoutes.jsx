@@ -3,8 +3,6 @@ import { AuthContext, useAuth } from "../context/AuthContext";
 import { Outlet, Navigate } from "react-router-dom";
 
 
-
-
 const ProtectedRoutes = ({ roles = [] }) => {
     const { user } = useAuth();
 

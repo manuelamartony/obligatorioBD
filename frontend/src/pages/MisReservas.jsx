@@ -2,6 +2,7 @@ import React from 'react'
 import '../styles/MisReservas.css'
 import { useNavigate } from 'react-router-dom'
 
+
 const reservations = [
     {
         id: 1,

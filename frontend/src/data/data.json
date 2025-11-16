@@ -106,8 +106,8 @@
   "turno": [
     {
       "id_turno": 1,
-      "hora_inicio": "08:00",
-      "hora_fin": "10:00"
+      "hora_inicio": "09:00",
+      "hora_fin": "11:00"
     },
     {
       "id_turno": 2,
@@ -123,15 +123,15 @@
   "reserva": [
     {
       "id_reserva": 1001,
-      "nombre_sala": "Sala A101",
+      "nombre_sala": "Salon TI3",
       "edificio": "Edificio Central",
-      "fecha": "2025-11-15",
+      "fecha": "2025-11-19",
       "id_turno": 1,
       "estado": "activa"
     },
     {
       "id_reserva": 1002,
-      "nombre_sala": "Sala P201",
+      "nombre_sala": "Salon 205",
       "edificio": "Campus Pocitos",
       "fecha": "2025-11-16",
       "id_turno": 3,
@@ -139,7 +139,7 @@
     },
     {
       "id_reserva": 1003,
-      "nombre_sala": "Sala D301",
+      "nombre_sala": "Salon 301",
       "edificio": "Edificio Central",
       "fecha": "2025-11-10",
       "id_turno": 2,
