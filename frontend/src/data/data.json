@@ -175,42 +175,30 @@
   ],
   "schedule_sala": {
     "Salon TI3": {
-      "Monday": {
-        "8:00 A.M.": "DISPONIBLE",
-        "12:00 P.M": "DISPONIBLE",
-        "1:00 P.M.": "DISPONIBLE",
-        "2:00 P.M.": "DISPONIBLE"
+      "Lunes": {
+        "8:00": "OCUPADO"
       },
-      "Tuesday": {
-        "8:00 A.M.": "OCUPADO",
-        "9:00 A.M.": "DISPONIBLE",
-        "12:00 P.M": "DISPONIBLE",
-        "1:00 P.M.": "DISPONIBLE"
+      "Martes": {
+        "8:00": "OCUPADO",
+        "9:00": "OCUPADO"
       }
     },
 
     "Salon 205": {
-      "Monday": {
-        "8:00 A.M.": "OCUPADO",
-        "12:00 P.M": "DISPONIBLE",
-        "1:00 P.M.": "DISPONIBLE",
-        "2:00 P.M.": "DISPONIBLE"
+      "Lunes": {
+        "8:00": "OCUPADO"
       },
-      "Wednesday": {
-        "12:00 P.M": "DISPONIBLE",
-        "1:00 P.M.": "DISPONIBLE",
-        "2:00 P.M.": "OCUPADO",
-        "3:00 P.M.": "OCUPADO"
+      "Miercoles": {
+        "14:00": "OCUPADO",
+        "15:00": "OCUPADO"
       }
     },
 
     "Salon 301": {
-      "Friday": {
-        "8:00 A.M.": "DISPONIBLE",
-        "9:00 A.M.": "OCUPADO",
-        "10:00 A.M.": "OCUPADO",
-        "11:00 A.M.": "OCUPADO",
-        "12:00 P.M": "DISPONIBLE"
+      "Viernes": {
+        "9:00": "OCUPADO",
+        "10:00": "OCUPADO",
+        "11:00": "OCUPADO"
       }
     }
   }

@@ -5,64 +5,26 @@ export async function getReservas() {
     return await resReservas.json();
 }
 
-
 const TurnosPopup = ({ sala }) => {
     const hours = [
-        '8:00 A.M.',
-        '9:00 A.M.',
-        '10:00 A.M.',
-        '11:00 A.M.',
-        '12:00 P.M',
-        '13:00 P.M.',
-        '14:00 P.M.',
-        '15:00 P.M.',
-        '16:00 P.M.',
-        '17:00 P.M.',
-        '18:00 P.M.',
-        '19:00 P.M.',
-        '20:00 P.M.',
-        '21:00 P.M.',
-        '22:00 P.M.',
-        '23:00 P.M.',
+        '8:00',
+        '9:00',
+        '10:00',
+        '11:00',
+        '12:00',
+        '13:00',
+        '14:00',
+        '15:00',
+        '16:00',
+        '17:00',
+        '18:00',
+        '19:00',
+        '20:00',
+        '21:00',
+        '22:00',
+        '23:00',
     ];
-
-    const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
-
-    // Example schedule data - replace with your actual data
-    const schedule = {
-        'Monday': {
-            '8:00 A.M.': 'DISPONIBLE',
-            '12:00 NOON': 'DISPONIBLE',
-            '1:00 P.M.': 'DISPONIBLE',
-            '2:00 P.M.': 'DISPONIBLE'
-        },
-        'Tuesday': {
-            '8:00 A.M.': 'OCUPADO',
-            '9:00 A.M.': 'DISPONIBLE',
-            '12:00 NOON': 'DISPONIBLE',
-            '1:00 P.M.': 'OCUPADO'
-        },
-        'Wednesday': {
-            '12:00 NOON': 'DISPONIBLE',
-            '1:00 P.M.': 'OCUPADO',
-            '2:00 P.M.': 'OCUPADO',
-            '3:00 P.M.': 'OCUPADO'
-        },
-        'Thursday': {
-            '8:00 A.M.': 'DISPONIBLE',
-            '12:00 NOON': 'DISPONIBLE',
-            '1:00 P.M.': 'OCUPADO',
-            '2:00 P.M.': 'OCUPADO',
-            '3:00 P.M.': 'OCUPADO'
-        },
-        'Friday': {
-            '8:00 A.M.': 'OCUPADO',
-            '9:00 A.M.': 'OCUPADO',
-            '10:00 A.M.': 'OCUPADO',
-            '11:00 A.M.': 'OCUPADO',
-            '12:00 NOON': 'DISPONIBLE'
-        }
-    };
+    const days = ['Lunes', 'Martes', 'Miercoles', 'Jueves', 'Viernes'];
 
     const [reservas, setReservas] = useState([])
 
@@ -73,10 +35,6 @@ const TurnosPopup = ({ sala }) => {
         }
         fetchReservas();
     }, []);
-    console.log(sala)
-    console.log("reservas", reservas[sala.nombre_sala]
-    );
-    console.log("schedule", schedule);
 
     return (
         <div className="turnos-popup">
@@ -98,11 +56,16 @@ const TurnosPopup = ({ sala }) => {
                                 {days.map(day => (
                                     <td
                                         key={`${day}-${hour}`}
-                                        className={`status-cell ${reservas?.[sala.nombre_sala]?.[day]?.[hour]?.toLowerCase() || ''
+                                        className={`status-cell ${reservas?.[sala.nombre_sala]?.[day]?.[hour] === "OCUPADO"
+                                                ? "ocupado"
+                                                : "disponible"
                                             }`}
                                     >
-                                        {reservas?.[sala.nombre_sala]?.[day]?.[hour] || ''}
+                                        {reservas?.[sala.nombre_sala]?.[day]?.[hour] === "OCUPADO"
+                                            ? "OCUPADO"
+                                            : "DISPONIBLE"}
                                     </td>
+
                                 ))}
                             </tr>
                         ))}
