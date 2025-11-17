@@ -13,7 +13,7 @@
       "contrasena": "123"
     }
   ],
-  "usuarios": [
+  "participante": [
     {
       "ci": "51234567",
       "nombre": "Juan",

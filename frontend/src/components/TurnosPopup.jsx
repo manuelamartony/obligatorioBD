@@ -5,6 +5,7 @@ import "../styles/TurnosPopup.css";
 export async function getReservas() {
     const res = await fetch("http://localhost:3001/reserva");
     return await res.json();
+
 }
 
 export async function getTurnos() {
@@ -112,6 +113,7 @@ const TurnosPopup = ({ sala }) => {
                                     >
                                         {h}
                                     </option>
+
                                 ))}
                             </select>
                         </div>
@@ -129,15 +131,24 @@ const TurnosPopup = ({ sala }) => {
                                         <option
                                             key={h}
                                             value={h}
-                                            disabled={
-                                                horasOcupadas.includes(h) ||
-                                                ALL_HOURS.indexOf(h) <= ALL_HOURS.indexOf(inicio) ||
-                                                ALL_HOURS.indexOf(h) > ALL_HOURS.indexOf(inicio) + 2
-                                            }
+                                            disabled={(() => {
+                                                const i = ALL_HOURS.indexOf(inicio);
+                                                const f = ALL_HOURS.indexOf(h);
+
+                                                if (f <= i) return true;                // No permitir mismo inicio
+                                                if (f > i + 2) return true;             // Máximo 2 horas
+
+                                                // Chequear solo horas internas (NO el límite)
+                                                const rangoInterno = ALL_HOURS.slice(i, f);
+                                                if (rangoInterno.some(x => horasOcupadas.includes(x))) return true;
+
+                                                return false;
+                                            })()}
                                         >
                                             {h}
                                         </option>
                                     ))}
+
                                 </select>
 
                             </div>
