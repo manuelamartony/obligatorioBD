@@ -36,12 +36,14 @@ const Panel = () => {
                         NUEVA RESERVA
                     </div>
                 </Link>
-                <Link to="reportes" className='link'>
-                    <div className="available-rooms">
-                        <hr />
-                        REPORTES
-                    </div>
-                </Link>
+                {user.role === "admin" && (
+                    <Link to="reportes" className='link'>
+                        <div className="available-rooms">
+                            <hr />
+                            REPORTES
+                        </div>
+                    </Link>
+                )}
             </div>
         </div >
     )

@@ -23,12 +23,20 @@ function App() {
       element: <Login />,
       action: loginAction, // <-- action del login, para el form
     },
+    // ---- rutas de alumno y profesor ----
     {
-      element: <ProtectedRoutes />,
+      element: <ProtectedRoutes roles={["alumno", "admin"]} />,
       children: [
         { path: "/my/panel", element: <Panel /> },
         { path: "/my/panel/mis-reservas", element: <MisReservas /> },
         { path: "/my/panel/nueva-reserva", element: <NuevaReserva /> },
+      ],
+    },
+
+    // ---- ruta del admin ----
+    {
+      element: <ProtectedRoutes roles={["admin"]} />,
+      children: [
         { path: "/my/panel/reportes", element: <Reportes /> },
       ],
     },

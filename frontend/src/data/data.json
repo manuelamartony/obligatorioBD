@@ -7,6 +7,10 @@
     {
       "correo": "maria.lopez@ucu.edu.uy",
       "contrasena": "hashedpassword456"
+    },
+    {
+      "correo": "admin",
+      "contrasena": "123"
     }
   ],
   "participante": [
@@ -27,6 +31,12 @@
       "nombre": "Carlos",
       "apellido": "Rodríguez",
       "email": "carlos.rodriguez@ucu.edu.uy"
+    },
+    {
+      "ci": "123",
+      "nombre": "administrador",
+      "apellido": "",
+      "email": "admin"
     }
   ],
   "facultad": [
@@ -69,6 +79,12 @@
       "ci_participante": "50123456",
       "nombre_programa": "Ingeniería en Informática",
       "rol": "docente"
+    },
+    {
+      "id_alumno_programa": 4,
+      "ci_participante": "123",
+      "nombre_programa": "Admin",
+      "rol": "admin"
     }
   ],
   "edificio": [
@@ -172,34 +188,5 @@
       "fecha_inicio": "2025-11-11",
       "fecha_fin": "2025-11-25"
     }
-  ],
-  "schedule_sala": {
-    "Salon TI3": {
-      "Lunes": {
-        "8:00": "OCUPADO"
-      },
-      "Martes": {
-        "8:00": "OCUPADO",
-        "9:00": "OCUPADO"
-      }
-    },
-
-    "Salon 205": {
-      "Lunes": {
-        "8:00": "OCUPADO"
-      },
-      "Miercoles": {
-        "14:00": "OCUPADO",
-        "15:00": "OCUPADO"
-      }
-    },
-
-    "Salon 301": {
-      "Viernes": {
-        "9:00": "OCUPADO",
-        "10:00": "OCUPADO",
-        "11:00": "OCUPADO"
-      }
-    }
-  }
+  ]
 }

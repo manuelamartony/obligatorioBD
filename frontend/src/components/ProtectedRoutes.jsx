@@ -12,8 +12,8 @@ const ProtectedRoutes = ({ roles = [] }) => {
     }
 
     // 2. Si hay usuario pero no es student
-    if (user.role !== "alumno") {
-        return <div>Error: no sos estudiante</div>;
+    if (roles.length > 0 && !roles.includes(user.role)) {
+        return <div>No tenés permisos para acceder a esta sección.</div>;
     }
 
     return <Outlet />;

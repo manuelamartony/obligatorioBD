@@ -70,13 +70,14 @@ const TurnosPopup = ({ sala }) => {
             .some(h => horasOcupadas.includes(h));
 
     function handleReserva() {
-        console.log("reserva");
+
     }
+
 
 
     return (
         <div className="turnos-popup">
-            <h2>Elegí fecha y horario</h2>
+            <h2>{`${sala.nombre_sala} - Elegí fecha y horario`}</h2>
 
             <input
                 type="date"
