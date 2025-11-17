@@ -23,8 +23,6 @@ const NuevaReserva = () => {
         fetchSalones();
     }, []);
 
-    console.log("Salones:", salones);
-
     const navigate = useNavigate();
     return (
         <div className="nueva-reserva-page">

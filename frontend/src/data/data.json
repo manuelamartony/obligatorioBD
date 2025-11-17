@@ -7,6 +7,10 @@
     {
       "correo": "maria.lopez@ucu.edu.uy",
       "contrasena": "hashedpassword456"
+    },
+    {
+      "correo": "admin",
+      "contrasena": "123"
     }
   ],
   "participante": [
@@ -27,6 +31,12 @@
       "nombre": "Carlos",
       "apellido": "Rodríguez",
       "email": "carlos.rodriguez@ucu.edu.uy"
+    },
+    {
+      "ci": "123",
+      "nombre": "administrador",
+      "apellido": "",
+      "email": "admin"
     }
   ],
   "facultad": [
@@ -69,6 +79,12 @@
       "ci_participante": "50123456",
       "nombre_programa": "Ingeniería en Informática",
       "rol": "docente"
+    },
+    {
+      "id_alumno_programa": 4,
+      "ci_participante": "123",
+      "nombre_programa": "Admin",
+      "rol": "admin"
     }
   ],
   "edificio": [
@@ -106,8 +122,8 @@
   "turno": [
     {
       "id_turno": 1,
-      "hora_inicio": "08:00",
-      "hora_fin": "10:00"
+      "hora_inicio": "09:00",
+      "hora_fin": "11:00"
     },
     {
       "id_turno": 2,
@@ -123,15 +139,15 @@
   "reserva": [
     {
       "id_reserva": 1001,
-      "nombre_sala": "Sala A101",
+      "nombre_sala": "Salon TI3",
       "edificio": "Edificio Central",
-      "fecha": "2025-11-15",
+      "fecha": "2025-11-19",
       "id_turno": 1,
       "estado": "activa"
     },
     {
       "id_reserva": 1002,
-      "nombre_sala": "Sala P201",
+      "nombre_sala": "Salon 205",
       "edificio": "Campus Pocitos",
       "fecha": "2025-11-16",
       "id_turno": 3,
@@ -139,7 +155,7 @@
     },
     {
       "id_reserva": 1003,
-      "nombre_sala": "Sala D301",
+      "nombre_sala": "Salon 301",
       "edificio": "Edificio Central",
       "fecha": "2025-11-10",
       "id_turno": 2,
@@ -172,46 +188,5 @@
       "fecha_inicio": "2025-11-11",
       "fecha_fin": "2025-11-25"
     }
-  ],
-  "schedule_sala": {
-    "Salon TI3": {
-      "Monday": {
-        "8:00 A.M.": "DISPONIBLE",
-        "12:00 P.M": "DISPONIBLE",
-        "1:00 P.M.": "DISPONIBLE",
-        "2:00 P.M.": "DISPONIBLE"
-      },
-      "Tuesday": {
-        "8:00 A.M.": "OCUPADO",
-        "9:00 A.M.": "DISPONIBLE",
-        "12:00 P.M": "DISPONIBLE",
-        "1:00 P.M.": "DISPONIBLE"
-      }
-    },
-
-    "Salon 205": {
-      "Monday": {
-        "8:00 A.M.": "OCUPADO",
-        "12:00 P.M": "DISPONIBLE",
-        "1:00 P.M.": "DISPONIBLE",
-        "2:00 P.M.": "DISPONIBLE"
-      },
-      "Wednesday": {
-        "12:00 P.M": "DISPONIBLE",
-        "1:00 P.M.": "DISPONIBLE",
-        "2:00 P.M.": "OCUPADO",
-        "3:00 P.M.": "OCUPADO"
-      }
-    },
-
-    "Salon 301": {
-      "Friday": {
-        "8:00 A.M.": "DISPONIBLE",
-        "9:00 A.M.": "OCUPADO",
-        "10:00 A.M.": "OCUPADO",
-        "11:00 A.M.": "OCUPADO",
-        "12:00 P.M": "DISPONIBLE"
-      }
-    }
-  }
+  ]
 }
