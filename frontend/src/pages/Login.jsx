@@ -19,7 +19,7 @@ export async function loginAction({ request }) {
     if (!loginUser) return { error: "Credenciales incorrectas" };
 
     // 2. Buscar participante
-    const resPart = await fetch("http://localhost:3001/participante");
+    const resPart = await fetch("http://localhost:3001/usuarios");
     const partData = await resPart.json();
 
     const participante = partData.find(p => p.email === loginUser.correo);
