@@ -2,28 +2,37 @@ import React, { useEffect, useState } from "react";
 import "../styles/TurnosPopup.css";
 import ConfirmarReserva from "./ConfirmarReserva";
 
-async function getDisponibilidad(nombreSala, fecha) {
+// 1) Obtener todos los turnos del día (solo los disponibles)
+async function getTurnosDisponiblesDelDia(fecha, sala, edificio) {
     const res = await fetch(
-        `http://localhost:3000/api/salas/${encodeURIComponent(nombreSala)}/disponibilidad?fecha=${fecha}`
+        `http://localhost:3000/api/turnos/disponibles?fecha=${encodeURIComponent(
+            fecha
+        )}&sala=${encodeURIComponent(sala)}&edificio=${encodeURIComponent(edificio)}`
     );
 
-    if (!res.ok) throw new Error("Error obteniendo disponibilidad");
-
+    if (!res.ok) throw new Error("Error obteniendo turnos disponibles");
     return await res.json();
 }
 
+// 2) Obtener todos los turnos del sistema (para ver los ocupados)
+async function getTodosLosTurnos() {
+    const res = await fetch("http://localhost:3000/api/turnos/");
+    if (!res.ok) throw new Error("Error obteniendo todos los turnos");
+    const data = await res.json();
+    return data.turnos;
+}
+
+// Hora bonita
 function formatHour(hora) {
-    const partes = hora.split(":");
-    return partes[0].padStart(2, "0") + ":" + partes[1];
+    const [h, m] = hora.split(":");
+    return `${h.padStart(2, "0")}:${m}`;
 }
 
 const TurnosPopup = ({ sala }) => {
-
     const [selectedDate, setSelectedDate] = useState(null);
     const [turnos, setTurnos] = useState([]);
 
-    // NUEVO: control de pantallas internas
-    const [pantalla, setPantalla] = useState("turnos"); // "turnos" o "confirmar"
+    const [pantalla, setPantalla] = useState("turnos"); // "turnos" | "confirmar"
     const [turnoElegido, setTurnoElegido] = useState(null);
 
     useEffect(() => {
@@ -31,19 +40,26 @@ const TurnosPopup = ({ sala }) => {
 
         async function load() {
             try {
-                const data = await getDisponibilidad(
-                    sala.nombre_sala,
-                    selectedDate,
-                );
+                // 1️⃣ Todos los turnos del sistema
+                const todosTurnos = await getTodosLosTurnos();
 
-                const formatted = data.turnos.map(t => ({
+                // 2️⃣ Turnos disponibles del día
+                const data = await getTurnosDisponiblesDelDia(
+                    selectedDate,
+                    sala.nombre_sala,
+                    sala.edificio
+                );
+                const disponiblesIds = data.turnos_disponibles.map((t) => t.id_turno);
+
+                // 3️⃣ Formatear todos los turnos y marcar ocupados
+                const turnosFormateados = todosTurnos.map((t) => ({
                     ...t,
                     ini: formatHour(t.hora_inicio),
-                    fin: formatHour(t.hora_fin)
+                    fin: formatHour(t.hora_fin),
+                    disponible: disponiblesIds.includes(t.id_turno),
                 }));
 
-                setTurnos(formatted);
-
+                setTurnos(turnosFormateados);
             } catch (err) {
                 console.error(err);
             }
@@ -52,24 +68,19 @@ const TurnosPopup = ({ sala }) => {
         load();
     }, [selectedDate, sala.nombre_sala]);
 
-
     function reservarTurno(turno) {
         setTurnoElegido(turno);
         setPantalla("confirmar");
     }
 
-
     function confirmarReserva(payload) {
         console.log("🔵 RESERVA CONFIRMADA:", payload);
-        // acá haces el POST al backend si querés
-        // fetch("POST /reservas", {...})
+        // fetch POST acá
     }
-
 
     return (
         <div className="turnos-popup">
-
-            {/* ------------------- PANTALLA 1: TURNOS ------------------- */}
+            {/* ------------------- PANTALLA TURNOS ------------------- */}
             {pantalla === "turnos" && (
                 <>
                     <h2>{`${sala.nombre_sala} - Elegí fecha y horario`}</h2>
@@ -113,8 +124,7 @@ const TurnosPopup = ({ sala }) => {
                 </>
             )}
 
-
-            {/* ------------------- PANTALLA 2: CONFIRMAR ------------------- */}
+            {/* ------------------- PANTALLA CONFIRMAR ------------------- */}
             {pantalla === "confirmar" && turnoElegido && (
                 <ConfirmarReserva
                     turno={turnoElegido}
