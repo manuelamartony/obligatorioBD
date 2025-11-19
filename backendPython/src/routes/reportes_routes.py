@@ -5,48 +5,27 @@ router = APIRouter()
 
 @router.get("/salas-mas-reservadas")
 async def salas_mas_reservadas(
-    fecha_inicio: str = Query(...),
-    fecha_fin: str = Query(...)
 ):
-    return await reportes_controller.salas_mas_reservadas(fecha_inicio, fecha_fin)
+    return await reportes_controller.salas_mas_reservadas()
 
 @router.get("/turnos-demandados")
 async def turnos_demandados(
-    fecha_inicio: str = Query(...),
-    fecha_fin: str = Query(...)
 ):
-    return await reportes_controller.turnos_demandados(fecha_inicio, fecha_fin)
-
-@router.get("/promedio-participantes")
-async def promedio_participantes(
-    fecha_inicio: str = Query(...),
-    fecha_fin: str = Query(...)
+    return await reportes_controller.turnos_mas_demandados()
+@router.get("/promedios-mas-participantes-por-sala")
+async def promedios_participantes_por_salas(
+    
 ):
-    return await reportes_controller.promedio_participantes(fecha_inicio, fecha_fin)
+    return await reportes_controller.promedios_participantes_por_salas()
 
-@router.get("/reservas-por-facultad")
-async def reservas_por_facultad(
-    fecha_inicio: str = Query(...),
-    fecha_fin: str = Query(...)
+@router.get("/sanciones-segun-carrera")
+async def sanciones_segun_carrera(
+    
 ):
-    return await reportes_controller.reservas_por_facultad(fecha_inicio, fecha_fin)
+    return reportes_controller.sanciones_segun_carrera()
 
-@router.get("/ocupacion-edificios")
-async def ocupacion_edificios(fecha: str = Query(...)):
-    return await reportes_controller.ocupacion_edificios(fecha)
-
-@router.get("/cantidad-reservas")
-async def cantidad_reservas(
-    fecha_inicio: str = Query(...),
-    fecha_fin: str = Query(...),
-    estado: str = Query(None)
+@router.get("/cantidad_reservas_segun_dia")
+async def cantidad_reservas_segun_dia(
+    
 ):
-    return await reportes_controller.cantidad_reservas(fecha_inicio, fecha_fin, estado)
-
-@router.get("/general")
-async def reporte_general(
-    fecha_inicio: str = Query(...),
-    fecha_fin: str = Query(...)
-):
-    return await reportes_controller.reporte_general(fecha_inicio, fecha_fin)
-
+    return await reportes_controller.cantidad_reservas_segun_dia()
