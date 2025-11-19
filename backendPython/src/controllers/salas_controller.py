@@ -32,23 +32,23 @@ async def obtener_todas_las_salas():
             
             
             
-async def obtener_disponibilidad_sala(nombre:str,fecha:str):
+async def obtener_disponibilidad_sala(sala:str,turno:str,fecha:str):
     try:
         conn = get_connection()
         cursor = conn.cursor(dictionary = True)
         
-        queryTurnos="""SELECT * FROM turno"""
+        query="""SELECT * FROM reserva
+        WHERE nombre_sala= %s AND id_turno = %s AND fecha= %s"""
         
-        
-        cursor.execute(queryTurnos)
-        resultados = cursor.fetchall()
-        
-        queryReserva = """SELECT r.id_turno FROM reserva r """
-        
+        cursor.execute(query, (sala,turno, fecha))
+        resultado = cursor.fetchone()
+
+        estado = "ocupada" if resultado else "disponible"
+
         
         return {
             "success": True,
-            "disponibilidad": resultados
+            "estado": estado
         }
         
         
