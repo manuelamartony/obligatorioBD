@@ -2,9 +2,9 @@ import React, { useEffect, useState } from "react";
 import "../styles/TurnosPopup.css";
 import ConfirmarReserva from "./ConfirmarReserva";
 
-async function getDisponibilidad(nombreSala, fecha, edificio) {
+async function getDisponibilidad(nombreSala, fecha) {
     const res = await fetch(
-        `http://localhost:3000/api/salas/${encodeURIComponent(nombreSala)}/disponibilidad?fecha=${fecha}&edificio=${encodeURIComponent(edificio)}`
+        `http://localhost:3000/api/salas/${encodeURIComponent(nombreSala)}/disponibilidad?fecha=${fecha}`
     );
 
     if (!res.ok) throw new Error("Error obteniendo disponibilidad");
@@ -34,7 +34,6 @@ const TurnosPopup = ({ sala }) => {
                 const data = await getDisponibilidad(
                     sala.nombre_sala,
                     selectedDate,
-                    sala.edificio
                 );
 
                 const formatted = data.turnos.map(t => ({
