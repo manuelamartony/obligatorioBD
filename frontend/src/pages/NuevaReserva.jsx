@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from 'react'
 import '../styles/NuevaReserva.css'
-import { data, useNavigate } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import Popup from 'reactjs-popup';
 import 'reactjs-popup/dist/index.css';
 import TurnosPopup from '../components/TurnosPopup';
