@@ -120,7 +120,7 @@ async def sanciones_segun_carrera():
             conn.close()
             
 #Cantidad de reservas segun dia de la semana (solo muestra los dias con resevas) -- Consulta inventada por nosotros (ultimo pto en consultas)
-async def cantidad_reservas_segun_dia ():
+async def cantidad_reservas_segun_dia():
     try:
         conn = get_connection()
         cursor = conn.cursor(dictionary = True)
