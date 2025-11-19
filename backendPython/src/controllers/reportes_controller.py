@@ -1,403 +1,147 @@
 from fastapi import HTTPException
 from src.config.database import get_connection
 
-async def salas_mas_reservadas(fecha_inicio: str, fecha_fin: str):
-    """Salas más reservadas en un período"""
+#Reservas de salas mas usadas (top 5 salas mas reservadas)
+async def salas_mas_reservadas():
     try:
-        if not fecha_inicio or not fecha_fin:
-            raise HTTPException(
-                status_code=400,
-                detail="fecha_inicio y fecha_fin son requeridas"
-            )
-
         conn = get_connection()
-        cursor = conn.cursor(dictionary=True)
-
-        query = """
-            SELECT
-                r.nombre_sala,
-                r.edificio,
-                COUNT(*) as cantidad_reservas,
-                s.capacidad,
-                s.tipo_sala
-            FROM reserva r
-            INNER JOIN sala s ON r.nombre_sala = s.nombre_sala AND r.edificio = s.edificio
-            WHERE r.fecha BETWEEN %s AND %s
-            GROUP BY r.nombre_sala, r.edificio, s.capacidad, s.tipo_sala
-            ORDER BY cantidad_reservas DESC
-            LIMIT 10
-        """
-
-        cursor.execute(query, (fecha_inicio, fecha_fin))
-        resultados = cursor.fetchall()
-
-        cursor.close()
-        conn.close()
-
-        return {
-            "success": True,
-            "periodo": {"fecha_inicio": fecha_inicio, "fecha_fin": fecha_fin},
-            "salas": resultados
-        }
-
-    except HTTPException:
-        raise
-    except Exception as error:
-        print(f'Error en reporte de salas más reservadas: {error}')
-        raise HTTPException(
-            status_code=500,
-            detail="Error en el servidor"
-        )
-
-
-async def turnos_demandados(fecha_inicio: str, fecha_fin: str):
-    """Turnos más demandados"""
-    try:
-        if not fecha_inicio or not fecha_fin:
-            raise HTTPException(
-                status_code=400,
-                detail="fecha_inicio y fecha_fin son requeridas"
-            )
-
-        conn = get_connection()
-        cursor = conn.cursor(dictionary=True)
-
-        query = """
-            SELECT
-                t.id_turno,
-                t.hora_inicio,
-                t.hora_fin,
-                COUNT(*) as cantidad_reservas
-            FROM reserva r
-            INNER JOIN turno t ON r.id_turno = t.id_turno
-            WHERE r.fecha BETWEEN %s AND %s
-            GROUP BY t.id_turno, t.hora_inicio, t.hora_fin
-            ORDER BY cantidad_reservas DESC
-        """
-
-        cursor.execute(query, (fecha_inicio, fecha_fin))
-        resultados = cursor.fetchall()
-
-        # Convertir time objects a strings
-        for resultado in resultados:
-            resultado['hora_inicio'] = str(resultado['hora_inicio'])
-            resultado['hora_fin'] = str(resultado['hora_fin'])
-
-        cursor.close()
-        conn.close()
-
-        return {
-            "success": True,
-            "periodo": {"fecha_inicio": fecha_inicio, "fecha_fin": fecha_fin},
-            "turnos": resultados
-        }
-
-    except HTTPException:
-        raise
-    except Exception as error:
-        print(f'Error en reporte de turnos demandados: {error}')
-        raise HTTPException(
-            status_code=500,
-            detail="Error en el servidor"
-        )
-
-
-async def promedio_participantes(fecha_inicio: str, fecha_fin: str):
-    """Promedio de participantes por sala"""
-    try:
-        if not fecha_inicio or not fecha_fin:
-            raise HTTPException(
-                status_code=400,
-                detail="fecha_inicio y fecha_fin son requeridas"
-            )
-
-        conn = get_connection()
-        cursor = conn.cursor(dictionary=True)
-
-        query = """
-            SELECT
-                r.nombre_sala,
-                r.edificio,
-                s.capacidad,
-                AVG(participantes_count) as promedio_participantes,
-                COUNT(*) as total_reservas
-            FROM reserva r
-            INNER JOIN sala s ON r.nombre_sala = s.nombre_sala AND r.edificio = s.edificio
-            LEFT JOIN (
-                SELECT id_reserva, COUNT(*) as participantes_count
-                FROM reserva_participante
-                GROUP BY id_reserva
-            ) rp ON r.id_reserva = rp.id_reserva
-            WHERE r.fecha BETWEEN %s AND %s
-            GROUP BY r.nombre_sala, r.edificio, s.capacidad
-            ORDER BY promedio_participantes DESC
-        """
-
-        cursor.execute(query, (fecha_inicio, fecha_fin))
-        resultados = cursor.fetchall()
-
-        cursor.close()
-        conn.close()
-
-        return {
-            "success": True,
-            "periodo": {"fecha_inicio": fecha_inicio, "fecha_fin": fecha_fin},
-            "salas": resultados
-        }
-
-    except HTTPException:
-        raise
-    except Exception as error:
-        print(f'Error en reporte de promedio de participantes: {error}')
-        raise HTTPException(
-            status_code=500,
-            detail="Error en el servidor"
-        )
-
-
-async def reservas_por_facultad(fecha_inicio: str, fecha_fin: str):
-    """Reservas por facultad"""
-    try:
-        if not fecha_inicio or not fecha_fin:
-            raise HTTPException(
-                status_code=400,
-                detail="fecha_inicio y fecha_fin son requeridas"
-            )
-
-        conn = get_connection()
-        cursor = conn.cursor(dictionary=True)
-
-        query = """
-            SELECT
-                f.nombre_facultad,
-                COUNT(DISTINCT r.id_reserva) as cantidad_reservas,
-                COUNT(DISTINCT p.ci) as participantes_unicos
-            FROM reserva r
-            INNER JOIN reserva_participante rp ON r.id_reserva = rp.id_reserva
-            INNER JOIN participante p ON rp.ci = p.ci
-            INNER JOIN participante_programa_académico ppa ON p.ci = ppa.ci
-            INNER JOIN programa_academico pa ON ppa.nombre_programa = pa.nombre_programa
-            INNER JOIN facultad f ON pa.id_facultad = f.id_facultad
-            WHERE r.fecha BETWEEN %s AND %s
-            GROUP BY f.id_facultad, f.nombre_facultad
-            ORDER BY cantidad_reservas DESC
-        """
-
-        cursor.execute(query, (fecha_inicio, fecha_fin))
-        resultados = cursor.fetchall()
-
-        cursor.close()
-        conn.close()
-
-        return {
-            "success": True,
-            "periodo": {"fecha_inicio": fecha_inicio, "fecha_fin": fecha_fin},
-            "facultades": resultados
-        }
-
-    except HTTPException:
-        raise
-    except Exception as error:
-        print(f'Error en reporte de reservas por facultad: {error}')
-        raise HTTPException(
-            status_code=500,
-            detail="Error en el servidor"
-        )
-
-
-async def ocupacion_edificios(fecha: str):
-    """Ocupación de salas por edificio"""
-    try:
-        if not fecha:
-            raise HTTPException(
-                status_code=400,
-                detail="fecha es requerida"
-            )
-
-        conn = get_connection()
-        cursor = conn.cursor(dictionary=True)
-
-        query = """
-            SELECT
-                e.nombre_edificio,
-                e.direccion,
-                COUNT(DISTINCT s.nombre_sala) as total_salas,
-                COUNT(DISTINCT r.nombre_sala) as salas_utilizadas,
-                ROUND((COUNT(DISTINCT r.nombre_sala) / COUNT(DISTINCT s.nombre_sala)) * 100, 2) as ocupacion_porcentaje,
-                COUNT(r.id_reserva) as total_reservas
-            FROM edificio e
-            INNER JOIN sala s ON e.nombre_edificio = s.edificio
-            LEFT JOIN reserva r ON s.nombre_sala = r.nombre_sala AND s.edificio = r.edificio
-                AND r.fecha = %s AND r.estado IN ('activa', 'finalizada')
-            GROUP BY e.nombre_edificio, e.direccion
-            ORDER BY ocupacion_porcentaje DESC
-        """
-
-        cursor.execute(query, (fecha,))
-        resultados = cursor.fetchall()
-
-        cursor.close()
-        conn.close()
-
-        return {
-            "success": True,
-            "fecha": fecha,
-            "edificios": resultados
-        }
-
-    except HTTPException:
-        raise
-    except Exception as error:
-        print(f'Error en reporte de ocupación de edificios: {error}')
-        raise HTTPException(
-            status_code=500,
-            detail="Error en el servidor"
-        )
-
-
-async def cantidad_reservas(fecha_inicio: str, fecha_fin: str, estado: str = None):
-    """Cantidad total de reservas con desglose por estado"""
-    try:
-        if not fecha_inicio or not fecha_fin:
-            raise HTTPException(
-                status_code=400,
-                detail="fecha_inicio y fecha_fin son requeridas"
-            )
-
-        conn = get_connection()
-        cursor = conn.cursor(dictionary=True)
-
-        # Consulta principal: total por estado
-        query_por_estado = """
-            SELECT
-                estado,
-                COUNT(*) as cantidad
-            FROM reserva
-            WHERE fecha BETWEEN %s AND %s
-        """
-        params = [fecha_inicio, fecha_fin]
-
-        if estado:
-            query_por_estado += ' AND estado = %s'
-            params.append(estado)
-
-        query_por_estado += ' GROUP BY estado'
-
-        cursor.execute(query_por_estado, params)
-        por_estado = cursor.fetchall()
-
-        # Consulta de totales
-        query_total = """
-            SELECT
-                COUNT(*) as total_reservas,
-                COUNT(DISTINCT rp.ci) as usuarios_unicos,
-                COUNT(DISTINCT DATE(r.fecha)) as dias_con_reservas
-            FROM reserva r
-            LEFT JOIN reserva_participante rp ON r.id_reserva = rp.id_reserva
-            WHERE r.fecha BETWEEN %s AND %s
-        """
+        cursor = conn.cursor(dictionary = True)
         
-        if estado:
-            query_total += ' AND r.estado = %s'
+        query  = """SELECT reserva.nombre_sala , COUNT(reserva.nombre_sala) AS cant 
+        FROM reserva
+        GROUP BY nombre_sala
+        ORDER BY cant DESC
+        LIMIT 5"""
 
-        cursor.execute(query_total, params)
-        totales = cursor.fetchone()
+        cursor.execute(query)
+        resultados = cursor.fetchall()
 
-        cursor.close()
-        conn.close()
-
-        # Formatear respuesta
-        desglose_por_estado = {
-            "activa": 0,
-            "cancelada": 0,
-            "sin_asistencia": 0,
-            "finalizada": 0
-        }
-
-        for item in por_estado:
-            estado_key = item['estado']
-            if estado_key in desglose_por_estado:
-                desglose_por_estado[estado_key] = item['cantidad']
 
         return {
             "success": True,
-            "periodo": {"fecha_inicio": fecha_inicio, "fecha_fin": fecha_fin},
-            "filtro_estado": estado or "todos",
-            "total_reservas": totales['total_reservas'],
-            "usuarios_unicos": totales['usuarios_unicos'],
-            "dias_con_reservas": totales['dias_con_reservas'],
-            "por_estado": desglose_por_estado
+            "salas": resultados
         }
-
-    except HTTPException:
-        raise
     except Exception as error:
-        print(f'Error en reporte de cantidad de reservas: {error}')
+        print(f'Error en salas más reservadas: {error}')
         raise HTTPException(
             status_code=500,
             detail="Error en el servidor"
         )
 
-
-async def reporte_general(fecha_inicio: str, fecha_fin: str):
-    """Reporte general del sistema"""
+    finally:
+        if cursor:
+            cursor.close()
+        if conn:
+            conn.close()
+            
+#Consultas para los turnos mas demandadas
+async def turnos_mas_demandados():
     try:
-        if not fecha_inicio or not fecha_fin:
-            raise HTTPException(
-                status_code=400,
-                detail="fecha_inicio y fecha_fin son requeridas"
-            )
-
         conn = get_connection()
-        cursor = conn.cursor(dictionary=True)
-
-        # Obtener múltiples métricas
-        cursor.execute(
-            'SELECT COUNT(*) as total FROM reserva WHERE fecha BETWEEN %s AND %s',
-            (fecha_inicio, fecha_fin)
-        )
-        total_reservas_row = cursor.fetchone()
-        total_reservas = total_reservas_row['total'] if total_reservas_row else 0
-
-        cursor.execute('SELECT COUNT(*) as total FROM sala')
-        total_salas_row = cursor.fetchone()
-        total_salas = total_salas_row['total'] if total_salas_row else 0
-
-        cursor.execute('SELECT COUNT(*) as total FROM edificio')
-        total_edificios_row = cursor.fetchone()
-        total_edificios = total_edificios_row['total'] if total_edificios_row else 0
-
-        cursor.execute('SELECT COUNT(DISTINCT ci) as total FROM participante')
-        total_participantes_row = cursor.fetchone()
-        total_participantes = total_participantes_row['total'] if total_participantes_row else 0
-
-        cursor.execute(
-            'SELECT estado, COUNT(*) as cantidad FROM reserva WHERE fecha BETWEEN %s AND %s GROUP BY estado',
-            (fecha_inicio, fecha_fin)
-        )
-        reservas_por_estado = cursor.fetchall()
-
-        cursor.close()
-        conn.close()
-
-        return {
-            "success": True,
-            "periodo": {"fecha_inicio": fecha_inicio, "fecha_fin": fecha_fin},
-            "metricas_generales": {
-                "total_reservas": total_reservas,
-                "total_salas": total_salas,
-                "total_edificios": total_edificios,
-                "total_participantes": total_participantes
-            },
-            "reservas_por_estado": reservas_por_estado
-        }
-
-    except HTTPException:
-        raise
-    except Exception as error:
-        print(f'Error en reporte general: {error}')
+        cursor = conn.cursor(dictionary = True)
+        
+        query  = """SELECT turno.hora_inicio,turno.hora_fin,COUNT(id_reserva) AS cant FROM turno
+        JOIN obligatorio_bd.reserva r ON turno.id_turno = r.id_turno
+        GROUP BY turno.hora_inicio, turno.hora_fin
+        ORDER BY cant DESC ;"""
+        
+        cursor.execute(query)
+        resultados = cursor.fetchall()
+        return {"success": True, "turnos": resultados}
+    except  Exception as error:
+        print(f'Error en turnos mas demandados: {error}')
         raise HTTPException(
             status_code=500,
             detail="Error en el servidor"
         )
-
+    
+    
+    finally:
+        if cursor:
+            cursor.close()
+        if conn:
+            conn.close()
+            
+#Cantidad promedio de participantes por salas
+async def promedios_participantes_por_salas():
+    try:
+        conn = get_connection()
+        cursor = conn.cursor(dictionary = True)
+        
+        query = """SELECT reserva.nombre_sala,AVG(participante) as promedio_participantes FROM (
+            SELECT reserva_participante.id_reserva,COUNT(reserva_participante.ci) AS participante
+            FROM reserva_participante
+            GROUP BY reserva_participante.id_reserva) as cuenta
+            JOIN reserva ON reserva.id_reserva = cuenta.id_reserva
+            GROUP BY reserva.nombre_sala """
+            
+            
+        cursor.execute(query)
+        resultados = cursor.fetchall()
+        return {"success": True, "promedio_participantes": resultados}
+    except Exception as error:
+        print(f'Error en promedio de participantes por sala: {error}')
+        raise HTTPException(
+            status_code=500,
+            detail="Error en el servidor"
+        )
+    finally:
+        if cursor:
+            cursor.close()
+        if conn:
+            conn.close()
+            
+#Cantidad de sanciones segun la carrera ---Consulta inventada por nosotros(ultimo pto en consultas)
+async def sanciones_segun_carrera():
+    try:
+        conn = get_connection()
+        cursor = conn.cursor(dictionary = True)
+        query = """SELECT c.nombre_carrera,COUNT(*) AS cant
+        FROM sancion_participante sp
+        JOIN participante_carrera p ON p.ci = sp.ci
+        JOIN carrera c ON p.nombre_carrera = c.nombre_carrera
+        GROUP BY c.nombre_carrera
+        ORDER BY cant DESC """
+        
+        
+        cursor.execute(query)
+        resultados = cursor.fetchall()
+        return {"success": True, "sanciones": resultados}
+    except Exception as error:
+        print(f'Error en sanciones segun carrera: {error}')
+        raise HTTPException(
+            status_code=500,
+            detail="Error en el servidor"
+        )
+    finally:
+        if cursor:
+            cursor.close()
+        if conn:
+            conn.close()
+            
+#Cantidad de reservas segun dia de la semana (solo muestra los dias con resevas) -- Consulta inventada por nosotros (ultimo pto en consultas)
+async def cantidad_reservas_segun_dia ():
+    try:
+        conn = get_connection()
+        cursor = conn.cursor(dictionary = True)
+        query="""SELECT
+        DAYNAME(r.fecha) AS dia,
+        COUNT(*) AS cant
+        FROM reserva r
+        GROUP BY DAYOFWEEK(r.fecha), DAYNAME(r.fecha)
+        ORDER BY DAYOFWEEK(r.fecha)"""
+        cursor.execute(query)
+        resultados = cursor.fetchall()
+        return {"success": True, "reservas_por_dia": resultados}
+        
+    except  Exception as error:
+        print(f'Error en reservas segun dia: {error}')
+        raise HTTPException(
+            status_code=500,
+            detail="Error en el servidor"
+        )
+    finally:
+        if cursor:
+            cursor.close()
+        if conn:
+            conn.close()
