@@ -1,197 +1,129 @@
 import React, { useEffect, useState } from "react";
 import "../styles/TurnosPopup.css";
+import ConfirmarReserva from "./ConfirmarReserva";
 
+async function getDisponibilidad(nombreSala, fecha, edificio) {
+    const res = await fetch(
+        `http://localhost:3000/api/salas/${encodeURIComponent(nombreSala)}/disponibilidad?fecha=${fecha}&edificio=${encodeURIComponent(edificio)}`
+    );
 
-export async function getReservas() {
-    const res = await fetch("http://localhost:3001/reserva");
+    if (!res.ok) throw new Error("Error obteniendo disponibilidad");
+
     return await res.json();
-
 }
 
-export async function getTurnos() {
-    const res = await fetch("http://localhost:3001/turno");
-    return await res.json();
-}
-
-const ALL_HOURS = [
-    "08:00", "09:00", "10:00", "11:00", "12:00",
-    "13:00", "14:00", "15:00", "16:00", "17:00",
-    "18:00", "19:00", "20:00", "21:00", "22:00", "23:00"
-];
-
-function getHoursBetween(start, end) {
-    let s = parseInt(start.split(":")[0]);
-    let e = parseInt(end.split(":")[0]);
-    let result = [];
-    while (s < e) {
-        result.push(s.toString().padStart(2, "0") + ":00");
-        s++;
-    }
-    return result;
+function formatHour(hora) {
+    const partes = hora.split(":");
+    return partes[0].padStart(2, "0") + ":" + partes[1];
 }
 
 const TurnosPopup = ({ sala }) => {
+
     const [selectedDate, setSelectedDate] = useState(null);
-    const [reservas, setReservas] = useState([]);
     const [turnos, setTurnos] = useState([]);
 
-    const [inicio, setInicio] = useState("");
-    const [fin, setFin] = useState("");
+    // NUEVO: control de pantallas internas
+    const [pantalla, setPantalla] = useState("turnos"); // "turnos" o "confirmar"
+    const [turnoElegido, setTurnoElegido] = useState(null);
 
     useEffect(() => {
+        if (!selectedDate) return;
+
         async function load() {
-            setReservas(await getReservas());
-            setTurnos(await getTurnos());
+            try {
+                const data = await getDisponibilidad(
+                    sala.nombre_sala,
+                    selectedDate,
+                    sala.edificio
+                );
+
+                const formatted = data.turnos.map(t => ({
+                    ...t,
+                    ini: formatHour(t.hora_inicio),
+                    fin: formatHour(t.hora_fin)
+                }));
+
+                setTurnos(formatted);
+
+            } catch (err) {
+                console.error(err);
+            }
         }
+
         load();
-    }, []);
+    }, [selectedDate, sala.nombre_sala]);
 
-    // Reservas de ese día y sala
-    const reservasDia = reservas.filter(
-        r => r.nombre_sala === sala.nombre_sala && r.fecha === selectedDate
-    );
 
-    // Horas ocupadas
-    let horasOcupadas = [];
-    reservasDia.forEach(r => {
-        const t = turnos.find(t => t.id_turno === r.id_turno);
-        if (t) horasOcupadas.push(...getHoursBetween(t.hora_inicio, t.hora_fin));
-    });
-
-    // Validación rango
-    const rangoValido =
-        inicio &&
-        fin &&
-        ALL_HOURS.indexOf(fin) <= ALL_HOURS.indexOf(inicio) + 2 &&
-        ALL_HOURS.indexOf(fin) > ALL_HOURS.indexOf(inicio) &&
-        !ALL_HOURS
-            .slice(
-                ALL_HOURS.indexOf(inicio),
-                ALL_HOURS.indexOf(fin)
-            )
-            .some(h => horasOcupadas.includes(h));
-
-    function handleReserva() {
-
+    function reservarTurno(turno) {
+        setTurnoElegido(turno);
+        setPantalla("confirmar");
     }
 
+
+    function confirmarReserva(payload) {
+        console.log("🔵 RESERVA CONFIRMADA:", payload);
+        // acá haces el POST al backend si querés
+        // fetch("POST /reservas", {...})
+    }
 
 
     return (
         <div className="turnos-popup">
-            <h2>{`${sala.nombre_sala} - Elegí fecha y horario`}</h2>
 
-            <input
-                type="date"
-                className="date-picker"
-                onChange={e => {
-                    setSelectedDate(e.target.value);
-                    setInicio("");
-                    setFin("");
-                }}
-            />
-
-            {selectedDate && (
+            {/* ------------------- PANTALLA 1: TURNOS ------------------- */}
+            {pantalla === "turnos" && (
                 <>
-                    <div className="hour-date-container">
-                        <div className="selector">
-                            <label>Hora de inicio:</label>
-                            <select
-                                value={inicio}
-                                onChange={(e) => {
-                                    setInicio(e.target.value);
-                                    setFin("");
-                                }}
-                            >
-                                <option value="">Seleccionar…</option>
+                    <h2>{`${sala.nombre_sala} - Elegí fecha y horario`}</h2>
 
-                                {ALL_HOURS.map(h => (
-                                    <option
-                                        key={h}
-                                        value={h}
-                                        disabled={horasOcupadas.includes(h)}
+                    <input
+                        type="date"
+                        className="date-picker"
+                        onChange={(e) => {
+                            setSelectedDate(e.target.value);
+                            setPantalla("turnos");
+                        }}
+                    />
+
+                    {selectedDate && (
+                        <>
+                            <h3>Disponibilidad del día</h3>
+
+                            <div className="hours-list">
+                                {turnos.map((t) => (
+                                    <div
+                                        key={t.id_turno}
+                                        className={`hour-card ${t.disponible ? "disponible" : "ocupado"}`}
                                     >
-                                        {h}
-                                    </option>
+                                        <span>{t.ini} - {t.fin}</span>
 
+                                        {t.disponible ? (
+                                            <button
+                                                className="reservar-btn"
+                                                onClick={() => reservarTurno(t)}
+                                            >
+                                                Reservar
+                                            </button>
+                                        ) : (
+                                            <span>Ocupado</span>
+                                        )}
+                                    </div>
                                 ))}
-                            </select>
-                        </div>
-
-                        {inicio && (
-                            <div className="selector">
-                                <label>Hora final:</label>
-                                <select
-                                    value={fin}
-                                    onChange={(e) => setFin(e.target.value)}
-                                >
-                                    <option value="">Seleccionar…</option>
-
-                                    {ALL_HOURS.map(h => (
-                                        <option
-                                            key={h}
-                                            value={h}
-                                            disabled={(() => {
-                                                const i = ALL_HOURS.indexOf(inicio);
-                                                const f = ALL_HOURS.indexOf(h);
-
-                                                if (f <= i) return true;                // No permitir mismo inicio
-                                                if (f > i + 2) return true;             // Máximo 2 horas
-
-                                                // Chequear solo horas internas (NO el límite)
-                                                const rangoInterno = ALL_HOURS.slice(i, f);
-                                                if (rangoInterno.some(x => horasOcupadas.includes(x))) return true;
-
-                                                return false;
-                                            })()}
-                                        >
-                                            {h}
-                                        </option>
-                                    ))}
-
-                                </select>
-
                             </div>
-                        )}
-
-                        <button
-                            className={`reservar-btn ${rangoValido ? "" : "disabled"}`}
-                            disabled={!rangoValido}
-                            onClick={() => handleReserva()}
-                        >
-                            Reservar
-                        </button>
-                    </div>
-
-                    <p style={{ color: 'red', fontWeight: 'bold' }}>IMPORTANTE: Las salas solo pueden reservarse por horas completas y por un máximo de 2 horas por día. Tampoco es posible participar de más de 3 reservas activas en una semana</p>
-
-                    <h3>Disponibilidad del día</h3>
-
-                    <div className="hours-list">
-                        {ALL_HOURS.map(hour => {
-                            const ocupado = horasOcupadas.includes(hour);
-                            const dentroRango =
-                                inicio &&
-                                fin &&
-                                ALL_HOURS.indexOf(hour) >= ALL_HOURS.indexOf(inicio) &&
-                                ALL_HOURS.indexOf(hour) < ALL_HOURS.indexOf(fin);
-
-                            return (
-                                <div
-                                    key={hour}
-                                    className={
-                                        "hour-card " +
-                                        (ocupado ? "ocupado" : "disponible") +
-                                        (dentroRango ? " seleccionado" : "")
-                                    }
-                                >
-                                    <span>{hour}</span>
-                                    <span>{ocupado ? "Ocupado" : "Libre"}</span>
-                                </div>
-                            );
-                        })}
-                    </div>
+                        </>
+                    )}
                 </>
+            )}
+
+
+            {/* ------------------- PANTALLA 2: CONFIRMAR ------------------- */}
+            {pantalla === "confirmar" && turnoElegido && (
+                <ConfirmarReserva
+                    turno={turnoElegido}
+                    sala={sala.nombre_sala}
+                    fecha={selectedDate}
+                    onBack={() => setPantalla("turnos")}
+                    onConfirm={confirmarReserva}
+                />
             )}
         </div>
     );

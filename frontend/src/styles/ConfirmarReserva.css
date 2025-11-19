@@ -1,0 +1,168 @@
+/* Contenedor general dentro del popup */
+.confirmar-reserva {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    padding: 10px;
+}
+
+/* Botón para volver */
+.back-btn {
+    background: transparent;
+    border: none;
+    font-size: 16px;
+    color: #333;
+    cursor: pointer;
+    width: fit-content;
+    padding: 4px 0;
+    transition: 0.2s;
+}
+
+.back-btn:hover {
+    color: #1a73e8;
+}
+
+/* Títulos */
+.confirmar-reserva h2 {
+    font-size: 22px;
+    text-align: center;
+    margin-bottom: 6px;
+}
+
+.confirmar-reserva h3 {
+    font-size: 18px;
+    margin-top: 10px;
+    margin-bottom: 6px;
+}
+
+/* Lista de inputs */
+.lista-participantes {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+/* Inputs */
+.ci-input {
+    padding: 10px;
+    border-radius: 10px;
+    border: 1px solid #ccc;
+    font-size: 15px;
+    width: 100%;
+    box-sizing: border-box;
+    transition: 0.2s;
+}
+
+.ci-input:focus {
+    outline: none;
+    border-color: #1a73e8;
+    box-shadow: 0 0 0 2px rgba(26, 115, 232, 0.2);
+}
+
+/* Botón agregar participante */
+.agregar-btn {
+    background: #e5d1fa;
+    color: #333;
+    border: 1px solid #c8b1e8;
+    padding: 10px;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 15px;
+    transition: 0.2s;
+}
+
+.agregar-btn:hover {
+    background: #d7bffd;
+}
+
+/* Botón Confirmar */
+.confirm-btn {
+    background: #1a73e8;
+    color: white;
+    border: none;
+    padding: 14px;
+    border-radius: 10px;
+    cursor: pointer;
+    width: 100%;
+    font-size: 16px;
+    margin-top: 10px;
+    transition: 0.25s;
+}
+
+.confirm-btn:hover {
+    background: #155fcc;
+}
+
+/* Responsive */
+@media (max-width: 480px) {
+    .confirmar-reserva h2 {
+        font-size: 20px;
+    }
+
+    .ci-input {
+        font-size: 14px;
+    }
+
+    .confirm-btn,
+    .agregar-btn {
+        font-size: 14px;
+        padding: 12px;
+    }
+}
+
+.participante-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.remove-btn {
+    background: #ff4d4d;
+    color: white;
+    border: none;
+    padding: 8px 10px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: 0.2s;
+}
+
+.remove-btn:hover {
+    background: #e04343;
+}
+
+.confirm-btn.disabled {
+    background: #9bbce6;
+    cursor: not-allowed;
+}
+
+.validar-btn {
+    background: #2d8cff;
+    color: white;
+    border: none;
+    padding: 6px 10px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+.validar-btn:hover {
+    background: #1b6fe0;
+}
+
+.estado {
+    font-size: 18px;
+    margin-left: 6px;
+}
+
+.estado-validando {
+    color: #888;
+}
+
+.estado-valido {
+    color: #2ecc71;
+}
+
+.estado-invalido {
+    color: #e74c3c;
+}

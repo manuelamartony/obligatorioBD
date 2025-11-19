@@ -1,14 +1,15 @@
 import React, { useEffect, useState } from 'react'
 import '../styles/NuevaReserva.css'
-import { useNavigate } from 'react-router-dom'
+import { data, useNavigate } from 'react-router-dom'
 import Popup from 'reactjs-popup';
 import 'reactjs-popup/dist/index.css';
 import TurnosPopup from '../components/TurnosPopup';
 
 
-export async function getSalones() {
-    const resSalones = await fetch("http://localhost:3001/sala");
-    return await resSalones.json();
+export async function getSalonesFromAPI() {
+    const resSalones = await fetch('http://localhost:3000/api/salas');
+    const dataSalones = await resSalones.json()
+    return dataSalones
 }
 
 
@@ -17,8 +18,8 @@ const NuevaReserva = () => {
 
     useEffect(() => {
         async function fetchSalones() {
-            const data = await getSalones();
-            setSalones(data);
+            const dataAPI = await getSalonesFromAPI();
+            setSalones(dataAPI.salas);
         }
         fetchSalones();
     }, []);
