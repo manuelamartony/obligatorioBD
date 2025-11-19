@@ -1,3 +1,6 @@
+"use client";
+
+
 import './styles/App.css'
 import { BrowserRouter, Routes, Route, createBrowserRouter, RouterProvider } from "react-router-dom";
 import Panel from './pages/Panel'
@@ -8,7 +11,6 @@ import NuevaReserva from './pages/NuevaReserva';
 import Reportes from './pages/Reportes';
 
 import ProtectedRoutes from './components/ProtectedRoutes';
-import { useEffect, useState } from 'react';
 
 function App() {
 

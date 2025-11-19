@@ -1,3 +1,5 @@
+"use client";
+
 import React, { useEffect, useState } from 'react'
 import '../styles/NuevaReserva.css'
 import { data, useNavigate } from 'react-router-dom'

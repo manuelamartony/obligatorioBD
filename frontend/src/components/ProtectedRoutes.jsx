@@ -1,4 +1,5 @@
-import { useContext } from "react";
+"use client";
+
 import { AuthContext, useAuth } from "../context/AuthContext";
 import { Outlet, Navigate } from "react-router-dom";
 
