@@ -31,7 +31,22 @@ const Reportes = () => {
     // -------------------------------
     // 2) Turnos más demandados
     // -------------------------------
-    const turnosRows = TurnosMasDemandados?.turnos?.map(t => `${t.hora_inicio} - ${t.hora_fin}`)
+
+    function formatSecondsToHour(seconds) {
+        const hours = Math.floor(seconds / 3600);
+        const minutes = Math.floor((seconds % 3600) / 60);
+
+        return `${hours.toString().padStart(2, "0")}:${minutes
+            .toString()
+            .padStart(2, "0")}`;
+    }
+
+    const turnosRows = TurnosMasDemandados?.turnos?.map(t => {
+        const inicio = formatSecondsToHour(t.hora_inicio);
+        const fin = formatSecondsToHour(t.hora_fin);
+        return `${inicio} - ${fin}`;
+    });
+
     const turnosColumns = ["Cantidad"]
     const turnosData = TurnosMasDemandados?.turnos?.map(t => [t.cant])
 
@@ -63,7 +78,7 @@ const Reportes = () => {
 
             <main className="reports-grid">
 
-                <h2>Salas más reservadas</h2>
+                <h2>Las 5 salas más reservadas</h2>
                 <TablaReporte
                     columns={salasColumns}
                     rows={salasRows}
