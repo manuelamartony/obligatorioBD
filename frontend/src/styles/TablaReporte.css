@@ -1,0 +1,23 @@
+.tabla-reporte {
+  width: 100%;
+  border-collapse: collapse;
+  background: white;
+}
+
+.tabla-reporte th,
+.tabla-reporte td {
+  padding: 10px;
+  border: 1px solid #dcdcdc;
+  text-align: center;
+}
+
+.tabla-reporte thead th {
+  background: #f0f0f0;
+  font-weight: bold;
+}
+
+.row-header {
+  background: #fafafa;
+  font-weight: bold;
+  text-align: left;
+}
