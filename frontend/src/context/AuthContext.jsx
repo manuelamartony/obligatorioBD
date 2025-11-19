@@ -1,19 +1,19 @@
-import { createContext, useContext, useEffect, useState } from "react"
+"use client"
+
+import { createContext, useContext, useEffect, useState } from "react";
 
 export const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
 
-    const [user, setUser] = useState(null)
+    const [user, setUser] = useState(null);
 
-    // Esto es para guardar al usuario si refresca la pagina
     useEffect(() => {
         const savedUser = localStorage.getItem("user");
         if (savedUser) {
             setUser(JSON.parse(savedUser));
         }
     }, []);
-
 
     const login = (userData) => {
         setUser(userData);
@@ -24,7 +24,7 @@ export const AuthProvider = ({ children }) => {
         <AuthContext.Provider value={{ user, login }}>
             {children}
         </AuthContext.Provider>
-    )
-}
+    );
+};
 
-export const useAuth = () => useContext(AuthContext)
+export const useAuth = () => useContext(AuthContext);
