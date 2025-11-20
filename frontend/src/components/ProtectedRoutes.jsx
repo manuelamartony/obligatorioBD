@@ -1,19 +1,18 @@
-"use client";
-
-import { AuthContext, useAuth } from "../context/AuthContext";
+import { useAuth } from "../context/AuthContext";
 import { Outlet, Navigate } from "react-router-dom";
 
-
 const ProtectedRoutes = ({ roles = [] }) => {
-    const { user } = useAuth();
+    const { user, loading } = useAuth();
 
-    // 1. Si no hay usuario → debe ir al login
+    if (loading) {
+        return <div>Cargando...</div>; // puede ser un spinner
+    }
+
     if (!user) {
         return <Navigate to="/login" replace />;
     }
 
-    // 2. Si hay usuario pero no es student
-    if (roles.length > 0 && !roles.includes(user.role)) {
+    if (roles.length > 0 && !roles.includes(user.rol)) {
         return <div>No tenés permisos para acceder a esta sección.</div>;
     }
 

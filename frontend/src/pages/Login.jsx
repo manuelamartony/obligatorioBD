@@ -1,51 +1,37 @@
 import React, { useContext, useEffect } from "react";
-import { Form, useActionData, redirect, Link, useNavigate } from "react-router-dom";
+import { Form, useActionData, useNavigate } from "react-router-dom";
 import "../styles/Login.css";
 import { AuthContext } from "../context/AuthContext";
 
 export async function loginAction({ request }) {
     const formData = await request.formData();
-    const emailOrUser = formData.get("userOrEmail");
-    const password = formData.get("password");
+    const correo = formData.get("userOrEmail");
+    const contrasena = formData.get("password");
 
-    // 1. Login básico
-    const resLogin = await fetch("http://localhost:3001/login");
-    const loginData = await resLogin.json();
+    const res = await fetch("http://localhost:3000/api/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ correo, contrasena }),
+    });
 
-    const loginUser = loginData.find(
-        (u) => u.correo === emailOrUser && u.contrasena === password
-    );
+    if (!res.ok) {
+        return { error: "Credenciales incorrectas" };
+    }
 
-    if (!loginUser) return { error: "Credenciales incorrectas" };
+    const loginResp = await res.json();
 
-    // 2. Buscar participante
-    const resPart = await fetch("http://localhost:3001/participante");
-    const partData = await resPart.json();
+    const token = loginResp.token;
+    const userData = loginResp.participante;
 
-    const participante = partData.find(p => p.email === loginUser.correo);
+    if (!token || !userData) {
+        return { error: "Error procesando la respuesta del servidor" };
+    }
 
-    if (!participante) return { error: "No se encontró participante" };
-
-    // 3. Buscar rol académico
-    const resProg = await fetch("http://localhost:3001/participante_programa_academico");
-    const progData = await resProg.json();
-
-    const academic = progData.find(a => a.ci_participante === participante.ci);
-
-    // 4. Construir user final
-    const fullUser = {
-        correo: loginUser.correo,
-        ci: participante.ci,
-        nombre: participante.nombre,
-        apellido: participante.apellido,
-        role: academic?.rol ?? null,
-        programa: academic?.nombre_programa ?? null,
+    return {
+        user: userData,
+        token: token,
     };
-
-    return { user: fullUser };
 }
-
-
 
 export default function Login() {
     const data = useActionData();
@@ -53,11 +39,12 @@ export default function Login() {
     const navigate = useNavigate();
 
     useEffect(() => {
-        if (data?.user) {
-            login(data.user);        // <-- actualiza contexto Y localStorage
+        if (data?.user && data?.token) {
+            login(data.user, data.token);
             navigate("/my/panel");
         }
     }, [data]);
+
     return (
         <div className='login-body'>
             <div className='login-container'>
@@ -83,7 +70,9 @@ export default function Login() {
                     />
 
                     {data?.error && (
-                        <p style={{ color: "red", marginTop: "8px" }}>{data.error}</p>
+                        <p style={{ color: "red", marginTop: "8px" }}>
+                            {data.error}
+                        </p>
                     )}
 
                     <button type="submit" className="interface-btn">

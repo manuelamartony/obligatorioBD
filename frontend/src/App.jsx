@@ -27,7 +27,7 @@ function App() {
     },
     // ---- rutas de alumno y profesor ----
     {
-      element: <ProtectedRoutes roles={["alumno", "admin"]} />,
+      element: <ProtectedRoutes roles={["alumno", "admin", "docente"]} />,
       children: [
         { path: "/my/panel", element: <Panel /> },
         { path: "/my/panel/mis-reservas", element: <MisReservas /> },
