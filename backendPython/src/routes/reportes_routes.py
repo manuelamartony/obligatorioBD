@@ -29,3 +29,33 @@ async def cantidad_reservas_segun_dia(
     
 ):
     return await reportes_controller.cantidad_reservas_segun_dia()
+
+@router.get("/ocupacion_salas_por_edificio")
+async def ocupacion_salas_por_edificio(
+    
+):
+    return await reportes_controller.ocupacion_salas_por_edificio()
+
+@router.get("/cantidad_reservas_asistencias_profesores_alumnos")
+async def cantidad_reservas_asistencias_profesores_alumnos(
+    
+):
+    return await reportes_controller.cantidad_reservas_asistencias_profesores_alumnos()
+
+@router.get("/cantidad_sanciones_profesores_alumnos")
+async def cantidad_sanciones_profesores_alumnos(
+    
+):
+    return await reportes_controller.cantidad_sanciones_profesores_alumnos()
+
+@router.get("/reservas_utilizadas_vs_canceladas_noAsistidas")
+async def reservas_utilizadas_vs_canceladas_noAsistidas(
+    
+):
+    return await reportes_controller.reservas_utilizadas_vs_canceladas_noAsistidas()
+
+@router.get("/tasa_cancelacion_por_participante")
+async def tasa_cancelacion_por_participante(
+    
+):
+    return await reportes_controller.tasa_cancelacion_por_participante()
