@@ -40,7 +40,7 @@ async def login(correo: str, contrasena: str):
 
         # Buscar datos del participante usando el email del login
         cursor.execute(
-            'SELECT ci, nombre, apellido, email FROM participante WHERE email = %s',
+            'SELECT ci, nombre, apellido, email FROM usuario WHERE email = %s',
             (correo,)
         )
         participante_rows = cursor.fetchall()
@@ -55,9 +55,9 @@ async def login(correo: str, contrasena: str):
 
         participante = participante_rows[0]
 
-        # Obtener el rol del participante desde participante_programa_académico
+        # Obtener el rol del participante desde participante_carrera
         cursor.execute(
-            'SELECT rol FROM participante_programa_académico WHERE ci = %s LIMIT 1',
+            'SELECT rol FROM participante_carrera WHERE ci = %s LIMIT 1',
             (participante['ci'],)
         )
         rol_rows = cursor.fetchall()
@@ -121,7 +121,7 @@ async def me(ci: str = None):
         cursor = conn.cursor(dictionary=True)
 
         cursor.execute(
-            'SELECT ci, nombre, apellido, email FROM participante WHERE ci = %s',
+            'SELECT ci, nombre, apellido, email FROM usuario WHERE ci = %s',
             (ci,)
         )
         participante_rows = cursor.fetchall()
@@ -136,9 +136,9 @@ async def me(ci: str = None):
 
         participante = participante_rows[0]
 
-        # Obtener el rol del participante desde participante_programa_académico
+        # Obtener el rol del participante desde participante_carrera
         cursor.execute(
-            'SELECT rol FROM participante_programa_académico WHERE ci = %s LIMIT 1',
+            'SELECT rol FROM participante_carrera WHERE ci = %s LIMIT 1',
             (ci,)
         )
         rol_rows = cursor.fetchall()
