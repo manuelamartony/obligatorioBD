@@ -145,3 +145,208 @@ async def cantidad_reservas_segun_dia():
             cursor.close()
         if conn:
             conn.close()
+
+async def ocupacion_salas_por_edificio():
+    try:
+        conn = get_connection()
+        cursor = conn.cursor(dictionary=True)
+        query = """SELECT
+                    s.edificio,
+                    COUNT(t.id_turno) AS total_turnos_posibles,
+                    COUNT(r.id_reserva) AS turnos_ocupados,
+                    ROUND(
+                        (COUNT(r.id_reserva) * 100.0) / COUNT(t.id_turno),
+                        2
+                    ) AS porcentaje_ocupacion
+                FROM sala s
+                CROSS JOIN turno t
+                LEFT JOIN reserva r
+                    ON r.nombre_sala = s.nombre_sala
+                    AND r.id_turno = t.id_turno
+                    AND r.estado = 'activa'
+                GROUP BY s.edificio
+                ORDER BY porcentaje_ocupacion DESC"""
+        cursor.execute(query)
+        resultados = cursor.fetchall()
+        return {"success": True, "ocupacion_salas_por_edificio": resultados}
+    
+    except Exception as error:
+        print(f'Error en ocupacion de salas por edificio: {error}')
+        raise HTTPException(
+            status_code=500,
+            detail="Error en el servidor"
+        )
+    finally:
+        if cursor:
+            cursor.close()
+        if conn:
+            conn.close()
+
+async def cantidad_reservas_asistencias_profesores_alumnos():
+    try:
+        conn = get_connection()
+        cursor = conn.cursor(dictionary=True)
+        query = """SELECT
+                    s.edificio,
+                    COUNT(t.id_turno) AS total_turnos_posibles,
+                    COUNT(r.id_reserva) AS turnos_ocupados,
+                    ROUND(
+                        (COUNT(r.id_reserva) * 100.0) / COUNT(t.id_turno),
+                        2
+                    ) AS porcentaje_ocupacion
+                FROM sala s
+                CROSS JOIN turno t
+                LEFT JOIN reserva r
+                    ON r.nombre_sala = s.nombre_sala
+                    AND r.id_turno = t.id_turno
+                    AND r.estado = 'activa'
+                GROUP BY s.edificio
+                ORDER BY porcentaje_ocupacion DESC"""
+        cursor.execute(query)
+        resultados = cursor.fetchall()
+        return {"success": True, "cantidad_reservas_asistencias_profesores_alumnos": resultados}
+    
+    except Exception as error:
+        print(f'Error en cantidad de reservas y asistencias por profesores y alumnos: {error}')
+        raise HTTPException(
+            status_code=500,
+            detail="Error en el servidor"
+        )
+    finally:
+        if cursor:
+            cursor.close()
+        if conn:
+            conn.close()
+
+async def cantidad_reservas_asistencias_profesores_alumnos():
+    try:
+        conn = get_connection()
+        cursor = conn.cursor(dictionary=True)
+        query = """SELECT
+                    p.ci,
+                    p.nombre,
+                    p.apellido,
+                    ppa.rol,
+                    COUNT(rp.id_reserva) AS total_reservas,
+                    SUM(rp.asistencia) AS total_asistencias
+                FROM participante p
+                JOIN participante_programa_academico ppa
+                    ON p.ci = ppa.ci
+                LEFT JOIN reserva_participante rp
+                    ON p.ci = rp.ci
+                GROUP BY
+                    p.ci, p.nombre, p.apellido, ppa.rol
+                ORDER BY
+                    ppa.rol, total_reservas DESC"""
+        cursor.execute(query)
+        resultados = cursor.fetchall()
+        return {"success": True, "cantidad_reservas_asistencias_profesores_alumnos": resultados}
+    
+    except Exception as error:
+        print(f'Error en cantidad de reservas y asistencias por profesores y alumnos: {error}')
+        raise HTTPException(
+            status_code=500,
+            detail="Error en el servidor"
+        )
+    finally:
+        if cursor:
+            cursor.close()
+        if conn:
+            conn.close()
+
+async def cantidad_sanciones_profesores_alumnos():
+    try:
+        conn = get_connection()
+        cursor = conn.cursor(dictionary=True)
+        query = """SELECT
+                    ppa.rol,
+                    COUNT(sp.ci) AS cantidad_sanciones
+                FROM participante_programa_academico ppa
+                LEFT JOIN sancion_participante sp
+                    ON ppa.ci = sp.ci
+                GROUP BY
+                    ppa.rol"""
+        cursor.execute(query)
+        resultados = cursor.fetchall()
+        return {"success": True, "cantidad_sanciones_profesores_alumnos": resultados}
+    
+    except Exception as error:
+        print(f'Error en cantidad de sanciones para profesores y alumnos: {error}')
+        raise HTTPException(
+            status_code=500,
+            detail="Error en el servidor"
+        )
+    finally:
+        if cursor:
+            cursor.close()
+        if conn:
+            conn.close()
+
+async def reservas_utilizadas_vs_canceladas_noAsistidas():
+    try:
+        conn = get_connection()
+        cursor = conn.cursor(dictionary=True)
+        query = """SELECT
+                    ROUND(
+                        COUNT(CASE WHEN estado = 'finalizada' THEN 1 END) * 100.0
+                        / COUNT(*)
+                    , 2) AS porcentaje_utilizadas,
+
+                    ROUND(
+                        COUNT(CASE WHEN estado IN ('cancelada', 'sin asistencia') THEN 1 END) * 100.0
+                        / COUNT(*)
+                    , 2) AS porcentaje_no_utilizadas
+
+                FROM reserva"""
+        cursor.execute(query)
+        resultados = cursor.fetchall()
+        return {"success": True, "reservas_utilizadas_vs_canceladas_noAsistidas": resultados}
+    
+    except Exception as error:
+        print(f'Error en porcentaje de reservas utilizadas vs canceladas/no asistidas: {error}')
+        raise HTTPException(
+            status_code=500,
+            detail="Error en el servidor"
+        )
+    finally:
+        if cursor:
+            cursor.close()
+        if conn:
+            conn.close()
+
+async def tasa_cancelacion_por_participante():
+    try:
+        conn = get_connection()
+        cursor = conn.cursor(dictionary=True)
+        query = """SELECT
+                    p.nombre,
+                    p.apellido,
+                    COUNT(rp.id_reserva) AS total_reservas,
+                    SUM(CASE WHEN r.estado = 'cancelada' THEN 1 ELSE 0 END) AS reservas_canceladas,
+                    ROUND(
+                        CAST(SUM(CASE WHEN r.estado = 'cancelada' THEN 1 ELSE 0 END) AS DECIMAL(10,3))
+                        / NULLIF(COUNT(rp.id_reserva), 0),
+                        3
+                    ) AS tasa_cancelacion
+                FROM participante p
+                LEFT JOIN reserva_participante rp
+                    ON p.ci = rp.ci
+                LEFT JOIN reserva r
+                    ON r.id_reserva = rp.id_reserva
+                GROUP BY p.ci, p.nombre, p.apellido
+                ORDER BY
+                    tasa_cancelacion IS NULL,
+                    tasa_cancelacion DESC"""
+        cursor.execute(query)
+        resultados = cursor.fetchall()
+        return {"success": True, "tasa_cancelacion_por_participante": resultados}
+    
+    except Exception as error:
+        print(f'Error en tasa de cancelacion por participante: {error}')
+        raise HTTPException(
+            status_code=500,
+            detail="Error en el servidor"
+        )
+    finally:
+        if cursor:
+            cursor.close()
