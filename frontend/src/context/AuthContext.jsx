@@ -16,7 +16,7 @@ export const AuthProvider = ({ children }) => {
         if (savedToken) setToken(savedToken);
         if (savedUser) setUser(JSON.parse(savedUser));
 
-        setLoading(false); // <- ya cargó desde localStorage
+        setLoading(false);
     }, []);
 
     const login = (userData, accessToken) => {

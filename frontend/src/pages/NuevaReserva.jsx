@@ -27,6 +27,9 @@ const NuevaReserva = () => {
     }, []);
 
     const navigate = useNavigate();
+
+    const colores = ['lavender', 'mint', 'orange', 'sky', 'rose', 'yellow'];
+
     return (
         <div className="nueva-reserva-page">
             <header className="nr-header">
@@ -37,31 +40,32 @@ const NuevaReserva = () => {
 
             <main className="salas-grid">
                 {salones &&
-                    salones.map((s) => (
-                        <Popup
-                            trigger={
-                                <div key={s.id} className="sala-card">
-                                    <button className="sala-btn mint">
-                                        {s.nombre_sala}
-                                    </button>
+                    salones.map((s, index) => {
+                        const colorClass = colores[index % colores.length];
+                        return (
+                            <Popup
+                                key={s.id}
+                                trigger={
+                                    <div className="sala-card">
+                                        <button className={`sala-btn ${colorClass}`}>
+                                            {s.nombre_sala}
+                                        </button>
 
-                                    <div className="sala-details">
-                                        <p><strong>Edificio:</strong> {s.edificio}</p>
-                                        <p><strong>Capacidad:</strong> {s.capacidad}</p>
-                                        <p><strong>Tipo:</strong> {s.tipo_sala}</p>
+                                        <div className="sala-details">
+                                            <p><strong>Edificio:</strong> {s.edificio}</p>
+                                            <p><strong>Capacidad:</strong> {s.capacidad}</p>
+                                            <p><strong>Tipo:</strong> {s.tipo_sala}</p>
+                                        </div>
                                     </div>
-                                </div>
-                            }
-                            modal
-                            nested
-                            className="turnos-modal"
-                        >
-                            <TurnosPopup sala={s} />
-                        </Popup>
-
-
-                    ))}
-
+                                }
+                                modal
+                                nested
+                                className="turnos-modal"
+                            >
+                                <TurnosPopup sala={s} />
+                            </Popup>
+                        );
+                    })}
             </main>
         </div>
     )

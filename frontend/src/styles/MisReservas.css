@@ -3,9 +3,9 @@
 .misreservas-page {
   padding: 3rem 4rem 4rem 4rem;
   min-height: 100vh;
-  background: white;
   color: #111;
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  max-width: 1200px;
 }
 
 .mr-header {
@@ -17,34 +17,30 @@
 
 .pill-btn {
   background: #fff;
-  border: 1px solid #111;
-  padding: 0.5rem 1.2rem;
-  border-radius: 28px;
-  font-size: 0.85rem;
+  border: 1px solid #ccc;
+  padding: 0.5rem 1.5rem;
+  border-radius: 30px;
+  font-size: 0.9rem;
+  font-weight: 600;
   cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.pill-btn:hover {
+  background: #f0f0f0;
+  border-color: #aaa;
 }
 
 .header-center {
   text-align: center;
 }
 
-.icon-circle {
-  width: 56px;
-  height: 56px;
-  border-radius: 50%;
-  border: 2px solid #111;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  margin-bottom: 0.6rem;
-  font-size: 1.25rem;
-}
-
 .page-title {
-  font-size: 3.2rem;
-  letter-spacing: 1px;
+  font-size: 3rem;
+  letter-spacing: 0.5px;
   margin: 0;
   font-weight: 700;
+  color: #333;
   font-family: 'Caprasimo', Georgia, 'Times New Roman', serif;
 }
 
@@ -54,83 +50,108 @@
 
 .reservas-grid {
   display: flex;
-  gap: 2rem;
-  justify-content: space-between;
-  align-items: stretch;
   flex-wrap: wrap;
+  justify-content: center;
+  gap: 2rem;
 }
 
 .res-card {
-  position: relative;
-  flex: 1 1 calc(33% - 1.33rem);
+  flex: 0 1 300px; /* ancho base 300px, no crecer demasiado */
+  max-width: 320px; /* ancho máximo fijo */
   min-width: 260px;
-  padding: 2rem 1.7rem 3.2rem 2rem;
-  border-radius: 28px;
+  padding: 2rem;
+  border-radius: 20px;
+  background: #fff;
   color: #0b0b0b;
-  overflow: hidden;
-  box-shadow: 0 2px 0 rgba(0,0,0,0.02);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
   display: flex;
   flex-direction: column;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
-/* cut the top-right corner with clip-path similar to design */
+.res-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.12);
+}
+
+
+/* optional clip-path for visual style */
 .res-card {
-  clip-path: polygon(0 0, 78% 0, 100% 18%, 100% 100%, 0% 100%);
-}
-
-.res-card.lavender {
-  background: #E5D1FA;
-}
-
-.res-card.orange {
-  background: #F16A18;
-  color: #111;
+  clip-path: polygon(0 0, 85% 0, 100% 12%, 100% 100%, 0% 100%);
 }
 
 .res-card.mint {
-  background: #98D8AA;
+  background: #c6f1d6;
+}
+
+.res-card.lavender {
+  background: #e8d9f9;
+}
+
+.res-card.orange {
+  background: #f4b182;
 }
 
 .res-title {
-  font-size: 1.6rem;
-  margin: 0 0 0.5rem 0;
+  font-size: 1.8rem;
+  margin-bottom: 0.8rem;
   font-weight: 700;
-  font-family: 'Caprasimo', Georgia, serif;
+  color: #222;
 }
 
 .divider {
   height: 2px;
-  background: rgba(0,0,0,0.7);
+  background: rgba(0,0,0,0.1);
   width: 60%;
-  margin-bottom: 0.8rem;
+  margin-bottom: 1rem;
 }
 
 .res-details {
   list-style: none;
   padding-left: 0;
-  margin-top: 0.4rem;
+  margin-top: 0;
   line-height: 1.6;
-  font-size: 0.95rem;
+  font-size: 1rem;
   flex: 1 0 auto;
 }
 
-.res-details li::before {
-  content: '\2013';
-  display: inline-block;
-  width: 1.2rem;
+.res-details li {
+  margin-bottom: 0.5rem;
+  padding-left: 0.5rem;
+  position: relative;
 }
 
+.res-details li::before {
+  content: '\2022';
+  position: absolute;
+  left: 0;
+  color: #333;
+  font-size: 1rem;
+}
 
 /* responsive tweaks */
 @media (max-width: 980px) {
   .reservas-grid { gap: 1rem }
-  .res-card { flex: 1 1 calc(50% - 1rem); }
-  .page-title { font-size: 2.6rem }
+  .res-card {
+    flex: 0 1 45%; /* dos tarjetas por fila */
+    max-width: none;
+  }
+  .page-title { font-size: 2.4rem }
 }
 
 @media (max-width: 640px) {
   .misreservas-page { padding: 1.5rem }
   .reservas-grid { flex-direction: column }
-  .res-card { flex: 1 1 100%; min-width: auto }
+  .res-card {
+    flex: 0 1 100%; /* una tarjeta por fila */
+    max-width: none;
+  }
   .page-title { font-size: 2rem }
 }
+
+.res-card.lavender { background: #E5D1FA; color: #111; }
+.res-card.mint { background: #98D8AA; color: #111; }
+.res-card.orange { background: #F16A18; color: #0b0b0b; }
+.res-card.sky { background: #87CEEB; color: #111; }
+.res-card.rose { background: #FFB6C1; color: #111; }
+.res-card.yellow { background: #FFD700; color: #111; }
