@@ -2,6 +2,7 @@ from fastapi import APIRouter, Query
 from src.controllers import participantes_controller
 from pydantic import BaseModel
 from typing import Optional
+from pydantic import BaseModel
 
 router = APIRouter()
 
@@ -30,17 +31,17 @@ async def borrar_usuario(ci:int):
     return await participantes_controller.borrar_usuario(ci)
 
 class UsuarioUpdate(BaseModel):
-    nombre: Optional[str] = None
-    apellido: Optional[str] = None
-    email: Optional[str] = None
-    nuevo_ci: Optional[int] = None
+    nombre: str | None = None
+    apellido: str | None = None
+    email: str | None = None
+    nuevo_ci: int | None = None
 
 @router.patch("/modificar-usuario/{ci}")
 async def modificar_usuario(ci: int, cambios: UsuarioUpdate):
     return await participantes_controller.modificar_usuario(
-        ci,
-        cambios.nombre,
-        cambios.apellido,
-        cambios.email,
-        cambios.nuevo_ci
+        ci=ci,
+        nombre=cambios.nombre,
+        apellido=cambios.apellido,
+        email=cambios.email,
+        nuevo_ci=cambios.nuevo_ci
     )
