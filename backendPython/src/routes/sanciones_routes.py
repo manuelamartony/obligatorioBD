@@ -19,6 +19,6 @@ async def crear_sancion_a_usuario(ci:int,fecha_inicio:str,fecha_fin:str):
 async def quitar_sancion_a_usuario(ci:int,fecha_inicio:str,fecha_fin:str):
     return await sanciones_controller.quitar_sancion_a_usuario(ci,fecha_inicio,fecha_fin)
 
-@router.post("/modificar-sancion")
+@router.patch("/modificar-sancion")
 async def modificar_tiempo_sancion(ci:int,fecha_inicio:str,fecha_fin:str):
     return await sanciones_controller.modificar_tiempo_sancion(ci,fecha_inicio,fecha_fin)

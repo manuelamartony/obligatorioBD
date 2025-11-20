@@ -1,7 +1,7 @@
 from fastapi import HTTPException
 from src.config.database import get_connection
 
-async def obtener_todos_participantes(rol: str = None, limit: int = 50, offset: int = 0):
+async def obtener_todos_usuarios(rol: str = None, limit: int = 50, offset: int = 0):
     """Obtener todos los participantes (con paginación opcional)"""
     try:
         conn = get_connection()
@@ -53,7 +53,7 @@ async def obtener_todos_participantes(rol: str = None, limit: int = 50, offset: 
             detail="Error en el servidor"
         )
 
-async def obtener_participante(ci:int):
+async def obtener_usuario(ci:int):
     try:
         conn = get_connection()
         cursor = conn.cursor(dictionary = True)
@@ -82,7 +82,7 @@ async def obtener_participante(ci:int):
         if conn:
             conn.close()
     
-async def obtener_rol_participante(ci:int):
+async def obtener_rol_usuario(ci:int):
     try:
         conn = get_connection()
         cursor = conn.cursor(dictionary = True)
