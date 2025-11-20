@@ -9,8 +9,8 @@ async def obtener_todos_usuarios(rol: str = None, limit: int = 50, offset: int =
 
         query = """
             SELECT DISTINCT p.ci, p.nombre, p.apellido, p.email
-            FROM participante p
-            LEFT JOIN participante_programa_académico ppa ON p.ci = ppa.ci
+            FROM usuario p
+            LEFT JOIN participante_carrera ppa ON p.ci = ppa.ci
         """
         params = []
 
@@ -25,10 +25,10 @@ async def obtener_todos_usuarios(rol: str = None, limit: int = 50, offset: int =
         participantes = cursor.fetchall()
 
         # Contar total
-        count_query = 'SELECT COUNT(DISTINCT p.ci) as total FROM participante p'
+        count_query = 'SELECT COUNT(DISTINCT p.ci) as total FROM usuario p'
         count_params = []
         if rol:
-            count_query += ' INNER JOIN participante_programa_académico ppa ON p.ci = ppa.ci WHERE ppa.rol = %s'
+            count_query += ' INNER JOIN participante_carrera ppa ON p.ci = ppa.ci WHERE ppa.rol = %s'
             count_params.append(rol)
 
         cursor.execute(count_query, count_params)
@@ -61,7 +61,7 @@ async def obtener_usuario(ci:int):
         query= """SELECT u.ci,u.nombre,u.apellido,u.email,pc.nombre_carrera,pc.rol FROM usuario u
         JOIN participante_carrera pc ON u.ci = pc.ci
         WHERE u.ci =%s"""
-        cursor.execute(query,(ci))
+        cursor.execute(query,(ci,))
         resultados = cursor.fetchall()
         
         return {
@@ -85,17 +85,20 @@ async def obtener_usuario(ci:int):
 async def obtener_rol_usuario(ci:int):
     try:
         conn = get_connection()
-        cursor = conn.cursor(dictionary = True)
+        cursor = conn.cursor(dictionary=True)
         
-        query= """SELECT pc.ci,pc.rol from participante_carrera pc
-WHERE ci = %s"""
-        cursor.execute(query,(ci))
+        query = """
+        SELECT pc.ci, pc.rol
+        FROM participante_carrera pc
+        WHERE ci = %s
+        """
+        cursor.execute(query, (ci,))
         resultados = cursor.fetchall()
         
         return {
             "success": True,
             "message": "Rol encontrado exitosamente",
-           "participante":resultados
+            "participante": resultados
         }
         
     except Exception as error:
@@ -104,11 +107,13 @@ WHERE ci = %s"""
             status_code=500,
             detail="Error en el servidor"
         )
+        
     finally:
         if cursor:
             cursor.close()
         if conn:
             conn.close()
+
             
 async def crear_usuario(ci:int,nombre:str,apellido:str,email:str):
     try:
@@ -121,7 +126,7 @@ async def crear_usuario(ci:int,nombre:str,apellido:str,email:str):
         conn.commit()
         return {
             "success": True,
-            "message": "Sanción creada correctamente",
+            "message": "Usuario creado correctamente",
             "data": {
                 "ci": ci,
                 "nombre": nombre,
@@ -149,7 +154,7 @@ async def borrar_usuario(ci:int):
 WHERE ci=%s"""
         
         
-        cursor.execute(query, (ci))
+        cursor.execute(query, (ci,))
         conn.commit()
         return {
             "success": True,
