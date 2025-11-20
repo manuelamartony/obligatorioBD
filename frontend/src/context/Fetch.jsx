@@ -55,4 +55,3 @@ export const useSancionesSegunCarrera = makeFetchJSONHook(
 export const useCantidadReservasSegunDia = makeFetchJSONHook(
     'http://localhost:3000/api/reportes/cantidad_reservas_segun_dia'
 );
-

@@ -6,7 +6,7 @@ import {
     useTurnosMasDemandados,
     usePromedioMasParticipantesPorSala,
     useCantidadReservasSegunDia
-} from '../context/FetchReportes'
+} from '../context/Fetch'
 
 import TablaReporte from '../components/TablaReporte'
 
