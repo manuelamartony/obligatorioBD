@@ -6,7 +6,7 @@ const TablaReporte = ({ columns = [], rows = [], data = [] }) => {
         <table className="tabla-reporte">
             <thead>
                 <tr>
-                    <th></th>
+                    <th style={{ borderRadius: 0 }}></th>
                     {columns.map((col) => (
                         <th key={col}>{col}</th>
                     ))}

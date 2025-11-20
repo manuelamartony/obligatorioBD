@@ -6,7 +6,7 @@ import {
     useTurnosMasDemandados,
     usePromedioMasParticipantesPorSala,
     useCantidadReservasSegunDia
-} from '../context/FetchReportes'
+} from '../context/Fetch'
 
 import TablaReporte from '../components/TablaReporte'
 
@@ -78,7 +78,7 @@ const Reportes = () => {
 
             <main className="reports-grid">
 
-                <h2>Las 5 salas más reservadas</h2>
+                <h2>Las 5 salas más reservadas:</h2>
                 <TablaReporte
                     columns={salasColumns}
                     rows={salasRows}
@@ -86,7 +86,7 @@ const Reportes = () => {
                 />
 
 
-                <h2>Turnos más demandados</h2>
+                <h2>Turnos más demandados:</h2>
                 <TablaReporte
                     columns={turnosColumns}
                     rows={turnosRows}
@@ -94,7 +94,7 @@ const Reportes = () => {
                 />
 
 
-                <h2>Promedio de participantes por sala</h2>
+                <h2>Promedio de participantes por sala:</h2>
                 <TablaReporte
                     columns={promedioColumns}
                     rows={promedioRows}
@@ -102,7 +102,7 @@ const Reportes = () => {
                 />
 
 
-                <h2>Cantidad de reservas según día</h2>
+                <h2>Cantidad de reservas según día:</h2>
                 <TablaReporte
                     columns={reservasDiaColumns}
                     rows={reservasDiaRows}

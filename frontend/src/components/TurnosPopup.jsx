@@ -31,6 +31,7 @@ function formatHour(hora) {
 const TurnosPopup = ({ sala }) => {
     const [selectedDate, setSelectedDate] = useState(null);
     const [turnos, setTurnos] = useState([]);
+    const [errorMsg, setErrorMsg] = useState(null)
 
     const [pantalla, setPantalla] = useState("turnos"); // "turnos" | "confirmar"
     const [turnoElegido, setTurnoElegido] = useState(null);
@@ -88,39 +89,71 @@ const TurnosPopup = ({ sala }) => {
                     <input
                         type="date"
                         className="date-picker"
+                        min={new Date().toISOString().split("T")[0]}
+                        value={selectedDate || ""}
                         onChange={(e) => {
-                            setSelectedDate(e.target.value);
+                            const value = e.target.value;
+                            if (!value) {
+                                setSelectedDate(null);
+                                return;
+                            }
+                            const d = new Date(value + "T00:00:00"); // forzar timezone safe
+                            const day = d.getDay(); // 0 domingo, 6 sabado
+                            if (day === 0 || day === 6) {
+                                // buscar siguiente lunes automático
+                                const daysToAdd = day === 6 ? 2 : 1;
+                                d.setDate(d.getDate() + daysToAdd);
+                                const corrected = d.toISOString().split("T")[0];
+                                setSelectedDate(corrected);
+                                // opcional: mostrar mensaje inline
+                                setErrorMsg("Sábados y Domingos no disponibles para reservas.");
+                            } else {
+                                setSelectedDate(value);
+                                setErrorMsg(null);
+                            }
                             setPantalla("turnos");
                         }}
+                        onBlur={(e) => {
+                            // doble validación por si el usuario pegó un texto inválido
+                            const value = e.target.value;
+                            if (!value) return;
+                            const d = new Date(value + "T00:00:00");
+                            if (isNaN(d)) {
+                                setSelectedDate(null);
+                                setErrorMsg("Fecha inválida");
+                            }
+                        }}
                     />
+                    {errorMsg ? <div className="text-error">{errorMsg}</div> :
 
-                    {selectedDate && (
-                        <>
-                            <h3>Disponibilidad del día</h3>
+                        selectedDate && (
+                            <>
+                                <p className="text-error">IMPORTANTE: Las salas solo pueden reservarse por horas completas y por un máximo de 2 horas por día.</p>
+                                <h3>Disponibilidad del día</h3>
 
-                            <div className="hours-list">
-                                {turnos.map((t) => (
-                                    <div
-                                        key={t.id_turno}
-                                        className={`hour-card ${t.disponible ? "disponible" : "ocupado"}`}
-                                    >
-                                        <span>{t.ini} - {t.fin}</span>
+                                <div className="hours-list">
+                                    {turnos.map((t) => (
+                                        <div
+                                            key={t.id_turno}
+                                            className={`hour-card ${t.disponible ? "disponible" : "ocupado"}`}
+                                        >
+                                            <span>{t.ini} - {t.fin}</span>
 
-                                        {t.disponible ? (
-                                            <button
-                                                className="reservar-btn"
-                                                onClick={() => reservarTurno(t)}
-                                            >
-                                                Reservar
-                                            </button>
-                                        ) : (
-                                            <span>Ocupado</span>
-                                        )}
-                                    </div>
-                                ))}
-                            </div>
-                        </>
-                    )}
+                                            {t.disponible ? (
+                                                <button
+                                                    className="reservar-btn"
+                                                    onClick={() => reservarTurno(t)}
+                                                >
+                                                    Reservar
+                                                </button>
+                                            ) : (
+                                                <span>Ocupado</span>
+                                            )}
+                                        </div>
+                                    ))}
+                                </div>
+                            </>
+                        )}
                 </>
             )}
 
@@ -134,6 +167,8 @@ const TurnosPopup = ({ sala }) => {
                     onConfirm={confirmarReserva}
                 />
             )}
+
+
         </div>
     );
 };

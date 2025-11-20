@@ -399,6 +399,10 @@ th {
     cursor: not-allowed;
 }
 
+.text-error {
+    color: red;
+}
+
 /* Responsive: en pantalla chica se apilan */
 @media (max-width: 600px) {
     .hour-date-container {
