@@ -1,8 +1,6 @@
 "use client";
 import { useContext, useEffect, useState } from "react";
 import { AuthContext } from "./AuthContext";
-import { Navigate } from "react-router-dom";
-
 
 export function makeFetchJSONHook(resource, options = undefined) {
     return function (...args) {
@@ -84,5 +82,13 @@ export const useObtenerTurnosDelDia = (fecha, sala) => {
                     sala.edificio
                 )}`
                 : null
+    )();
+};
+
+export const useObtenerUsuario = () => {
+    const { user } = useContext(AuthContext);
+
+    return makeFetchJSONHook(
+        () => `http://localhost:3000/api/participantes/${user?.ci}`
     )();
 };

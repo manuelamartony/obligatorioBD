@@ -3,6 +3,8 @@ import React, { useEffect, useState } from "react";
 import "../styles/TurnosPopup.css";
 import ConfirmarReserva from "./ConfirmarReserva";
 import { useObtenerTurnosDelDia, useTodosLosTurnos } from "../context/Fetch";
+import { useObtenerUsuario } from "../context/Fetch";
+
 
 
 function formatHour(hora) {
@@ -16,9 +18,34 @@ const TurnosPopup = ({ sala }) => {
     const [turnoElegido, setTurnoElegido] = useState(null);
     const [turnos, setTurnos] = useState([]);
     const [errorMsg, setErrorMsg] = useState(null);
-
+    const { data: userData, loading } = useObtenerUsuario();
     const { data: todosTurnos } = useTodosLosTurnos();
     const { data: turnosDisponibles } = useObtenerTurnosDelDia(selectedDate, sala);
+
+    function puedeReservar() {
+        if (!userData?.participante || !sala?.tipo_sala) return false;
+
+        const usuario = userData.participante[0];
+        const tipoCarrera = usuario.tipo_carrera;
+        const rol = usuario.rol;
+        const tipoSala = sala.tipo_sala;
+
+        // Salas libres -> todos pueden reservar
+        if (tipoSala === "libre") return true;
+
+        // Salas de grado
+        if (tipoSala === "grado" && tipoCarrera === "grado") return true;
+
+        // Salas de postgrado
+        if (tipoSala === "postgrado" && tipoCarrera === "postgrado") return true;
+
+        // Salas docentes
+        if (tipoSala === "docente" && rol === "docente") return true;
+
+        // Si no coincide, no puede reservar
+        return false;
+    }
+
 
     useEffect(() => {
         if (!selectedDate || !todosTurnos?.turnos || !turnosDisponibles?.turnos_disponibles) return;
@@ -49,6 +76,18 @@ const TurnosPopup = ({ sala }) => {
             .then((res) => res.json())
             .then(console.log)
             .catch(console.error);
+    }
+
+    if (userData && !puedeReservar()) {
+        return (
+            <div className="turnos-popup">
+                <h2>{sala.nombre_sala}</h2>
+                <p className="text-error" style={{ fontSize: "1.2rem", padding: "1rem" }}>
+                    No podés reservar esta sala porque es de tipo <strong>{sala.tipo_sala}</strong> y
+                    tu tipo de carrera es <strong>{userData.participante[0].tipo_carrera}</strong>.
+                </p>
+            </div>
+        );
     }
 
     return (

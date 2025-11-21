@@ -58,9 +58,22 @@ async def obtener_usuario(ci:int):
         conn = get_connection()
         cursor = conn.cursor(dictionary = True)
         
-        query= """SELECT u.ci,u.nombre,u.apellido,u.email,pc.nombre_carrera,pc.rol FROM usuario u
-        JOIN participante_carrera pc ON u.ci = pc.ci
-        WHERE u.ci =%s"""
+        query = """
+            SELECT 
+                u.ci,
+                u.nombre,
+                u.apellido,
+                u.email,
+                pc.nombre_carrera,
+                pc.rol,
+                c.tipo AS tipo_carrera
+            FROM usuario u
+            JOIN participante_carrera pc 
+                ON u.ci = pc.ci
+            JOIN carrera c
+                ON pc.nombre_carrera = c.nombre_carrera
+            WHERE u.ci = %s
+        """
         cursor.execute(query,(ci,))
         resultados = cursor.fetchall()
         
