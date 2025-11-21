@@ -20,7 +20,7 @@ async def obtener_reserva_por_id(id: int):
 async def crear_reserva(request: CrearReservaRequest):
     return await reservas_controller.crear_reserva(request)
 
-@router.put("/{id}")
+@router.patch("/{id}")
 async def actualizar_reserva(id: int, request: ActualizarReservaRequest):
     return await reservas_controller.actualizar_reserva(id, request)
 
