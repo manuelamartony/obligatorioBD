@@ -27,6 +27,12 @@ async def obtener_reservas(ci: str):
                 detail="CI del participante es requerido"
             )
 
+        # 👈 CAMBIO: convertir CI string a int
+        try:
+            ci_int = int(ci.strip())
+        except:
+            raise HTTPException(status_code=400, detail="CI inválido")
+
         conn = get_connection()
         cursor = conn.cursor(dictionary=True)
 
@@ -46,7 +52,7 @@ async def obtener_reservas(ci: str):
             ORDER BY r.fecha DESC
         """
 
-        cursor.execute(query, (ci,))
+        cursor.execute(query, (ci_int,))  # 👈 CAMBIO: usar el entero
         reservas = cursor.fetchall()
 
         cursor.close()
@@ -146,7 +152,7 @@ async def crear_reserva(request: CrearReservaRequest):
     try:
         conn.start_transaction()
 
-        # Validaciones
+        # Validaciones generales
         if not request.nombre_sala or not request.edificio or not request.fecha or not request.id_turno or not request.ci:
             conn.rollback()
             conn.close()
@@ -157,122 +163,107 @@ async def crear_reserva(request: CrearReservaRequest):
 
         cursor = conn.cursor(dictionary=True)
 
-        # Normalizar fecha a DATE (YYYY-MM-DD)
+        # Normalizar fecha
         fecha_date = request.fecha.split('T')[0] if 'T' in request.fecha else request.fecha
 
-        # Verificar que el participante (creador) existe
-        cursor.execute('SELECT ci FROM participante WHERE ci = %s', (request.ci,))
-        participante_existe = cursor.fetchall()
+        # 👈 CAMBIO: convertir CI del creador
+        try:
+            ci_creador = int(request.ci.strip())
+        except:
+            raise HTTPException(status_code=400, detail="El CI del creador es inválido")
 
-        if len(participante_existe) == 0:
+        # Verificar que el creador existe
+        cursor.execute('SELECT ci FROM usuario WHERE ci = %s', (ci_creador,))
+        if cursor.fetchone() is None:
             conn.rollback()
             cursor.close()
             conn.close()
-            raise HTTPException(
-                status_code=400,
-                detail="El participante no existe"
-            )
+            raise HTTPException(status_code=400, detail="El creador no existe")
 
-        # Verificar que la sala existe en el edificio especificado
+        # 👈 CAMBIO: convertir participantes
+        participantes_int = []
+        if request.participantes:
+            try:
+                participantes_int = [int(ci.strip()) for ci in request.participantes]
+            except:
+                raise HTTPException(status_code=400, detail="Uno o más CIs de participantes son inválidos")
+
+            # Validar existencia de todos los participantes
+            placeholders = ",".join(["%s"] * len(participantes_int))
+            cursor.execute(f"SELECT ci FROM usuario WHERE ci IN ({placeholders})", tuple(participantes_int))
+            existentes = {row["ci"] for row in cursor.fetchall()}
+
+            faltantes = [ci for ci in participantes_int if ci not in existentes]
+            if faltantes:
+                conn.rollback()
+                cursor.close()
+                conn.close()
+                raise HTTPException(
+                    status_code=400,
+                    detail=f"Participantes no encontrados: {', '.join(map(str,faltantes))}"
+                )
+
+        # Verificar sala
         cursor.execute(
             'SELECT nombre_sala FROM sala WHERE nombre_sala = %s AND edificio = %s',
             (request.nombre_sala, request.edificio)
         )
-        sala_existe = cursor.fetchall()
-
-        if len(sala_existe) == 0:
+        if cursor.fetchone() is None:
             conn.rollback()
             cursor.close()
             conn.close()
-            raise HTTPException(
-                status_code=400,
-                detail="La sala no existe en el edificio especificado"
-            )
+            raise HTTPException(status_code=400, detail="La sala no existe en el edificio")
 
-        # Verificar disponibilidad de la sala en ese turno y fecha
+        # Verificar disponibilidad
         cursor.execute(
             """SELECT id_reserva FROM reserva
             WHERE nombre_sala = %s AND edificio = %s AND fecha = %s AND id_turno = %s
             AND estado IN ('activa', 'finalizada')""",
             (request.nombre_sala, request.edificio, fecha_date, request.id_turno)
         )
-        existentes = cursor.fetchall()
-
-        if len(existentes) > 0:
+        if cursor.fetchone():
             conn.rollback()
             cursor.close()
             conn.close()
-            raise HTTPException(
-                status_code=409,
-                detail="La sala ya está reservada para ese turno"
-            )
+            raise HTTPException(status_code=409, detail="La sala ya está reservada en ese turno")
 
-        # Verificar si el participante tiene sanciones activas
+        # Verificar sanciones
         cursor.execute(
             """SELECT * FROM sancion_participante
             WHERE ci = %s AND fecha_inicio <= CURDATE() AND fecha_fin >= CURDATE()""",
-            (request.ci,)
+            (ci_creador,)
         )
-        sanciones = cursor.fetchall()
-
-        if len(sanciones) > 0:
+        if cursor.fetchone():
             conn.rollback()
             cursor.close()
             conn.close()
-            raise HTTPException(
-                status_code=403,
-                detail="No puedes realizar reservas debido a sanciones activas"
-            )
+            raise HTTPException(status_code=403, detail="No puedes reservar por sanciones activas")
 
-        # Generar nuevo id_reserva manualmente
+        # Generar nuevo id_reserva
         cursor.execute('SELECT COALESCE(MAX(id_reserva), 0) AS maxId FROM reserva')
-        max_id_row = cursor.fetchone()
-        max_id = max_id_row['maxId'] if max_id_row else 0
-        id_reserva = max_id + 1
+        id_reserva = cursor.fetchone()['maxId'] + 1
 
-        # Crear la reserva
+        # Crear reserva
         cursor.execute(
             """INSERT INTO reserva (id_reserva, nombre_sala, edificio, fecha, id_turno, estado)
             VALUES (%s, %s, %s, %s, %s, 'activa')""",
             (id_reserva, request.nombre_sala, request.edificio, fecha_date, request.id_turno)
         )
 
-        # Agregar el creador de la reserva como participante
+        # INSERT creador
         cursor.execute(
-            """INSERT INTO reserva_participante (id_reserva, ci, fecha_solicitud_reserva, asistencia)
-            VALUES (%s, %s, %s, FALSE)""",
-            (id_reserva, request.ci, fecha_date)
+            """INSERT INTO reserva_participante (id_reserva, ci, asistencia)
+            VALUES (%s, %s, FALSE)""",
+            (id_reserva, ci_creador)
         )
 
-        # Validar y agregar participantes adicionales si existen
-        if request.participantes and len(request.participantes) > 0:
-            # Verificar que todos los participantes existan
-            placeholders = ','.join(['%s'] * len(request.participantes))
+        # INSERT participantes adicionales
+        for ci_p in participantes_int:
             cursor.execute(
-                f'SELECT ci FROM participante WHERE ci IN ({placeholders})',
-                tuple(request.participantes)
+                """INSERT INTO reserva_participante (id_reserva, ci, asistencia)
+                VALUES (%s, %s, FALSE)""",
+                (id_reserva, ci_p)
             )
-            participantes_existentes = cursor.fetchall()
-
-            participantes_validos = [p['ci'] for p in participantes_existentes]
-            participantes_invalidos = [ci for ci in request.participantes if ci not in participantes_validos]
-
-            if len(participantes_invalidos) > 0:
-                conn.rollback()
-                cursor.close()
-                conn.close()
-                raise HTTPException(
-                    status_code=400,
-                    detail=f"Algunos participantes no existen: {', '.join(participantes_invalidos)}"
-                )
-
-            # Agregar participantes adicionales
-            for participante_ci in request.participantes:
-                cursor.execute(
-                    """INSERT INTO reserva_participante (id_reserva, ci, fecha_solicitud_reserva, asistencia)
-                    VALUES (%s, %s, %s, FALSE)""",
-                    (id_reserva, participante_ci, fecha_date)
-                )
 
         conn.commit()
         cursor.close()
@@ -284,6 +275,7 @@ async def crear_reserva(request: CrearReservaRequest):
             "estado": "activa",
             "mensaje": "Reserva creada exitosamente"
         }
+
 
     except HTTPException:
         if conn:
@@ -432,31 +424,61 @@ async def marcar_asistencia(request: MarcarAsistenciaRequest):
                 detail="ID de reserva y CI son requeridos"
             )
 
+        # Convertir CI a int
+        try:
+            ci_int = int(request.ci.strip())
+        except:
+            raise HTTPException(status_code=400, detail="CI inválido")
+
         conn = get_connection()
-        cursor = conn.cursor()
+        cursor = conn.cursor(dictionary=True)
 
+        # 1️⃣ Ver si el participante existe en la reserva
         cursor.execute(
-            'UPDATE reserva_participante SET asistencia = TRUE WHERE id_reserva = %s AND ci = %s',
-            (request.id_reserva, request.ci)
+            """
+            SELECT asistencia 
+            FROM reserva_participante 
+            WHERE id_reserva = %s AND ci = %s
+            """,
+            (request.id_reserva, ci_int)
         )
+        row = cursor.fetchone()
 
-        if cursor.rowcount == 0:
+        if row is None:
             raise HTTPException(
                 status_code=404,
-                detail="Participante no encontrado en la reserva"
+                detail=f"Participante con CI {ci_int} no está registrado en la reserva"
             )
+        
+        # 2️⃣ Si ya tiene asistencia → devolver mensaje
+        if row["asistencia"] == 1 or row["asistencia"] is True:
+            return {
+                "success": True,
+                "mensaje": f"Participante con CI {ci_int} ya tiene asistencia marcada"
+            }
+
+        # 3️⃣ Marcar asistencia
+        cursor.execute(
+            """
+            UPDATE reserva_participante 
+            SET asistencia = TRUE 
+            WHERE id_reserva = %s AND ci = %s
+            """,
+            (request.id_reserva, ci_int)
+        )
 
         conn.commit()
 
         return {
             "success": True,
-            "mensaje": "Asistencia marcada exitosamente"
+            "mensaje": f"Asistencia marcada correctamente para el CI {ci_int}"
         }
 
     except HTTPException:
         if conn:
             conn.rollback()
         raise
+
     except Exception as error:
         if conn:
             conn.rollback()
@@ -465,9 +487,11 @@ async def marcar_asistencia(request: MarcarAsistenciaRequest):
             status_code=500,
             detail="Error en el servidor"
         )
+
     finally:
         if cursor:
             cursor.close()
         if conn:
             conn.close()
+
 
