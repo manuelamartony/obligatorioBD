@@ -2,11 +2,13 @@ import React from 'react'
 import '../styles/MisReservas.css'
 import { useNavigate } from 'react-router-dom'
 import { useObtenerReservasUsuario, useTodosLosTurnos } from '../context/Fetch';
+import { useAuth } from '../context/AuthContext';
 
 const MisReservas = () => {
     const navigate = useNavigate();
     const { data, loading } = useObtenerReservasUsuario()
     const { data: todosLosTurnos } = useTodosLosTurnos()
+    const { logout } = useAuth();
 
     function formatHour(hora) {
         const [h, m] = hora.split(":");
@@ -23,7 +25,7 @@ const MisReservas = () => {
                 <div className="header-center">
                     <h1 className="page-title">MIS RESERVAS</h1>
                 </div>
-                <button className="pill-btn profile">MI PERFIL</button>
+                <button className="pill-btn profile" onClick={logout}>Cerrar Sesión</button>
             </header>
 
             <main className="reservas-main">

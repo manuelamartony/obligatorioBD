@@ -1,6 +1,7 @@
 "use client";
 import { useContext, useEffect, useState } from "react";
 import { AuthContext } from "./AuthContext";
+import { Navigate } from "react-router-dom";
 
 
 export function makeFetchJSONHook(resource, options = undefined) {

@@ -1,6 +1,7 @@
 "use client";
 
 import { createContext, useContext, useEffect, useState } from "react";
+import { router } from "../App";
 
 export const AuthContext = createContext();
 
@@ -26,11 +27,22 @@ export const AuthProvider = ({ children }) => {
         localStorage.setItem("token", accessToken);
     };
 
-    const logout = () => {
+    const logout = async () => {
+        try {
+            await fetch("http://localhost:3000/api/auth/logout", {
+                method: "POST",
+                credentials: "include",
+            });
+        } catch (e) {
+            console.error("Error al desconectar del backend:", e);
+        }
+
         setUser(null);
         setToken(null);
         localStorage.removeItem("user");
         localStorage.removeItem("token");
+
+        router.navigate("/login");
     };
 
     return (

@@ -11,44 +11,36 @@ import NuevaReserva from './pages/NuevaReserva';
 import Reportes from './pages/Reportes';
 
 import ProtectedRoutes from './components/ProtectedRoutes';
+export const router = createBrowserRouter([
+  {
+    path: "/",
+    element: <Home />,
+  },
+  {
+    path: "/login",
+    element: <Login />,
+    action: loginAction,
+  },
+
+  {
+    element: <ProtectedRoutes roles={["alumno", "admin", "docente"]} />,
+    children: [
+      { path: "/my/panel", element: <Panel /> },
+      { path: "/my/panel/mis-reservas", element: <MisReservas /> },
+      { path: "/my/panel/nueva-reserva", element: <NuevaReserva /> },
+    ],
+  },
+
+  {
+    element: <ProtectedRoutes roles={["admin"]} />,
+    children: [
+      { path: "/my/panel/reportes", element: <Reportes /> },
+    ],
+  },
+]);
 
 function App() {
-
-
-  const router = createBrowserRouter([
-    {
-      path: "/",
-      element: <Home />,
-    },
-    {
-      path: "/login",
-      element: <Login />,
-      action: loginAction, // <-- action del login, para el form
-    },
-    // ---- rutas de alumno y profesor ----
-    {
-      element: <ProtectedRoutes roles={["alumno", "admin", "docente"]} />,
-      children: [
-        { path: "/my/panel", element: <Panel /> },
-        { path: "/my/panel/mis-reservas", element: <MisReservas /> },
-        { path: "/my/panel/nueva-reserva", element: <NuevaReserva /> },
-      ],
-    },
-
-    // ---- ruta del admin ----
-    {
-      element: <ProtectedRoutes roles={["admin"]} />,
-      children: [
-        { path: "/my/panel/reportes", element: <Reportes /> },
-      ],
-    },
-  ]);
-
-  return (
-
-    <RouterProvider router={router} />
-
-  )
+  return <RouterProvider router={router} />;
 }
 
-export default App
+export default App;

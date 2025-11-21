@@ -6,7 +6,7 @@ import { useNavigate } from 'react-router-dom'
 import Popup from 'reactjs-popup';
 import 'reactjs-popup/dist/index.css';
 import TurnosPopup from '../components/TurnosPopup';
-
+import { useAuth } from '../context/AuthContext';
 
 export async function getSalonesFromAPI() {
     const resSalones = await fetch('http://localhost:3000/api/salas');
@@ -14,9 +14,9 @@ export async function getSalonesFromAPI() {
     return dataSalones
 }
 
-
 const NuevaReserva = () => {
     const [salones, setSalones] = useState([])
+    const { logout } = useAuth();
 
     useEffect(() => {
         async function fetchSalones() {
@@ -35,7 +35,7 @@ const NuevaReserva = () => {
             <header className="nr-header">
                 <button className="pill-btn back" onClick={() => { navigate(-1) }}>VOLVER</button>
                 <h1 className="nr-title">NUEVA RESERVA</h1>
-                <button className="pill-btn profile">MI PERFIL</button>
+                <button className="pill-btn profile" onClick={logout} >Cerrar Sesión</button>
             </header>
 
             <main className="salas-grid">
@@ -67,7 +67,7 @@ const NuevaReserva = () => {
                         );
                     })}
             </main>
-        </div>
+        </div >
     )
 }
 
