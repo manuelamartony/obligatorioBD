@@ -166,7 +166,7 @@ async def crear_reserva(request: CrearReservaRequest):
         # Normalizar fecha
         fecha_date = request.fecha.split('T')[0] if 'T' in request.fecha else request.fecha
 
-        # 👈 CAMBIO: convertir CI del creador
+      
         try:
             ci_creador = int(request.ci.strip())
         except:
@@ -180,7 +180,7 @@ async def crear_reserva(request: CrearReservaRequest):
             conn.close()
             raise HTTPException(status_code=400, detail="El creador no existe")
 
-        # 👈 CAMBIO: convertir participantes
+
         participantes_int = []
         if request.participantes:
             try:
@@ -435,7 +435,6 @@ async def marcar_asistencia(request: MarcarAsistenciaRequest):
         conn = get_connection()
         cursor = conn.cursor(dictionary=True)
 
-        # 1️⃣ Ver si el participante existe en la reserva
         cursor.execute(
             """
             SELECT asistencia 
@@ -452,14 +451,13 @@ async def marcar_asistencia(request: MarcarAsistenciaRequest):
                 detail=f"Participante con CI {ci_int} no está registrado en la reserva"
             )
         
-        # 2️⃣ Si ya tiene asistencia → devolver mensaje
+
         if row["asistencia"] == 1 or row["asistencia"] is True:
             return {
                 "success": True,
                 "mensaje": f"Participante con CI {ci_int} ya tiene asistencia marcada"
             }
 
-        # 3️⃣ Marcar asistencia
         cursor.execute(
             """
             UPDATE reserva_participante 

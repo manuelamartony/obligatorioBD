@@ -7,70 +7,80 @@ VALUES ('manuela.martony@gmail.com', '12345678'),
     ('sofia.perez@ucu.edu.uy', 'abcdef12'),
     ('agustin.ramos@ucu.edu.uy', 'qwerty98'),
     ('prof.mendez@ucu.edu.uy', 'docente01'),
-    ('prof.rodriguez@ucu.edu.uy', 'docente02');
-INSERT INTO obligatorio_bd.usuario(ci, nombre, apellido, email)
+    ('prof.rodriguez@ucu.edu.uy', 'docente02'),
+    ('admin@ucu.edu.uy','admin123');
+INSERT INTO obligatorio_bd.usuario(ci, nombre, apellido, email,esAdmin)
 VALUES (
         12345678,
         'Manuela',
         'Martony',
-        'manuela.martony@gmail.com'
+        'manuela.martony@gmail.com',
+        false
     ),
     (
         23456789,
         'Franco',
         'Manfredi',
-        'franco.manfredi@gmail.com'
+        'franco.manfredi@gmail.com',
+        false
     ),
     (
         34567890,
         'Martin',
         'de Leon',
-        'martin.deleon@gmail.com'
+        'martin.deleon@gmail.com',
+        false
     ),
     (
         45678901,
         'Manuel',
         'Lorenzo',
-        'manuel.lorenzo@gmail.com'
+        'manuel.lorenzo@gmail.com',
+        false
     ),
     (
         44444444,
         'Sofia',
         'Perez',
-        'sofia.perez@ucu.edu.uy'
+        'sofia.perez@ucu.edu.uy',
+        false
     ),
     (
         55555555,
         'Agustin',
         'Ramos',
-        'agustin.ramos@ucu.edu.uy'
+        'agustin.ramos@ucu.edu.uy',
+        false
     ),
     (
         66666666,
         'Carolina',
         'Mendez',
-        'prof.mendez@ucu.edu.uy'
+        'prof.mendez@ucu.edu.uy',
+        false
     ),
     (
         77777777,
         'Luis',
         'Rodriguez',
-        'prof.rodriguez@ucu.edu.uy'
-    );
+        'prof.rodriguez@ucu.edu.uy',
+        false
+    ),
+    (88888888,'Funcionario','Admin','admin@ucu.edu.uy',true);
 INSERT INTO obligatorio_bd.facultad(id_facultad, nombre_facultad)
 VALUES (1, 'Facultad de Ingenieria'),
     (2, 'Facultad de Ciencias Economicas'),
     (3, 'Facultad de Salud'),
     (4, 'Facultad de Derecho y Artes Liberales'),
     (5, 'Escuela de Postgrados');
-INSERT INTO carrera(nombre_carrera, id_facultad, tipo)
+INSERT INTO obligatorio_bd.carrera(nombre_carrera, id_facultad, tipo)
 VALUES ('Ingenieria Informatica', 1, 'grado'),
     ('Contador Publico', 2, 'grado'),
     ('Enfermeria', 3, 'grado'),
     ('Derecho', 4, 'grado'),
     ('MBA', 5, 'postgrado'),
     ('Maestria en Gestion Educativa', 5, 'postgrado');
-INSERT INTO participante_carrera(id_alumno_programa, ci, nombre_carrera, rol)
+INSERT INTO obligatorio_bd.participante_carrera(id_alumno_programa, ci, nombre_carrera, rol)
 VALUES (1, 12345678, 'Ingenieria Informatica', 'alumno'),
     (2, 23456789, 'Contador Publico', 'alumno'),
     (3, 34567890, 'Derecho', 'alumno'),
@@ -82,7 +92,8 @@ VALUES (1, 12345678, 'Ingenieria Informatica', 'alumno'),
         'alumno'
     ),
     (6, 66666666, 'Ingenieria Informatica', 'docente'),
-    (7, 77777777, 'Derecho', 'docente');
+    (7, 77777777, 'Derecho', 'docente'),
+    (8,45678901,'MBA','alumno');
 INSERT INTO obligatorio_bd.edificio(nombre_edificio, direccion, departamento)
 VALUES('Edificio Central', '8 de octubre', 'Montevideo'),
     ('Mulling', 'Comandante Braga', 'Montevideo'),
@@ -213,7 +224,6 @@ VALUES (12345678, 1, true),
     (12345678, 11, false),
     (23456789, 11, false);
 INSERT INTO obligatorio_bd.sancion_participante(ci, fecha_inicio, fecha_fin)
-VALUES(12345678, '2025-10-29', '2025-11-29'),
-    (23456789, '2025-10-20', '2025-12-20'),
-    (34567890, '2025-10-27', '2025-12-27'),
-    (12345678, '2025-10-15', '2025-12-15');
+VALUES(12345678, '2025-12-29', '2026-01-12'),
+    (23456789, '2026-01-02', '2026-01-16'),
+    (34567890, '2025-12-02', '2025-12-16');
