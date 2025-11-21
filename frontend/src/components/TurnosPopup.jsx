@@ -52,14 +52,22 @@ const TurnosPopup = ({ sala }) => {
                 edificio: sala.edificio
             });
 
-            const res = await fetch(`/api/turnos/ocupados?${params.toString()}`);
+
+            const res = await fetch(`http://localhost:3000/api/turnos/ocupados?${params.toString()}`);
+            if (!res.ok) {
+                console.error("Error al obtener turnos ocupados", res.status, res.statusText);
+                return;
+            }
             const data = await res.json();
+
 
             if (data.success) {
                 setTurnos(prevTurnos =>
                     prevTurnos.map(t => {
                         const ocupado = data.turnos_ocupados.find(o => o.id_turno === t.id_turno);
-                        return ocupado ? { ...t, disponible: false, estado: ocupado.estado, hora_inicio: ocupado.hora_inicio, hora_fin: ocupado.hora_fin } : { ...t, disponible: true };
+                        return ocupado
+                            ? { ...t, disponible: false, estado: ocupado.estado }
+                            : { ...t, disponible: true, estado: null };
                     })
                 );
             }
@@ -67,6 +75,7 @@ const TurnosPopup = ({ sala }) => {
             console.error("Error al obtener turnos ocupados:", error);
         }
     };
+
 
     function puedeReservar() {
         if (!userData?.participante || !sala?.tipo_sala) return false;
@@ -150,7 +159,7 @@ const TurnosPopup = ({ sala }) => {
                                                 Reservar
                                             </button>
                                         ) : (
-                                            <span>{t.estado || "Ocupado"}</span>
+                                            <span>Ocupado</span>
                                         )}
                                     </div>
                                 ))}

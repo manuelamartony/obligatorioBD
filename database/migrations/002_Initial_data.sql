@@ -35,7 +35,7 @@ VALUES (
     ),
     (
         44444444,
-        'Sofía',
+        'Sofia',
         'Perez',
         'sofia.perez@ucu.edu.uy'
     ),
@@ -168,7 +168,7 @@ VALUES (1, 'M103', 'Mulling', '2025-10-29', 'activa', 1),
         8,
         'C410',
         'Edificio Central',
-        '2025-11-02',
+        '2025-12-02',
         'activa',
         6
     ),
