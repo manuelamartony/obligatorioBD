@@ -14,7 +14,8 @@ const ConfirmarReserva = ({
   const [participantes, setParticipantes] = useState([]);
 
   const { user } = useAuth();
-  
+  const newCi = String(user.ci);
+
   function actualizarCedula(index, valor) {
     const nuevo = [...participantes];
     nuevo[index].ci = valor;
@@ -58,7 +59,7 @@ const ConfirmarReserva = ({
       edificio: sala.edificio,
       fecha: fecha,
       id_turno: turno.id_turno,
-      ci: String(user.ci),
+      ci: newCi,
       participantes: participantes.map((p) => p.ci.trim()),
     };
 
@@ -118,7 +119,8 @@ const ConfirmarReserva = ({
         {participantes.map((p, index) => (
           <div className="participante-row" key={index}>
             <input
-              type="text"
+              type="number"
+              min="1"
               placeholder="Cédula"
               value={p.ci}
               onChange={(e) => actualizarCedula(index, e.target.value)}
