@@ -36,25 +36,25 @@ VALUES (
     (
         44444444,
         'Sofía',
-        'Pérez',
+        'Perez',
         'sofia.perez@ucu.edu.uy'
     ),
     (
         55555555,
-        'Agustín',
+        'Agustin',
         'Ramos',
         'agustin.ramos@ucu.edu.uy'
     ),
     (
         66666666,
         'Carolina',
-        'Méndez',
+        'Mendez',
         'prof.mendez@ucu.edu.uy'
     ),
     (
         77777777,
         'Luis',
-        'Rodríguez',
+        'Rodriguez',
         'prof.rodriguez@ucu.edu.uy'
     );
 INSERT INTO obligatorio_bd.facultad(id_facultad, nombre_facultad)
@@ -96,7 +96,8 @@ VALUES ('M101', 'Mulling', 20, 'libre'),
     ('B305', 'Ucu Business', 18, 'postgrado'),
     ('C210', 'Edificio Central', 12, 'docente'),
     ('C410', 'Edificio Central', 25, 'libre'),
-    ('SJ12', 'San Jose', 8, 'docente');
+    ('SJ12', 'San Jose', 8, 'docente'),
+    ('AJ10','San Jose',10,'libre');
 INSERT INTO turno (hora_inicio, hora_fin, descripcion)
 VALUES ('08:00:00', '09:00:00', 'Turno 08-09'),
     ('09:00:00', '10:00:00', 'Turno 09-10'),

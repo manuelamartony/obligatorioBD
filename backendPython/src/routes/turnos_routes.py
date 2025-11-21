@@ -10,10 +10,9 @@ async def obtener_turnos():
 @router.get("/disponibles")
 async def obtener_turnos_disponibles(
     fecha: str = Query(...),
-    sala: str = Query(...),
-    edificio: str = Query(...)
+    sala: str = Query(...)
 ):
-    return await turnos_controller.obtener_turnos_disponibles(fecha, sala, edificio)
+    return await turnos_controller.obtener_turnos_disponibles(fecha, sala)
 
 @router.get("/{id}/disponibilidad")
 async def verificar_disponibilidad_turno(

@@ -128,13 +128,13 @@ async def verificar_disponibilidad_turno(id: int, fecha: str, sala: str = None, 
         )
 
 
-async def obtener_turnos_disponibles(fecha: str, sala: str, edificio: str):
+async def obtener_turnos_disponibles(fecha: str, sala: str):
     """Obtener turnos disponibles para una fecha y sala específica"""
     try:
-        if not fecha or not sala or not edificio:
+        if not fecha or not sala :
             raise HTTPException(
                 status_code=400,
-                detail="Fecha, sala y edificio son requeridos"
+                detail="Fecha y sala son requeridos"
             )
 
         conn = get_connection()
@@ -149,9 +149,9 @@ async def obtener_turnos_disponibles(fecha: str, sala: str, edificio: str):
         # Obtener reservas existentes
         cursor.execute(
             """SELECT id_turno FROM reserva
-            WHERE nombre_sala = %s AND edificio = %s AND fecha = %s
+            WHERE nombre_sala = %s AND fecha = %s
             AND estado IN ('activa', 'finalizada')""",
-            (sala, edificio, fecha)
+            (sala, fecha)
         )
         reservas = cursor.fetchall()
 
@@ -179,7 +179,6 @@ async def obtener_turnos_disponibles(fecha: str, sala: str, edificio: str):
             "success": True,
             "fecha": fecha,
             "sala": sala,
-            "edificio": edificio,
             "turnos_disponibles": turnos_disponibles,
             "total_turnos": len(turnos),
             "turnos_ocupados": len(turnos_reservados)
