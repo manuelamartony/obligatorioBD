@@ -277,36 +277,38 @@ async def crear_reserva(request: CrearReservaRequest):
         }
 
 
-    except HTTPException:
-        if conn:
-            conn.rollback()
-            conn.close()
-        raise
+    except HTTPException as http_err:
+        if conn is not None:
+            try:
+                conn.rollback()
+            except:
+                pass
+        raise http_err
+
     except Exception as error:
-        if conn:
-            conn.rollback()
-            conn.close()
-        print(f'Error al crear reserva: {error}')
-        error_code = getattr(error, 'errno', None)
-        if error_code == 1452:  # ER_NO_REFERENCED_ROW_2
-            raise HTTPException(
-                status_code=400,
-                detail="Sala o edificio no existen o no coinciden"
-            )
-        elif error_code == 1364:  # ER_BAD_NULL_ERROR
-            raise HTTPException(
-                status_code=400,
-                detail="Falta un valor requerido para crear la reserva"
-            )
-        elif hasattr(error, 'errno') and error.errno == 1062:  # ER_DUP_ENTRY
-            raise HTTPException(
-                status_code=409,
-                detail="Ya existe una reserva con estos datos"
-            )
-        raise HTTPException(
-            status_code=500,
-            detail="Error en el servidor"
-        )
+        if conn is not None:
+            try:
+                conn.rollback()
+            except:
+                pass
+
+        print(f"Error al crear reserva: {error}")
+        raise HTTPException(status_code=500, detail="Error en el servidor")
+
+    finally:
+        if cursor is not None:
+            try:
+                cursor.close()
+            except:
+                pass
+
+        if conn is not None:
+            try:
+                conn.close()
+            except:
+                pass
+
+
 
 
 async def actualizar_reserva(id: int, request: ActualizarReservaRequest):
