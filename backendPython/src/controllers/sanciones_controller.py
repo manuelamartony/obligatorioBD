@@ -37,7 +37,7 @@ async def sancion_por_usuario(ci:int):
         query= """SELECT * FROM sancion_participante 
         WHERE ci = %s"""
         
-        cursor.execute(query, (ci))
+        cursor.execute(query, (ci,))
         resultados = cursor.fetchall()
         return {
             "success": True,

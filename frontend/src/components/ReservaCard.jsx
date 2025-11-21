@@ -14,18 +14,18 @@ const ReservaCard = ({ reserva, colorClass, turno, formatHour }) => {
             <div className="divider" />
 
             <ul className="res-details">
-                <li>Edificio: {reserva.edificio}</li>
-                <li>Fecha: {reserva.fecha}</li>
+                <li><strong>Edificio:</strong> {reserva.edificio}</li>
+                <li><strong>Fecha:</strong> {reserva.fecha}</li>
 
                 <li>
-                    Horario:
+                    <strong>Horario:</strong>
                     {turno
                         ? ` ${formatHour(turno.hora_inicio)} - ${formatHour(turno.hora_fin)}`
                         : " No disponible"
                     }
                 </li>
 
-                <li>N° de Participantes: {reserva.participantes}</li>
+                <li><strong>N° de Participantes:</strong> {reserva.participantes}</li>
             </ul>
 
         </article>

@@ -14,11 +14,12 @@ async def obtener_programas(
 ):
     return await facultades_controller.obtener_programas(id_facultad, tipo)
 
-@router.get("/programas/tipos")
-async def obtener_tipos_programas():
-    return await facultades_controller.obtener_tipos_programas()
-
 @router.get("/facultades/{id_facultad}/programas")
 async def obtener_programas_por_facultad(id_facultad: int):
     return await facultades_controller.obtener_programas_por_facultad(id_facultad)
+
+
+@router.get("/programas/tipos")
+async def obtener_tipos_programas():
+    return await facultades_controller.obtener_tipos_programas()
 

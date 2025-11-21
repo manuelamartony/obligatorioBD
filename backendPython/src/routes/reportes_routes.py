@@ -19,10 +19,9 @@ async def promedios_participantes_por_salas(
     return await reportes_controller.promedios_participantes_por_salas()
 
 @router.get("/sanciones-segun-carrera")
-async def sanciones_segun_carrera(
-    
-):
-    return reportes_controller.sanciones_segun_carrera()
+async def sanciones_segun_carrera():
+    return await reportes_controller.sanciones_segun_carrera()
+
 
 @router.get("/cantidad_reservas_segun_dia")
 async def cantidad_reservas_segun_dia(
