@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import "../styles/ConfirmarReserva.css";
 
-const ConfirmarReserva = ({ turno, sala, fecha, onBack, onConfirm }) => {
+const ConfirmarReserva = ({ turno, sala, fecha, onBack, onConfirm, formatHour }) => {
     const [participantes, setParticipantes] = useState([]);
 
     function actualizarCedula(index, valor) {
@@ -60,7 +60,7 @@ const ConfirmarReserva = ({ turno, sala, fecha, onBack, onConfirm }) => {
             <h2>Confirmar reserva</h2>
             <p><strong>Sala:</strong> {sala}</p>
             <p><strong>Fecha:</strong> {fecha}</p>
-            <p><strong>Horario:</strong> {turno.ini} - {turno.fin}</p>
+            <p><strong>Horario:</strong> {formatHour(turno.hora_inicio)} - {formatHour(turno.hora_fin)}</p>
 
             <h3>Participantes</h3>
 

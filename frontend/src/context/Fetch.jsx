@@ -72,19 +72,6 @@ export const useTodosLosTurnos = makeFetchJSONHook(
     "http://localhost:3000/api/turnos/"
 );
 
-export const useObtenerTurnosDelDia = (fecha, sala) => {
-    return makeFetchJSONHook(
-        () =>
-            fecha && sala
-                ? `http://localhost:3000/api/turnos/disponibles?fecha=${encodeURIComponent(
-                    fecha
-                )}&sala=${encodeURIComponent(sala.nombre_sala)}&edificio=${encodeURIComponent(
-                    sala.edificio
-                )}`
-                : null
-    )();
-};
-
 export const useObtenerUsuario = () => {
     const { user } = useContext(AuthContext);
 

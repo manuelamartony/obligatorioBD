@@ -23,3 +23,10 @@ async def verificar_disponibilidad_turno(
 ):
     return await turnos_controller.verificar_disponibilidad_turno(id, fecha, sala, edificio)
 
+@router.get("/ocupados")
+async def obtener_turnos_ocupados(
+    fecha: str = Query(..., description="Fecha de los turnos en formato YYYY-MM-DD"),
+    sala: str = Query(..., description="Nombre de la sala"),
+    edificio: str = Query(..., description="Nombre del edificio")
+):
+    return await turnos_controller.turnos_ocupados(fecha, sala, edificio)

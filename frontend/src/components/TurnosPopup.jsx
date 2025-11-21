@@ -2,15 +2,24 @@
 import React, { useEffect, useState } from "react";
 import "../styles/TurnosPopup.css";
 import ConfirmarReserva from "./ConfirmarReserva";
-import { useObtenerTurnosDelDia, useTodosLosTurnos } from "../context/Fetch";
+import { useTodosLosTurnos } from "../context/Fetch";
 import { useObtenerUsuario } from "../context/Fetch";
 
-
-
-function formatHour(hora) {
-    const [h, m] = hora.split(":");
-    return `${h.padStart(2, "0")}:${m}`;
+export function formatHour(hora) {
+    if (typeof hora === "string") {
+        // formato "HH:MM:SS" -> "HH:MM"
+        const [h, m] = hora.split(":");
+        return `${h.padStart(2, "0")}:${m.padStart(2, "0")}`;
+    } else if (typeof hora === "number") {
+        // formato segundos -> "HH:MM"
+        const h = Math.floor(hora / 3600).toString().padStart(2, "0");
+        const m = Math.floor((hora % 3600) / 60).toString().padStart(2, "0");
+        return `${h}:${m}`;
+    } else {
+        return "--:--";
+    }
 }
+
 
 const TurnosPopup = ({ sala }) => {
     const [selectedDate, setSelectedDate] = useState(null);
@@ -20,7 +29,44 @@ const TurnosPopup = ({ sala }) => {
     const [errorMsg, setErrorMsg] = useState(null);
     const { data: userData, loading } = useObtenerUsuario();
     const { data: todosTurnos } = useTodosLosTurnos();
-    const { data: turnosDisponibles } = useObtenerTurnosDelDia(selectedDate, sala);
+
+    // Cargar todos los turnos como base
+    useEffect(() => {
+        if (todosTurnos) {
+            const turnosDisponibles = todosTurnos.turnos.map(t => ({
+                ...t,
+                disponible: true
+            }));
+            setTurnos(turnosDisponibles);
+        }
+    }, [todosTurnos]);
+
+    // Función para actualizar turnos ocupados
+    const actualizarTurnos = async (fecha) => {
+        if (!fecha || !sala) return;
+
+        try {
+            const params = new URLSearchParams({
+                fecha,
+                sala: sala.nombre_sala,
+                edificio: sala.edificio
+            });
+
+            const res = await fetch(`/api/turnos/ocupados?${params.toString()}`);
+            const data = await res.json();
+
+            if (data.success) {
+                setTurnos(prevTurnos =>
+                    prevTurnos.map(t => {
+                        const ocupado = data.turnos_ocupados.find(o => o.id_turno === t.id_turno);
+                        return ocupado ? { ...t, disponible: false, estado: ocupado.estado, hora_inicio: ocupado.hora_inicio, hora_fin: ocupado.hora_fin } : { ...t, disponible: true };
+                    })
+                );
+            }
+        } catch (error) {
+            console.error("Error al obtener turnos ocupados:", error);
+        }
+    };
 
     function puedeReservar() {
         if (!userData?.participante || !sala?.tipo_sala) return false;
@@ -30,52 +76,16 @@ const TurnosPopup = ({ sala }) => {
         const rol = usuario.rol;
         const tipoSala = sala.tipo_sala;
 
-        // Salas libres -> todos pueden reservar
         if (tipoSala === "libre") return true;
-
-        // Salas de grado
         if (tipoSala === "grado" && tipoCarrera === "grado") return true;
-
-        // Salas de postgrado
         if (tipoSala === "postgrado" && tipoCarrera === "postgrado") return true;
-
-        // Salas docentes
         if (tipoSala === "docente" && rol === "docente") return true;
-
-        // Si no coincide, no puede reservar
         return false;
     }
-
-
-    useEffect(() => {
-        if (!selectedDate || !todosTurnos?.turnos || !turnosDisponibles?.turnos_disponibles) return;
-
-        const disponiblesIds = turnosDisponibles.turnos_disponibles.map((t) => t.id_turno);
-
-        const turnosFormateados = todosTurnos.turnos.map((t) => ({
-            ...t,
-            ini: formatHour(t.hora_inicio),
-            fin: formatHour(t.hora_fin),
-            disponible: disponiblesIds.includes(t.id_turno),
-        }));
-
-        setTurnos(turnosFormateados);
-    }, [selectedDate, todosTurnos, turnosDisponibles]);
 
     function reservarTurno(turno) {
         setTurnoElegido(turno);
         setPantalla("confirmar");
-    }
-
-    function confirmarReserva(payload) {
-        fetch("http://localhost:3000/api/reservas/", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(payload),
-        })
-            .then((res) => res.json())
-            .then(console.log)
-            .catch(console.error);
     }
 
     if (userData && !puedeReservar()) {
@@ -100,7 +110,7 @@ const TurnosPopup = ({ sala }) => {
                         className="date-picker"
                         min={new Date().toISOString().split("T")[0]}
                         value={selectedDate || ""}
-                        onChange={(e) => {
+                        onChange={async (e) => {
                             const value = e.target.value;
                             if (!value) return setSelectedDate(null);
 
@@ -115,6 +125,9 @@ const TurnosPopup = ({ sala }) => {
                                 setSelectedDate(value);
                                 setErrorMsg(null);
                             }
+
+                            // Actualizar turnos ocupados para la fecha seleccionada
+                            await actualizarTurnos(value);
                             setPantalla("turnos");
                         }}
                     />
@@ -131,13 +144,13 @@ const TurnosPopup = ({ sala }) => {
                                         key={t.id_turno}
                                         className={`hour-card ${t.disponible ? "disponible" : "ocupado"}`}
                                     >
-                                        <span>{t.ini} - {t.fin}</span>
+                                        <span>{formatHour(t.hora_inicio)} - {formatHour(t.hora_fin)}</span>
                                         {t.disponible ? (
                                             <button className="reservar-btn" onClick={() => reservarTurno(t)}>
                                                 Reservar
                                             </button>
                                         ) : (
-                                            <span>Ocupado</span>
+                                            <span>{t.estado || "Ocupado"}</span>
                                         )}
                                     </div>
                                 ))}
@@ -152,7 +165,7 @@ const TurnosPopup = ({ sala }) => {
                     sala={sala.nombre_sala}
                     fecha={selectedDate}
                     onBack={() => setPantalla("turnos")}
-                    onConfirm={confirmarReserva}
+                    formatHour={formatHour}
                 />
             )}
         </div>

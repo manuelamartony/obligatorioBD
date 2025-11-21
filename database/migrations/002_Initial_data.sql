@@ -97,7 +97,7 @@ VALUES ('M101', 'Mulling', 20, 'libre'),
     ('C210', 'Edificio Central', 12, 'docente'),
     ('C410', 'Edificio Central', 25, 'libre'),
     ('SJ12', 'San Jose', 8, 'docente'),
-    ('AJ10','San Jose',10,'libre');
+    ('AJ10', 'San Jose', 10, 'libre');
 INSERT INTO turno (hora_inicio, hora_fin, descripcion)
 VALUES ('08:00:00', '09:00:00', 'Turno 08-09'),
     ('09:00:00', '10:00:00', 'Turno 09-10'),
