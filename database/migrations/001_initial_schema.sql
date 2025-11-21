@@ -35,7 +35,8 @@ CREATE TABLE usuario (
                          ci INT NOT NULL PRIMARY KEY,
                          nombre VARCHAR(50),
                          apellido VARCHAR(50),
-                         email VARCHAR(320)
+                         email VARCHAR(320),
+                         esAdmin BOOLEAN
 );
 
 CREATE TABLE facultad (

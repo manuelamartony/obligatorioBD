@@ -117,14 +117,6 @@ const ConfirmarReserva = ({ turno, sala, fecha, onBack, onConfirm, formatHour })
             <button
                 className={`confirm-btn ${!formularioValido ? "disabled" : ""}`}
                 disabled={!formularioValido}
-                onClick={() =>
-                    onConfirm({
-                        turno,
-                        sala,
-                        fecha,
-                        participantes,
-                    })
-                }
             >
                 Confirmar reserva
             </button>
