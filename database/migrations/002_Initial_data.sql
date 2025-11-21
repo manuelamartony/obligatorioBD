@@ -195,7 +195,15 @@ VALUES (1, 'M103', 'Mulling', '2025-10-29', 'activa', 1),
         '2025-10-15',
         'sin asistencia',
         9
-    );
+    ),
+    (
+        12,
+        'SJ12',
+        'San Jose',
+        '2025-12-15',
+        'activa',
+        10
+    )
 INSERT INTO obligatorio_bd.reserva_participante(ci, id_reserva, asistencia)
 VALUES (12345678, 1, true),
     (23456789, 2, false),
