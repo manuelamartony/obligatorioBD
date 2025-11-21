@@ -171,7 +171,7 @@ const TurnosPopup = ({ sala }) => {
             {pantalla === "confirmar" && turnoElegido && (
                 <ConfirmarReserva
                     turno={turnoElegido}
-                    sala={sala.nombre_sala}
+                    sala={sala}
                     fecha={selectedDate}
                     onBack={() => setPantalla("turnos")}
                     formatHour={formatHour}
