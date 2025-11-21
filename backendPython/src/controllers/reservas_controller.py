@@ -106,13 +106,13 @@ async def obtener_reserva_por_id(id: int):
         # Obtener participantes
         cursor.execute(
             """SELECT
-                p.ci,
-                p.nombre,
-                p.apellido,
-                p.email,
+                u.ci,
+                u.nombre,
+                u.apellido,
+                u.email,
                 rp.asistencia
             FROM reserva_participante rp
-            INNER JOIN participante p ON rp.ci = p.ci
+            INNER JOIN usuario u ON rp.ci = u.ci
             WHERE rp.id_reserva = %s""",
             (id,)
         )

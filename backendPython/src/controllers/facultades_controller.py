@@ -42,26 +42,26 @@ async def obtener_programas(id_facultad: int = None, tipo: str = None):
 
         query = """
             SELECT
-                pa.nombre_programa,
-                pa.id_facultad,
-                pa.tipo,
+                c.nombre_carrera,
+                c.id_facultad,
+                c.tipo,
                 f.nombre_facultad
-            FROM programa_academico pa
-            INNER JOIN facultad f ON pa.id_facultad = f.id_facultad
+            FROM carrera c
+            INNER JOIN facultad f ON c.id_facultad = f.id_facultad
             WHERE 1=1
         """
 
         params = []
 
         if id_facultad:
-            query += ' AND pa.id_facultad = %s'
+            query += " AND c.id_facultad = %s"
             params.append(id_facultad)
 
         if tipo:
-            query += ' AND pa.tipo = %s'
+            query += " AND c.tipo = %s"
             params.append(tipo)
 
-        query += ' ORDER BY f.nombre_facultad, pa.nombre_programa'
+        query += " ORDER BY c.id_facultad ASC, c.nombre_carrera ASC"
 
         cursor.execute(query, params)
         programas = cursor.fetchall()
@@ -72,11 +72,9 @@ async def obtener_programas(id_facultad: int = None, tipo: str = None):
         }
 
     except Exception as error:
-        print(f'Error al obtener programas: {error}')
-        raise HTTPException(
-            status_code=500,
-            detail="Error en el servidor"
-        )
+        print(f"Error al obtener programas: {error}")
+        raise HTTPException(status_code=500, detail="Error en el servidor")
+
     finally:
         if cursor:
             cursor.close()
@@ -94,14 +92,14 @@ async def obtener_programas_por_facultad(id_facultad: int):
 
         cursor.execute(
             """SELECT
-                pa.nombre_programa,
-                pa.id_facultad,
-                pa.tipo,
+                c.nombre_carrera,
+                c.id_facultad,
+                c.tipo,
                 f.nombre_facultad
-            FROM programa_academico pa
-            INNER JOIN facultad f ON pa.id_facultad = f.id_facultad
-            WHERE pa.id_facultad = %s
-            ORDER BY pa.nombre_programa""",
+            FROM carrera c
+            INNER JOIN facultad f ON c.id_facultad = f.id_facultad
+            WHERE c.id_facultad = %s
+            ORDER BY c.nombre_carrera""",
             (id_facultad,)
         )
         programas = cursor.fetchall()
@@ -125,6 +123,7 @@ async def obtener_programas_por_facultad(id_facultad: int):
             conn.close()
 
 
+
 async def obtener_tipos_programas():
     """Obtener tipos de programas disponibles"""
     conn = None
@@ -134,7 +133,7 @@ async def obtener_tipos_programas():
         cursor = conn.cursor(dictionary=True)
 
         cursor.execute(
-            'SELECT DISTINCT tipo FROM programa_academico ORDER BY tipo'
+            'SELECT DISTINCT tipo FROM carrera ORDER BY tipo'
         )
         tipos_rows = cursor.fetchall()
 

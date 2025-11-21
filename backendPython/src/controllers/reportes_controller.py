@@ -223,21 +223,24 @@ async def cantidad_reservas_asistencias_profesores_alumnos():
         conn = get_connection()
         cursor = conn.cursor(dictionary=True)
         query = """SELECT
-                    p.ci,
-                    p.nombre,
-                    p.apellido,
-                    ppa.rol,
+                    u.ci,
+                    u.nombre,
+                    u.apellido,
+                    pc.rol,
                     COUNT(rp.id_reserva) AS total_reservas,
                     SUM(rp.asistencia) AS total_asistencias
-                FROM participante p
-                JOIN participante_programa_academico ppa
-                    ON p.ci = ppa.ci
+                FROM usuario u
+                JOIN participante_carrera pc
+                    ON u.ci = pc.ci
                 LEFT JOIN reserva_participante rp
-                    ON p.ci = rp.ci
+                    ON u.ci = rp.ci
+                JOIN carrera c
+                    ON pc.nombre_carrera = c.nombre_carrera
                 GROUP BY
-                    p.ci, p.nombre, p.apellido, ppa.rol
+                    u.ci, u.nombre, u.apellido, pc.rol
                 ORDER BY
-                    ppa.rol, total_reservas DESC"""
+                    pc.rol, total_reservas DESC
+                """
         cursor.execute(query)
         resultados = cursor.fetchall()
         return {"success": True, "cantidad_reservas_asistencias_profesores_alumnos": resultados}
@@ -258,14 +261,25 @@ async def cantidad_sanciones_profesores_alumnos():
     try:
         conn = get_connection()
         cursor = conn.cursor(dictionary=True)
-        query = """SELECT
-                    ppa.rol,
-                    COUNT(sp.ci) AS cantidad_sanciones
-                FROM participante_programa_academico ppa
-                LEFT JOIN sancion_participante sp
-                    ON ppa.ci = sp.ci
-                GROUP BY
-                    ppa.rol"""
+        query = """
+        SELECT
+    u.ci,
+    u.nombre,
+    u.apellido,
+    pc.rol,
+    COUNT(sp.ci) AS total_sanciones
+FROM usuario u
+JOIN participante_carrera pc
+    ON u.ci = pc.ci
+JOIN carrera c
+    ON pc.nombre_carrera = c.nombre_carrera
+LEFT JOIN sancion_participante sp
+    ON u.ci = sp.ci
+GROUP BY
+    u.ci, u.nombre, u.apellido, pc.rol
+ORDER BY
+    pc.rol, total_sanciones DESC
+        """
         cursor.execute(query)
         resultados = cursor.fetchall()
         return {"success": True, "cantidad_sanciones_profesores_alumnos": resultados}
@@ -319,8 +333,8 @@ async def tasa_cancelacion_por_participante():
         conn = get_connection()
         cursor = conn.cursor(dictionary=True)
         query = """SELECT
-                    p.nombre,
-                    p.apellido,
+                    u.nombre,
+                    u.apellido,
                     COUNT(rp.id_reserva) AS total_reservas,
                     SUM(CASE WHEN r.estado = 'cancelada' THEN 1 ELSE 0 END) AS reservas_canceladas,
                     ROUND(
@@ -328,12 +342,12 @@ async def tasa_cancelacion_por_participante():
                         / NULLIF(COUNT(rp.id_reserva), 0),
                         3
                     ) AS tasa_cancelacion
-                FROM participante p
+                FROM usuario u
                 LEFT JOIN reserva_participante rp
-                    ON p.ci = rp.ci
+                    ON u.ci = rp.ci
                 LEFT JOIN reserva r
                     ON r.id_reserva = rp.id_reserva
-                GROUP BY p.ci, p.nombre, p.apellido
+                GROUP BY u.ci, u.nombre, u.apellido
                 ORDER BY
                     tasa_cancelacion IS NULL,
                     tasa_cancelacion DESC"""

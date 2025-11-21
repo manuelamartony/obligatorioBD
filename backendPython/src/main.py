@@ -7,7 +7,7 @@ from dotenv import load_dotenv
 
 from src.config.database import test_connection
 from src.routes import auth_routes, reservas_routes, salas_routes, turnos_routes
-from src.routes import reportes_routes, facultades_routes, participantes_routes
+from src.routes import reportes_routes, facultades_routes, participantes_routes, sanciones_routes
 
 load_dotenv()
 
@@ -44,6 +44,7 @@ app.include_router(turnos_routes.router, prefix="/api/turnos", tags=["turnos"])
 app.include_router(reportes_routes.router, prefix="/api/reportes", tags=["reportes"])
 app.include_router(facultades_routes.router, prefix="/api", tags=["facultades"])
 app.include_router(participantes_routes.router, prefix="/api/participantes", tags=["participantes"])
+app.include_router(sanciones_routes.router,prefix="/api/sanciones",tags=["sanciones"])
 
 @app.get("/")
 async def root():
@@ -60,7 +61,8 @@ async def root():
             "facultades": "/api/facultades",
             "programas": "/api/programas",
             "participantes": "/api/participantes",
-            "health": "/api/health"
+            "health": "/api/health",
+            "sanciones": "/api/sanciones"
         }
     }
 
@@ -103,6 +105,7 @@ if __name__ == "__main__":
     print("  GET    /api/reportes/*")
     print("  GET    /api/facultades")
     print("  GET    /api/participantes")
+    print("  GET    /api/sanciones")
     print("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n")
     
     # Ejecutar desde el directorio backend: uvicorn src.main:app --reload

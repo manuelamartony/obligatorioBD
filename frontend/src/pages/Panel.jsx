@@ -2,11 +2,13 @@ import React, { useContext } from 'react'
 import { Link } from 'react-router-dom'
 import "../styles/Panel.css"
 import PanelImage from "../../public/gente-feliz.avif"
-import { AuthContext } from '../context/AuthContext'
-
+import { AuthContext, useAuth } from '../context/AuthContext'
+import PowerButton from '../../public/power_button.svg'
 
 const Panel = () => {
     const { user } = useContext(AuthContext);
+    const { logout } = useAuth();
+
     return (
         <div className="container">
             <div className="left-section">
@@ -23,6 +25,9 @@ const Panel = () => {
                     <button className="profile">
                         Buenas, {user.nombre + " " + user.apellido}!
                     </button>
+
+                    <img src={PowerButton} alt="" style={{ height: 35, width: 35, marginLeft: 5, cursor: 'pointer' }} onClick={logout} />
+
                 </div>
                 <Link to="mis-reservas" className='link'>
                     <div className="my-reserves">
