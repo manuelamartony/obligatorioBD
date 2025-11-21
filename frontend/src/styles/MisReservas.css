@@ -5,7 +5,13 @@
   min-height: 100vh;
   color: #111;
   font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  width: 100%;
   max-width: 1200px;
+}
+
+.section-title {
+  margin: 15px 0;
+  font-size: 30px;
 }
 
 .mr-header {
@@ -56,11 +62,11 @@
 }
 
 .res-card {
-  flex: 0 1 300px; /* ancho base 300px, no crecer demasiado */
-  max-width: 320px; /* ancho máximo fijo */
-  min-width: 260px;
-  padding: 2rem;
-  border-radius: 20px;
+  flex: 0 1 240px; /* ancho base 300px, no crecer demasiado */
+  max-width: 200px; /* ancho máximo fijo */
+  min-width: 220px;
+  padding: 1.5rem;
+  border-radius: 16px;
   background: #fff;
   color: #0b0b0b;
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
@@ -155,3 +161,16 @@
 .res-card.sky { background: #87CEEB; color: #111; }
 .res-card.rose { background: #FFB6C1; color: #111; }
 .res-card.yellow { background: #FFD700; color: #111; }
+
+.res-card.cancelada {
+  background: #d9d9d9 !important;
+  color: #333;
+  border-left: 6px solid #9a9a9a;
+}
+
+/* Sin asistencia: rojo */
+.res-card.sin-asistencia {
+  background: #f8c2c2 !important;
+  color: #5a0000;
+  border-left: 6px solid #b10000;
+}
