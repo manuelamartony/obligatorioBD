@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 
 import "../styles/ConfirmarReserva.css";
+import { useAuth } from "../context/AuthContext";
 
 const ConfirmarReserva = ({
   turno,
@@ -12,6 +13,8 @@ const ConfirmarReserva = ({
 }) => {
   const [participantes, setParticipantes] = useState([]);
 
+  const { user } = useAuth();
+  
   function actualizarCedula(index, valor) {
     const nuevo = [...participantes];
     nuevo[index].ci = valor;
@@ -50,15 +53,12 @@ const ConfirmarReserva = ({
     setParticipantes([...nuevo]);
   }
   async function subirReserva() {
-    console.log(participantes);
-    console.log(participantes.map((p) => p.ci.trim()));
-
     const payload = {
       nombre_sala: sala.nombre_sala,
       edificio: sala.edificio,
       fecha: fecha,
       id_turno: turno.id_turno,
-      ci: localStorage.getItem("ci") || "55555555",
+      ci: String(user.ci),
       participantes: participantes.map((p) => p.ci.trim()),
     };
 
