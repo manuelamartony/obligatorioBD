@@ -97,7 +97,7 @@ VALUES ('M101', 'Mulling', 20, 'libre'),
     ('C210', 'Edificio Central', 12, 'docente'),
     ('C410', 'Edificio Central', 25, 'libre'),
     ('SJ12', 'San Jose', 8, 'docente'),
-    ('AJ10','San Jose',10,'libre');
+    ('AJ10', 'San Jose', 10, 'libre');
 INSERT INTO turno (hora_inicio, hora_fin, descripcion)
 VALUES ('08:00:00', '09:00:00', 'Turno 08-09'),
     ('09:00:00', '10:00:00', 'Turno 09-10'),
@@ -195,7 +195,15 @@ VALUES (1, 'M103', 'Mulling', '2025-10-29', 'activa', 1),
         '2025-10-15',
         'sin asistencia',
         9
-    );
+    ),
+    (
+        12,
+        'SJ12',
+        'San Jose',
+        '2025-12-15',
+        'activa',
+        10
+    )
 INSERT INTO obligatorio_bd.reserva_participante(ci, id_reserva, asistencia)
 VALUES (12345678, 1, true),
     (23456789, 2, false),

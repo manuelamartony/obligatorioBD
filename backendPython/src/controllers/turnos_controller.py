@@ -193,3 +193,45 @@ async def obtener_turnos_disponibles(fecha: str, sala: str):
             detail="Error en el servidor"
         )
 
+async def turnos_ocupados(fecha: str, sala: str, edificio: str):
+    try:
+        if not fecha or not sala or not edificio:
+            raise HTTPException(
+                status_code=400, 
+                detail="Fecha, sala y edificio son requeridos"
+            )
+
+        conn = get_connection()
+        cursor = conn.cursor(dictionary=True)
+
+        query = """
+            SELECT r.id_reserva, r.id_turno, t.hora_inicio, t.hora_fin, r.nombre_sala, r.edificio, r.estado
+            FROM reserva r
+            JOIN turno t ON r.id_turno = t.id_turno
+            WHERE r.fecha = %s AND r.nombre_sala = %s AND r.edificio = %s
+            ORDER BY t.hora_inicio
+        """
+        cursor.execute(query, (fecha, sala, edificio))
+
+        reservas = cursor.fetchall()
+
+        cursor.close()
+        conn.close()
+
+        return {
+            "success": True,
+            "fecha": fecha,
+            "sala": sala,
+            "edificio": edificio,
+            "total_turnos_ocupados": len(reservas),
+            "turnos_ocupados": reservas
+        }
+
+    except HTTPException:
+        raise
+    except Exception as error:
+        print(f"Error al obtener turnos ocupados: {error}")
+        raise HTTPException(
+            status_code=500,
+            detail="Error en el servidor"
+        )
