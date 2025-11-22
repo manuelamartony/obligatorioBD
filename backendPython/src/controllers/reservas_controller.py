@@ -1,4 +1,4 @@
-from fastapi import HTTPException
+from fastapi import HTTPException, APIRouter
 from src.config.database import get_connection
 from pydantic import BaseModel
 from typing import List, Optional
@@ -378,24 +378,27 @@ async def crear_reserva(request: CrearReservaRequest):
 
 
 
+
+
+router = APIRouter()
+
+@router.patch("/{id}")
 async def actualizar_reserva(id: int, request: ActualizarReservaRequest):
     """Actualizar estado de una reserva"""
-    conn = None
-    cursor = None
+    estados_validos = ['activa', 'cancelada', 'sin asistencia', 'finalizada']
+
+    if request.estado not in estados_validos:
+        raise HTTPException(
+            status_code=400,
+            detail=f"Estado inválido. Debe ser uno de: {', '.join(estados_validos)}"
+        )
+
     try:
-        estados_validos = ['activa', 'cancelada', 'sin asistencia', 'finalizada']
-
-        if not request.estado or request.estado not in estados_validos:
-            raise HTTPException(
-                status_code=400,
-                detail=f"Estado inválido. Debe ser uno de: {', '.join(estados_validos)}"
-            )
-
         conn = get_connection()
         cursor = conn.cursor()
 
         cursor.execute(
-            'UPDATE reserva SET estado = %s WHERE id_reserva = %s',
+            "UPDATE reserva SET estado = %s WHERE id_reserva = %s",
             (request.estado, id)
         )
 
@@ -406,29 +409,19 @@ async def actualizar_reserva(id: int, request: ActualizarReservaRequest):
             )
 
         conn.commit()
+        return {"success": True, "mensaje": "Reserva actualizada exitosamente"}
 
-        return {
-            "success": True,
-            "mensaje": "Reserva actualizada exitosamente"
-        }
-
-    except HTTPException:
+    except Exception as e:
         if conn:
             conn.rollback()
-        raise
-    except Exception as error:
-        if conn:
-            conn.rollback()
-        print(f'Error al actualizar reserva: {error}')
-        raise HTTPException(
-            status_code=500,
-            detail="Error en el servidor"
-        )
+        print(f"Error al actualizar reserva: {e}")
+        raise HTTPException(status_code=500, detail="Error en el servidor")
     finally:
         if cursor:
             cursor.close()
         if conn:
             conn.close()
+
 
 
 async def cancelar_reserva(id: int):

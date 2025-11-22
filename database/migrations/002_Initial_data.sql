@@ -8,8 +8,8 @@ VALUES ('manuela.martony@gmail.com', '12345678'),
     ('agustin.ramos@ucu.edu.uy', 'qwerty98'),
     ('prof.mendez@ucu.edu.uy', 'docente01'),
     ('prof.rodriguez@ucu.edu.uy', 'docente02'),
-    ('admin@ucu.edu.uy','admin123');
-INSERT INTO obligatorio_bd.usuario(ci, nombre, apellido, email,esAdmin)
+    ('admin@ucu.edu.uy', 'admin123');
+INSERT INTO obligatorio_bd.usuario(ci, nombre, apellido, email, esAdmin)
 VALUES (
         12345678,
         'Manuela',
@@ -66,7 +66,13 @@ VALUES (
         'prof.rodriguez@ucu.edu.uy',
         false
     ),
-    (88888888,'Funcionario','Admin','admin@ucu.edu.uy',true);
+    (
+        88888888,
+        'Funcionario',
+        'Admin',
+        'admin@ucu.edu.uy',
+        true
+    );
 INSERT INTO obligatorio_bd.facultad(id_facultad, nombre_facultad)
 VALUES (1, 'Facultad de Ingenieria'),
     (2, 'Facultad de Ciencias Economicas'),
@@ -93,7 +99,7 @@ VALUES (1, 12345678, 'Ingenieria Informatica', 'alumno'),
     ),
     (6, 66666666, 'Ingenieria Informatica', 'docente'),
     (7, 77777777, 'Derecho', 'docente'),
-    (8,45678901,'MBA','alumno');
+    (8, 45678901, 'MBA', 'alumno');
 INSERT INTO obligatorio_bd.edificio(nombre_edificio, direccion, departamento)
 VALUES('Edificio Central', '8 de octubre', 'Montevideo'),
     ('Mulling', 'Comandante Braga', 'Montevideo'),

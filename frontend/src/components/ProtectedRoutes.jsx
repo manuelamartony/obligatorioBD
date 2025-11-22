@@ -3,6 +3,7 @@ import { Outlet, Navigate } from "react-router-dom";
 
 const ProtectedRoutes = ({ roles = [] }) => {
     const { user, loading, sancionesActivas } = useAuth();
+    console.log(user);
 
     if (loading) {
         return <div>Cargando...</div>;
@@ -12,7 +13,7 @@ const ProtectedRoutes = ({ roles = [] }) => {
         return <Navigate to="/login" replace />;
     }
 
-    if (roles.length > 0 && !roles.includes(user.rol)) {
+    if (roles.length > 0 && !roles.includes(user.rol) && user.esAdmin === 0) {
         return <div>No tenés permisos para acceder a esta sección.</div>;
     }
 

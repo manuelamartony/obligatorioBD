@@ -41,7 +41,7 @@ const Panel = () => {
                         NUEVA RESERVA
                     </div>
                 </Link>
-                {user.role === "admin" && (
+                {user.esAdmin === 1 && (
                     <Link to="reportes" className='link'>
                         <div className="available-rooms">
                             <hr />
