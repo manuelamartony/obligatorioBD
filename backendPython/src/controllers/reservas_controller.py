@@ -253,20 +253,22 @@ async def crear_reserva(request: CrearReservaRequest):
 
 
 
-        # Validar existencia de todos los participantes
-        placeholders = ",".join(["%s"] * len(participantes_int))
-        cursor.execute(f"SELECT ci FROM usuario WHERE ci IN ({placeholders})", tuple(participantes_int))
-        existentes = {row["ci"] for row in cursor.fetchall()}
+        # Validar existencia de todos los participantes (solo si hay)
+        if participantes_int:
+            placeholders = ",".join(["%s"] * len(participantes_int))
+            cursor.execute(f"SELECT ci FROM usuario WHERE ci IN ({placeholders})", tuple(participantes_int))
+            existentes = {row["ci"] for row in cursor.fetchall()}
 
-        faltantes = [ci for ci in participantes_int if ci not in existentes]
-        if faltantes:
-            conn.rollback()
-            cursor.close()
-            conn.close()
-            raise HTTPException(
-                status_code=400,
-                detail=f"Participantes no encontrados: {', '.join(map(str,faltantes))}"
-            )
+            faltantes = [ci for ci in participantes_int if ci not in existentes]
+            if faltantes:
+                conn.rollback()
+                cursor.close()
+                conn.close()
+                raise HTTPException(
+                    status_code=400,
+                    detail=f"Participantes no encontrados: {', '.join(map(str,faltantes))}"
+                )
+
 
         # Verificar sala
         cursor.execute(

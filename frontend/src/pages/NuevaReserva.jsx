@@ -30,9 +30,6 @@ const NuevaReserva = () => {
 
     const colores = ['lavender', 'mint', 'orange', 'sky', 'rose', 'yellow'];
 
-
-
-
     return (
         <div className="nueva-reserva-page">
             <header className="nr-header">
@@ -65,7 +62,9 @@ const NuevaReserva = () => {
                                 nested
                                 className="turnos-modal"
                             >
-                                <TurnosPopup sala={s} />
+                                {(close) => (
+                                    <TurnosPopup sala={s} onClose={close} />
+                                )}
                             </Popup>
                         );
                     })}

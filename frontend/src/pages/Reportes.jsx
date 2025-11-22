@@ -18,15 +18,15 @@ import TablaReporte from '../components/TablaReporte'
 const Reportes = () => {
     const navigate = useNavigate();
 
-    const { data: SalasMasReservadas, loading: salasLoading } = useSalasMasReservadas()
-    const { data: TurnosMasDemandados, loading: turnosLoading } = useTurnosMasDemandados()
-    const { data: PromedioMasParticipantesPorSala, loading: promedioLoading } = usePromedioMasParticipantesPorSala()
-    const { data: CantidadReservasSegunDia, loading: reservasDiaLoading } = useCantidadReservasSegunDia()
-    const { data: PorcentajeOcupacionPorSala, loading: porcentajeLoading } = usePorcentajeSOcupacionSalasPorEdificio()
-    const { data: CantidadAsistenciasProfesoresAlumnos, loading: asistenciasLoading } = useCantidadAsistenciasProfesoresAlumnos()
-    const { data: CantidadSancionesProfesAlumnos, loading: sancionesLoading } = useCantidadSancionesProfesAlumnos()
-    const { data: ReservasUtilizadasOCanceladas, loading: reservasLoading } = useReservasUtilizadasOCanceladas()
-    const { data: TasaCancelacionPorParticipante, loading: tasaLoading } = useTasaCancelacionPorParticipante()
+    const { data: SalasMasReservadas, isLoading: salasLoading } = useSalasMasReservadas()
+    const { data: TurnosMasDemandados, isLoading: turnosLoading } = useTurnosMasDemandados()
+    const { data: PromedioMasParticipantesPorSala, isLoading: promedioLoading } = usePromedioMasParticipantesPorSala()
+    const { data: CantidadReservasSegunDia, isLoading: reservasDiaLoading } = useCantidadReservasSegunDia()
+    const { data: PorcentajeOcupacionPorSala, isLoading: porcentajeLoading } = usePorcentajeSOcupacionSalasPorEdificio()
+    const { data: CantidadAsistenciasProfesoresAlumnos, isLoading: asistenciasLoading } = useCantidadAsistenciasProfesoresAlumnos()
+    const { data: CantidadSancionesProfesAlumnos, isLoading: sancionesLoading } = useCantidadSancionesProfesAlumnos()
+    const { data: ReservasUtilizadasOCanceladas, isLoading: reservasLoading } = useReservasUtilizadasOCanceladas()
+    const { data: TasaCancelacionPorParticipante, isLoading: tasaLoading } = useTasaCancelacionPorParticipante()
 
     const anyLoading = salasLoading || turnosLoading || promedioLoading || reservasDiaLoading ||
         porcentajeLoading || asistenciasLoading || sancionesLoading || reservasLoading || tasaLoading

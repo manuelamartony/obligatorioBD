@@ -4,6 +4,8 @@ import "../styles/TurnosPopup.css";
 import ConfirmarReserva from "./ConfirmarReserva";
 import { useTodosLosTurnos } from "../context/Fetch";
 import { useObtenerUsuario } from "../context/Fetch";
+import ReservaExitosaPopup from "./ReservaExitosa";
+
 
 export function formatHour(hora) {
     if (typeof hora === "string") {
@@ -21,13 +23,14 @@ export function formatHour(hora) {
 }
 
 
-const TurnosPopup = ({ sala }) => {
+const TurnosPopup = ({ sala, onClose }) => {
     const [selectedDate, setSelectedDate] = useState(null);
     const [pantalla, setPantalla] = useState("turnos"); // "turnos" | "confirmar"
+    const [mostrarExito, setMostrarExito] = useState(false);
     const [turnoElegido, setTurnoElegido] = useState(null);
     const [turnos, setTurnos] = useState([]);
     const [errorMsg, setErrorMsg] = useState(null);
-    const { data: userData, loading } = useObtenerUsuario();
+    const { data: userData, isLoading } = useObtenerUsuario();
     const { data: todosTurnos } = useTodosLosTurnos();
 
     // Cargar todos los turnos como base
@@ -105,12 +108,25 @@ const TurnosPopup = ({ sala }) => {
                     No podés reservar esta sala porque es de tipo <strong>{sala.tipo_sala}</strong> y
                     tu tipo de carrera es <strong>{userData.participante[0].tipo_carrera}</strong>.
                 </p>
+
+                <button className="cerrar-btn" onClick={onClose}>
+                    Cerrar
+                </button>
             </div>
         );
     }
 
     return (
         <div className="turnos-popup">
+            {mostrarExito && (
+                <ReservaExitosaPopup
+                    onClose={() => {
+                        setMostrarExito(false);
+                        onClose();
+                    }}
+                />
+            )}
+
             {pantalla === "turnos" && (
                 <>
                     <h2>{`${sala.nombre_sala} - Elegí fecha y horario`}</h2>
@@ -174,9 +190,13 @@ const TurnosPopup = ({ sala }) => {
                     sala={sala}
                     fecha={selectedDate}
                     onBack={() => setPantalla("turnos")}
+                    onConfirm={() => {
+                        setMostrarExito(true);
+                    }}
                     formatHour={formatHour}
                 />
             )}
+
         </div>
     );
 };

@@ -106,11 +106,3 @@ export const useObtenerUsuario = () => {
         () => `http://localhost:3000/api/participantes/${user?.ci}`
     )();
 };
-
-export const useObtenerReservasEnLaSemana = () => {
-    const { user } = useContext(AuthContext);
-
-    return makeFetchJSONHook(
-        () => `http://localhost:3000/api/participantes/${user?.ci}`
-    )();
-}

@@ -12,6 +12,7 @@ const ConfirmarReserva = ({
   formatHour,
 }) => {
   const [participantes, setParticipantes] = useState([]);
+  const [errorMessage, setErrorMessage] = useState("");
 
   const { user } = useAuth();
   const newCi = String(user.ci);
@@ -19,7 +20,7 @@ const ConfirmarReserva = ({
   function actualizarCedula(index, valor) {
     const nuevo = [...participantes];
     nuevo[index].ci = valor;
-    nuevo[index].estado = "pendiente"; // cada vez que se cambia la CI, estado vuelve a pendiente
+    nuevo[index].estado = "pendiente";
     setParticipantes(nuevo);
   }
 
@@ -53,7 +54,10 @@ const ConfirmarReserva = ({
 
     setParticipantes([...nuevo]);
   }
+
   async function subirReserva() {
+    setErrorMessage(""); // aca limpio error previo
+
     const payload = {
       nombre_sala: sala.nombre_sala,
       edificio: sala.edificio,
@@ -71,20 +75,29 @@ const ConfirmarReserva = ({
       });
 
       if (!res.ok) {
-        const text = await res.text();
-        console.error("Error al crear reserva:", res.status, text);
+        let msg = "Error desconocido";
+
+        try {
+          const data = await res.json();
+          msg = data.detail || JSON.stringify(data);
+        } catch {
+          msg = await res.text();
+        }
+
+        setErrorMessage(msg);
+        console.error("Error al crear reserva:", res.status, msg);
         return;
       }
 
       const data = await res.json();
-      // llamar callback si el componente padre lo pidió
+
       if (typeof onConfirm === "function") onConfirm(data);
     } catch (e) {
       console.error("Error al conectar con el backend:", e);
+      setErrorMessage("No se pudo conectar con el servidor.");
     }
   }
 
-  // Todos los participantes deben tener CI y estar validados
   const formularioValido =
     participantes.length === 0 ||
     participantes.every((p) => p.ci.trim() !== "" && p.estado === "valido");
@@ -158,12 +171,16 @@ const ConfirmarReserva = ({
       <button
         className={`confirm-btn ${!formularioValido ? "disabled" : ""}`}
         disabled={!formularioValido}
-        onClick={() => {
-          subirReserva();
-        }}
+        onClick={subirReserva}
       >
         Confirmar reserva
       </button>
+
+      {errorMessage && (
+        <p className="error-text" style={{ marginTop: "15px", color: "red" }}>
+          {errorMessage}
+        </p>
+      )}
     </div>
   );
 };
