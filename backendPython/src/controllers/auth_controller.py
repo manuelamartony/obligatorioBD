@@ -40,7 +40,7 @@ async def login(correo: str, contrasena: str):
 
         # Buscar datos del participante usando el email del login
         cursor.execute(
-            'SELECT ci, nombre, apellido, email FROM usuario WHERE email = %s',
+            'SELECT * FROM usuario WHERE email = %s',
             (correo,)
         )
         participante_rows = cursor.fetchall()
@@ -78,6 +78,7 @@ async def login(correo: str, contrasena: str):
                 "nombre": participante['nombre'],
                 "apellido": participante['apellido'],
                 "email": participante['email'],
+                "esAdmin": participante['esAdmin'],
                 "rol": rol
             }
         }

@@ -12,9 +12,9 @@ const ProtectedRoutes = ({ roles = [] }) => {
     return <Navigate to="/login" replace />;
   }
 
-  if (roles.length > 0 && !roles.includes(user.rol)) {
-    return <div>No tenés permisos para acceder a esta sección.</div>;
-  }
+    if (roles.length > 0 && !roles.includes(user.rol) && user.esAdmin === 0) {
+        return <div>No tenés permisos para acceder a esta sección.</div>;
+    }
 
   if (sancionesActivas.length > 0) {
     // Buscamos la sanción con fecha_fin más cercana

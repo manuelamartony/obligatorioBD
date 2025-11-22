@@ -1,4 +1,4 @@
-from fastapi import HTTPException
+from fastapi import HTTPException, APIRouter
 from src.config.database import get_connection
 from pydantic import BaseModel
 from typing import List, Optional
@@ -166,7 +166,7 @@ async def crear_reserva(request: CrearReservaRequest):
         # Normalizar fecha
         fecha_date = request.fecha.split('T')[0] if 'T' in request.fecha else request.fecha
 
-        # 👈 CAMBIO: convertir CI del creador
+      
         try:
             ci_creador = int(request.ci.strip())
         except:
@@ -180,7 +180,7 @@ async def crear_reserva(request: CrearReservaRequest):
             conn.close()
             raise HTTPException(status_code=400, detail="El creador no existe")
 
-        # 👈 CAMBIO: convertir participantes
+
         participantes_int = []
         if request.participantes:
             try:
@@ -188,20 +188,85 @@ async def crear_reserva(request: CrearReservaRequest):
             except:
                 raise HTTPException(status_code=400, detail="Uno o más CIs de participantes son inválidos")
 
-            # Validar existencia de todos los participantes
-            placeholders = ",".join(["%s"] * len(participantes_int))
-            cursor.execute(f"SELECT ci FROM usuario WHERE ci IN ({placeholders})", tuple(participantes_int))
-            existentes = {row["ci"] for row in cursor.fetchall()}
+        # Conversión timedelta → horas
+        def timedelta_a_horas(td):
+            return td.total_seconds() / 3600
 
-            faltantes = [ci for ci in participantes_int if ci not in existentes]
-            if faltantes:
-                conn.rollback()
-                cursor.close()
-                conn.close()
-                raise HTTPException(
-                    status_code=400,
-                    detail=f"Participantes no encontrados: {', '.join(map(str,faltantes))}"
-                )
+        # Obtener duración del turno actual
+        cursor.execute(
+            """SELECT hora_inicio, hora_fin FROM turno WHERE id_turno = %s""",
+            (request.id_turno,)
+        )
+        turno = cursor.fetchone()
+
+        hora_inicio = turno["hora_inicio"]   # timedelta
+        hora_fin = turno["hora_fin"]         # timedelta
+
+        duracion_turno = timedelta_a_horas(hora_fin - hora_inicio)
+
+        # Sumar horas ya reservadas en ese día
+        cursor.execute(
+            """
+            SELECT t.hora_inicio, t.hora_fin
+            FROM reserva r
+            INNER JOIN reserva_participante rp ON r.id_reserva = rp.id_reserva
+            INNER JOIN turno t ON r.id_turno = t.id_turno
+            WHERE rp.ci = %s AND r.fecha = %s AND r.estado IN ('activa', 'finalizada')
+            """,
+            (request.ci, fecha_date)
+        )
+
+        reservas_dia = cursor.fetchall()
+
+        horas_acumuladas = 0
+        for r in reservas_dia:
+            hi = r["hora_inicio"]  # timedelta
+            hf = r["hora_fin"]     # timedelta
+            horas_acumuladas += timedelta_a_horas(hf - hi)
+
+        if horas_acumuladas + duracion_turno > 2:
+            raise HTTPException(
+                status_code=403,
+                detail="No puedes reservar más de 2 horas en el mismo día"
+            )
+
+        #Verificar maximo de 3 reservas por semana
+        cursor.execute(
+            """
+            SELECT COUNT(*) AS total
+            FROM reserva r
+            INNER JOIN reserva_participante rp ON r.id_reserva = rp.id_reserva
+            WHERE rp.ci = %s
+            AND YEARWEEK(r.fecha, 1) = YEARWEEK(%s, 1)
+            AND r.estado = 'activa'
+            """,
+            (request.ci, fecha_date)
+        )
+
+        count_semana = cursor.fetchone()["total"]
+
+        if count_semana >= 3:
+            raise HTTPException(
+                status_code=403,
+                detail="Ya tienes 3 reservas activas esta semana"
+            )
+
+
+
+        # Validar existencia de todos los participantes
+        placeholders = ",".join(["%s"] * len(participantes_int))
+        cursor.execute(f"SELECT ci FROM usuario WHERE ci IN ({placeholders})", tuple(participantes_int))
+        existentes = {row["ci"] for row in cursor.fetchall()}
+
+        faltantes = [ci for ci in participantes_int if ci not in existentes]
+        if faltantes:
+            conn.rollback()
+            cursor.close()
+            conn.close()
+            raise HTTPException(
+                status_code=400,
+                detail=f"Participantes no encontrados: {', '.join(map(str,faltantes))}"
+            )
 
         # Verificar sala
         cursor.execute(
@@ -238,6 +303,8 @@ async def crear_reserva(request: CrearReservaRequest):
             cursor.close()
             conn.close()
             raise HTTPException(status_code=403, detail="No puedes reservar por sanciones activas")
+        
+        #Verificar
 
         # Generar nuevo id_reserva
         cursor.execute('SELECT COALESCE(MAX(id_reserva), 0) AS maxId FROM reserva')
@@ -311,24 +378,27 @@ async def crear_reserva(request: CrearReservaRequest):
 
 
 
+
+
+router = APIRouter()
+
+@router.patch("/{id}")
 async def actualizar_reserva(id: int, request: ActualizarReservaRequest):
     """Actualizar estado de una reserva"""
-    conn = None
-    cursor = None
+    estados_validos = ['activa', 'cancelada', 'sin asistencia', 'finalizada']
+
+    if request.estado not in estados_validos:
+        raise HTTPException(
+            status_code=400,
+            detail=f"Estado inválido. Debe ser uno de: {', '.join(estados_validos)}"
+        )
+
     try:
-        estados_validos = ['activa', 'cancelada', 'sin asistencia', 'finalizada']
-
-        if not request.estado or request.estado not in estados_validos:
-            raise HTTPException(
-                status_code=400,
-                detail=f"Estado inválido. Debe ser uno de: {', '.join(estados_validos)}"
-            )
-
         conn = get_connection()
         cursor = conn.cursor()
 
         cursor.execute(
-            'UPDATE reserva SET estado = %s WHERE id_reserva = %s',
+            "UPDATE reserva SET estado = %s WHERE id_reserva = %s",
             (request.estado, id)
         )
 
@@ -339,29 +409,19 @@ async def actualizar_reserva(id: int, request: ActualizarReservaRequest):
             )
 
         conn.commit()
+        return {"success": True, "mensaje": "Reserva actualizada exitosamente"}
 
-        return {
-            "success": True,
-            "mensaje": "Reserva actualizada exitosamente"
-        }
-
-    except HTTPException:
+    except Exception as e:
         if conn:
             conn.rollback()
-        raise
-    except Exception as error:
-        if conn:
-            conn.rollback()
-        print(f'Error al actualizar reserva: {error}')
-        raise HTTPException(
-            status_code=500,
-            detail="Error en el servidor"
-        )
+        print(f"Error al actualizar reserva: {e}")
+        raise HTTPException(status_code=500, detail="Error en el servidor")
     finally:
         if cursor:
             cursor.close()
         if conn:
             conn.close()
+
 
 
 async def cancelar_reserva(id: int):
@@ -435,7 +495,6 @@ async def marcar_asistencia(request: MarcarAsistenciaRequest):
         conn = get_connection()
         cursor = conn.cursor(dictionary=True)
 
-        # 1️⃣ Ver si el participante existe en la reserva
         cursor.execute(
             """
             SELECT asistencia 
@@ -452,14 +511,13 @@ async def marcar_asistencia(request: MarcarAsistenciaRequest):
                 detail=f"Participante con CI {ci_int} no está registrado en la reserva"
             )
         
-        # 2️⃣ Si ya tiene asistencia → devolver mensaje
+
         if row["asistencia"] == 1 or row["asistencia"] is True:
             return {
                 "success": True,
                 "mensaje": f"Participante con CI {ci_int} ya tiene asistencia marcada"
             }
 
-        # 3️⃣ Marcar asistencia
         cursor.execute(
             """
             UPDATE reserva_participante 

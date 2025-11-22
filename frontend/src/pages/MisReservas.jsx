@@ -6,7 +6,7 @@ import ReservaCard from '../components/ReservaCard';
 
 const MisReservas = () => {
     const navigate = useNavigate();
-    const { data, loading } = useObtenerReservasUsuario();
+    const { data, loading, fetchData } = useObtenerReservasUsuario();
     const { data: todosLosTurnos } = useTodosLosTurnos();
     const { logout } = useAuth();
 
@@ -48,6 +48,7 @@ const MisReservas = () => {
                                 turno={turno}
                                 colorClass={colorClass}
                                 formatHour={formatHour}
+                                fetchData={fetchData}
                             />
                         );
                     })}

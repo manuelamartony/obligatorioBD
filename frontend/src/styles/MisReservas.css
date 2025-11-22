@@ -174,3 +174,33 @@
   color: #5a0000;
   border-left: 6px solid #b10000;
 }
+
+.cancel-btn {
+  width: 100%;
+  padding: 0.3rem 0.6rem;
+  margin-top: 1.2rem;
+  background-color: #ff4d4f;
+  color: white;
+  border: none;
+  border-radius: 10px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.25s ease, transform 0.15s ease;
+  box-shadow: 0 4px 10px rgba(255, 77, 79, 0.3);
+}
+
+.cancel-btn:hover {
+  background-color: #e64445;
+  transform: translateY(-2px);
+}
+
+.cancel-btn:active {
+  transform: translateY(0px);
+}
+
+.cancel-btn:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+  box-shadow: none;
+}
