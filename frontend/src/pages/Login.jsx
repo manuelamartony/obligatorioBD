@@ -21,6 +21,7 @@ export async function loginAction({ request }) {
     const loginResp = await res.json();
 
     const token = loginResp.token;
+    console.log(loginResp);
     const userData = loginResp.participante;
 
     if (!token || !userData) {
