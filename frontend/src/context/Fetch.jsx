@@ -67,6 +67,26 @@ export const useCantidadReservasSegunDia = makeFetchJSONHook(
     'http://localhost:3000/api/reportes/cantidad_reservas_segun_dia'
 );
 
+export const usePorcentajeSOcupacionSalasPorEdificio = makeFetchJSONHook(
+    'http://localhost:3000/api/reportes/ocupacion_salas_por_edificio'
+);
+
+export const useCantidadAsistenciasProfesoresAlumnos = makeFetchJSONHook(
+    'http://localhost:3000/api/reportes/cantidad_reservas_asistencias_profesores_alumnos'
+);
+
+export const useCantidadSancionesProfesAlumnos = makeFetchJSONHook(
+    'http://localhost:3000/api/reportes/cantidad_sanciones_profesores_alumnos'
+);
+
+export const useReservasUtilizadasOCanceladas = makeFetchJSONHook(
+    'http://localhost:3000/api/reportes/reservas_utilizadas_vs_canceladas_noAsistidas'
+);
+
+export const useTasaCancelacionPorParticipante = makeFetchJSONHook(
+    'http://localhost:3000/api/reportes/tasa_cancelacion_por_participante'
+);
+
 export const useObtenerReservasUsuario = () => {
     const { user } = useContext(AuthContext);
 
@@ -86,3 +106,4 @@ export const useObtenerUsuario = () => {
         () => `http://localhost:3000/api/participantes/${user?.ci}`
     )();
 };
+
