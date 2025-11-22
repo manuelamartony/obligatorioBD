@@ -3,7 +3,6 @@ import { Outlet, Navigate } from "react-router-dom";
 
 const ProtectedRoutes = ({ roles = [] }) => {
     const { user, loading, sancionesActivas } = useAuth();
-    console.log("Usuario: ", user);
 
     if (loading) {
         return <div>Cargando...</div>;
@@ -29,8 +28,8 @@ const ProtectedRoutes = ({ roles = [] }) => {
 
         return (
             <div style={{ padding: "1rem", color: "red", fontSize: "1.2rem" }}>
-                Estás sancionado hasta el <strong>{fechaFin}</strong>.
-                No podés hacer ninguna reserva.
+                Estás sancionado hasta el <strong>{fechaFin}</strong>. No podés hacer
+                ninguna reserva.
             </div>
         );
     }
