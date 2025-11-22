@@ -30,6 +30,9 @@ const NuevaReserva = () => {
 
     const colores = ['lavender', 'mint', 'orange', 'sky', 'rose', 'yellow'];
 
+
+
+
     return (
         <div className="nueva-reserva-page">
             <header className="nr-header">

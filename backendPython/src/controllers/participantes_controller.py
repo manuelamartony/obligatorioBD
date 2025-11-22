@@ -228,3 +228,41 @@ async def modificar_usuario(ci: int, nombre: str = None, apellido: str = None, e
 
     except Exception as e:
         return {"success": False, "error": str(e)}
+
+async def reservas_activas_semana(ci: int):
+    try:
+        conn = get_connection()
+        cursor = conn.cursor(dictionary=True)
+
+        query = """
+            SELECT 
+                COUNT(*) AS cantidad
+            FROM reserva_participante rp
+            JOIN reserva r ON rp.id_reserva = r.id_reserva
+            WHERE rp.ci = %s
+              AND r.estado = 'activa'
+              AND YEARWEEK(r.fecha, 1) = YEARWEEK(CURDATE(), 1);
+        """
+
+        cursor.execute(query, (ci,))
+        row = cursor.fetchone()
+
+        cantidad = row["cantidad"]
+
+        return {
+            "success": True,
+            "cantidad_reservas_activas_semana": cantidad,
+            "puede_reservar": cantidad < 3
+        }
+
+    except Exception as error:
+        print(f"Error al obtener reservas activas de la semana: {error}")
+        raise HTTPException(
+            status_code=500,
+            detail="Error en el servidor"
+        )
+    finally:
+        if cursor:
+            cursor.close()
+        if conn:
+            conn.close()

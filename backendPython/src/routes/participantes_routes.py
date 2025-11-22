@@ -45,3 +45,7 @@ async def modificar_usuario(ci: int, cambios: UsuarioUpdate):
         email=cambios.email,
         nuevo_ci=cambios.nuevo_ci
     )
+
+@router.get("/reservas-semana/{ci}")
+async def reservas_semana(ci: int):
+    return await participantes_controller.reservas_activas_semana(ci)
