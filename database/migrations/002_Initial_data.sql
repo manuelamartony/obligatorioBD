@@ -164,7 +164,7 @@ VALUES (1, 'M103', 'Mulling', '2025-10-29', 'activa', 1),
         'finalizada',
         4
     ),
-    (5, 'M101', 'Mulling', '2025-10-30', 'activa', 2),
+    (5, 'M101', 'Mulling', '2025-11-23', 'activa', 2),
     (
         6,
         'B305',

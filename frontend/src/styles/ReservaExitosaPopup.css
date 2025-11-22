@@ -1,0 +1,28 @@
+.popup-exito {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 99999;
+}
+
+.popup-card {
+  background: white;
+  padding: 2rem;
+  border-radius: 12px;
+  text-align: center;
+  width: 300px;
+}
+
+.popup-btn {
+  margin-top: 1.5rem;
+  padding: .7rem 1.5rem;
+  border: none;
+  border-radius: 8px;
+  background: #4caf50;
+  color: white;
+  cursor: pointer;
+  font-size: 1rem;
+}

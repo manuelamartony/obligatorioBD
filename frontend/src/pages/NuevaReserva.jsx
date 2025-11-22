@@ -62,7 +62,9 @@ const NuevaReserva = () => {
                                 nested
                                 className="turnos-modal"
                             >
-                                <TurnosPopup sala={s} />
+                                {(close) => (
+                                    <TurnosPopup sala={s} onClose={close} />
+                                )}
                             </Popup>
                         );
                     })}

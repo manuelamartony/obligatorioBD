@@ -6,7 +6,7 @@ import ReservaCard from '../components/ReservaCard';
 
 const MisReservas = () => {
     const navigate = useNavigate();
-    const { data, loading, fetchData } = useObtenerReservasUsuario();
+    const { data, isLoading, fetchData } = useObtenerReservasUsuario();
     const { data: todosLosTurnos } = useTodosLosTurnos();
     const { logout } = useAuth();
 
@@ -17,7 +17,7 @@ const MisReservas = () => {
 
     const colores = ['lavender', 'mint', 'orange', 'sky', 'rose', 'yellow'];
 
-    if (loading) return <p>Cargando...</p>;
+    if (isLoading) return <p>Cargando...</p>;
     if (!data?.reservas) return <p>No tienes reservas.</p>;
 
     const reservas = data.reservas;
