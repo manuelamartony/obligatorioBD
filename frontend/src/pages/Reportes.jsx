@@ -6,7 +6,11 @@ import {
     useTurnosMasDemandados,
     usePromedioMasParticipantesPorSala,
     useCantidadReservasSegunDia,
-    usePorcentajeSOcupacionSalasPorEdificio
+    usePorcentajeSOcupacionSalasPorEdificio,
+    useCantidadAsistenciasProfesoresAlumnos,
+    useCantidadSancionesProfesAlumnos,
+    useReservasUtilizadasOCanceladas,
+    useTasaCancelacionPorParticipante
 } from '../context/Fetch'
 
 import TablaReporte from '../components/TablaReporte'
@@ -23,8 +27,11 @@ const Reportes = () => {
     const { data: CantidadSancionesProfesAlumnos, loading: sancionesLoading } = useCantidadSancionesProfesAlumnos()
     const { data: ReservasUtilizadasOCanceladas, loading: reservasLoading } = useReservasUtilizadasOCanceladas()
     const { data: TasaCancelacionPorParticipante, loading: tasaLoading } = useTasaCancelacionPorParticipante()
-    if (salasLoading || turnosLoading || promedioLoading || reservasDiaLoading)
-        return <p>Cargando reportes...</p>
+
+    const anyLoading = salasLoading || turnosLoading || promedioLoading || reservasDiaLoading ||
+        porcentajeLoading || asistenciasLoading || sancionesLoading || reservasLoading || tasaLoading
+
+    if (anyLoading) return <p>Cargando reportes...</p>
 
     // -------------------------------
     // 1) Salas más reservadas
@@ -60,14 +67,12 @@ const Reportes = () => {
     // -------------------------------
 
     const promedioRows = PromedioMasParticipantesPorSala?.promedio_participantes?.map(s => s.nombre_sala)
-    console.log(PromedioMasParticipantesPorSala?.promedio_participantes)
     const promedioColumns = ["Promedio de participantes"]
     const promedioData = PromedioMasParticipantesPorSala?.promedio_participantes?.map(s => [s.promedio_participantes])
 
     // -------------------------------
     // 4) Cantidad de reservas según día
     // -------------------------------
-    console.log(CantidadReservasSegunDia);
     const reservasDiaRows = CantidadReservasSegunDia?.reservas_por_dia
         ?.map(d => d.dia)
     const reservasDiaColumns = ["Cantidad"]
@@ -77,34 +82,35 @@ const Reportes = () => {
     // -------------------------------
     // 5)Porcentaje de ocupación de salas por edificio
     // -------------------------------
-    const porcentajeRows = PorcentajeOcupacionPorSala?.porcentaje_ocupacion.map(s = s.edificio)
+    // backend devuelve { ocupacion_salas_por_edificio: [...] }
+    const porcentajeRows = PorcentajeOcupacionPorSala?.ocupacion_salas_por_edificio?.map(s => s.edificio)
     const porcentajeCollums = ["Porcentaje Ocupación Sala"]
-    const porcentajeData = PorcentajeOcupacionPorSala?.porcentaje_ocupacion.map(s => [s.porcentaje_ocupacion])
+    const porcentajeData = PorcentajeOcupacionPorSala?.ocupacion_salas_por_edificio?.map(s => [s.porcentaje_ocupacion])
     // -------------------------------
     // 6) Cantidad de reservas y asistencias de profesores y alumnos
     // -------------------------------
-    const cantRows = CantidadAsistenciasProfesoresAlumnos?.cantidad_reservas_asistencias_profesores_alumnos.map(r => `${r.nombre} - ${r.apellido}`)
+    const cantRows = CantidadAsistenciasProfesoresAlumnos?.cantidad_reservas_asistencias_profesores_alumnos?.map(r => `${r.nombre} ${r.apellido}`)
     const cantCollums = ["Asistencias", "Reservas"]
-    const cantData = CantidadAsistenciasProfesoresAlumnos?.cantidad_reservas_asistencias_profesores_alumnos.map(r => [r.total_asistencias, r.total_reservas])
+    const cantData = CantidadAsistenciasProfesoresAlumnos?.cantidad_reservas_asistencias_profesores_alumnos?.map(r => [r.total_asistencias, r.total_reservas])
 
     // -------------------------------
     // 7) Cantidad de sanciones Docentes y alumnos
     // -------------------------------
-    const sanRows = CantidadSancionesProfesAlumnos?.cantidad_sanciones_profesores_alumnos.map(s => `${s.nombre} - ${s.apellido}`)
+    const sanRows = CantidadSancionesProfesAlumnos?.cantidad_sanciones_profesores_alumnos?.map(s => `${s.nombre} ${s.apellido}`)
     const sanCollums = ["Sanciones"]
-    const cantDataSan = CantidadSancionesProfesAlumnos?.cantidad_sanciones_profesores_alumnos.map(s = [s.total_sanciones])
+    const cantDataSan = CantidadSancionesProfesAlumnos?.cantidad_sanciones_profesores_alumnos?.map(s => [s.total_sanciones])
 
     // -------------------------------
     // 8) Reservas utilizadas vs no Asistidas
     // -------------------------------
     const reservasCollums = ["Utilizadas", "No asistidas"]
-    const dataRes = ReservasUtilizadasOCanceladas.reservas_utilizadas_vs_canceladas_noAsistidas.map(r => [r.porcentaje_utilizadas, r.porcentaje_no_utilizadas])
+    const dataRes = ReservasUtilizadasOCanceladas?.reservas_utilizadas_vs_canceladas_noAsistidas?.map(r => [r.porcentaje_utilizadas, r.porcentaje_no_utilizadas])
     // -------------------------------
     // 9) Tasa cancelación por participante
     // -------------------------------
-    const tasaRows = TasaCancelacionPorParticipante.tasa_cancelacion_por_participante.map(t => `${t.nombre} - ${t.apellido}`)
+    const tasaRows = TasaCancelacionPorParticipante?.tasa_cancelacion_por_participante?.map(t => `${t.nombre} ${t.apellido}`)
     const tasaCollumns = ["Tasa Cancelacion"]
-    const tasaData = TasaCancelacionPorParticipante.tasa_cancelacion_por_participante.map(t => t.tasa_cancelacion)
+    const tasaData = TasaCancelacionPorParticipante?.tasa_cancelacion_por_participante?.map(t => [t.tasa_cancelacion])
 
 
     return (
@@ -156,11 +162,11 @@ const Reportes = () => {
                 />
                 <h2>Cantidad de Asistencias y Reservas por Alumnos y Profesores</h2>
                 <TablaReporte
-                    columns={cantRows}
-                    rows={cantCollums}
+                    columns={cantCollums}
+                    rows={cantRows}
                     data={cantData}
                 />
-                <h2>antidad de sanciones por alumno o profesor</h2>
+                <h2>Cantidad de sanciones por alumno o profesor</h2>
                 <TablaReporte
                     columns={sanCollums}
                     rows={sanRows}

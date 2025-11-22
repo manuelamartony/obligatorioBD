@@ -26,11 +26,13 @@ app = FastAPI(
     lifespan=lifespan
 )
 
-# Configurar CORS
+# Configurar CORS (desarrollo): permitir el origen del frontend
+# Si necesitas restringir en producción, cambia la variable de entorno `CORS_ORIGIN`.
 cors_origin = os.getenv('CORS_ORIGIN', 'http://localhost:5173')
+allowed_origins = [cors_origin, 'http://127.0.0.1:5173']
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[cors_origin],
+    allow_origins=allowed_origins,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

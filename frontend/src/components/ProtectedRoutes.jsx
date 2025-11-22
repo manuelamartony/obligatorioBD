@@ -3,7 +3,6 @@ import { Outlet, Navigate } from "react-router-dom";
 
 const ProtectedRoutes = ({ roles = [] }) => {
     const { user, loading, sancionesActivas } = useAuth();
-    console.log(user);
 
     if (loading) {
         return <div>Cargando...</div>;
