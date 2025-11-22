@@ -1,5 +1,5 @@
 "use client";
-import { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useState, useCallback } from "react";
 import { AuthContext } from "./AuthContext";
 
 export function makeFetchJSONHook(resource, options = undefined) {
@@ -8,35 +8,42 @@ export function makeFetchJSONHook(resource, options = undefined) {
         const [isLoading, setIsLoading] = useState(false);
         const [error, setError] = useState(null);
 
+        const url = typeof resource === "function" ? resource(...args) : resource;
+
+        const fetchData = useCallback(async () => {
+            if (!url) return;
+
+            setIsLoading(true);
+            setError(null);
+
+            try {
+                const res = await fetch(url, {
+                    ...options,
+                    headers: {
+                        ...(options?.headers || {}),
+                        "ngrok-skip-browser-warning": "true",
+                    },
+                });
+
+                if (!res.ok) {
+                    throw new Error(`Fetch error ${res.status} for resource ${url}`);
+                }
+
+                const json = await res.json();
+                setData(json);
+            } catch (err) {
+                setError(err);
+            } finally {
+                setIsLoading(false);
+            }
+        }, [url]);
 
         useEffect(() => {
-            (async () => {
-                setIsLoading(true);
-                try {
-                    const url =
-                        typeof resource === "function" ? resource(...args) : resource;
+            fetchData();
+        }, [fetchData]);
 
-                    const res = await fetch(url, options);
-
-                    if (!res.ok) {
-                        setError(
-                            new Error(`Fetch error ${res.status} for resource ${url}`)
-                        );
-                    } else {
-                        setData(await res.json());
-                    }
-                } catch (err) {
-                    setError(err);
-                }
-                setIsLoading(false);
-            })();
-            // eslint-disable-next-line react-hooks/exhaustive-deps
-        }, [...args]);
-
-        return { data, error, isLoading };
-
+        return { data, isLoading, error, fetchData };
     };
-
 }
 
 
