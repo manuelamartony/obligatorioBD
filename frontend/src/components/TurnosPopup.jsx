@@ -6,46 +6,61 @@ import { useTodosLosTurnos } from "../context/Fetch";
 import { useObtenerUsuario } from "../context/Fetch";
 import ReservaExitosaPopup from "./ReservaExitosa";
 
-
 export function formatHour(hora) {
     if (typeof hora === "string") {
-        // formato "HH:MM:SS" -> "HH:MM"
         const [h, m] = hora.split(":");
         return `${h.padStart(2, "0")}:${m.padStart(2, "0")}`;
     } else if (typeof hora === "number") {
-        // formato segundos -> "HH:MM"
         const h = Math.floor(hora / 3600).toString().padStart(2, "0");
         const m = Math.floor((hora % 3600) / 60).toString().padStart(2, "0");
         return `${h}:${m}`;
-    } else {
-        return "--:--";
-    }
+    } else return "--:--";
 }
 
-
-const TurnosPopup = ({ sala, onClose }) => {
+const TurnosPopup = ({ sala, onClose, refetchReservas }) => {
     const [selectedDate, setSelectedDate] = useState(null);
-    const [pantalla, setPantalla] = useState("turnos"); // "turnos" | "confirmar"
+    const [pantalla, setPantalla] = useState("turnos");
     const [mostrarExito, setMostrarExito] = useState(false);
     const [turnoElegido, setTurnoElegido] = useState(null);
     const [turnos, setTurnos] = useState([]);
     const [errorMsg, setErrorMsg] = useState(null);
-    const { data: userData, isLoading } = useObtenerUsuario();
+
+    const { data: userData } = useObtenerUsuario();
     const { data: todosTurnos } = useTodosLosTurnos();
 
-    // cargar todos los turnos como base
+    const [triggerRefetch, setTriggerRefetch] = useState(0);
+
+    // Interceptamos refetchReservas para actualizar turnos
     useEffect(() => {
-        if (todosTurnos) {
-            const turnosDisponibles = todosTurnos.turnos.map(t => ({
+        if (!refetchReservas) return;
+
+        const original = refetchReservas;
+        refetchReservas.__wrapped__ = true;
+
+        refetchReservas = async (...args) => {
+            await original(...args);
+            setTriggerRefetch(prev => prev + 1);
+        };
+    }, []);
+
+    // Inicializamos todos los turnos como disponibles
+    useEffect(() => {
+        if (!todosTurnos) return;
+        setTurnos(
+            todosTurnos.turnos.map(t => ({
                 ...t,
-                disponible: true
-            }));
-            setTurnos(turnosDisponibles);
-        }
+                disponible: true,
+                estado: null
+            }))
+        );
     }, [todosTurnos]);
 
-    // función para actualizar turnos ocupados
-    const actualizarTurnos = async (fecha) => {
+    // Refrescar turnos al triggerRefetch
+    useEffect(() => {
+        if (selectedDate) actualizarTurnos(selectedDate);
+    }, [triggerRefetch]);
+
+    const actualizarTurnos = async fecha => {
         if (!fecha || !sala) return;
 
         try {
@@ -54,31 +69,29 @@ const TurnosPopup = ({ sala, onClose }) => {
                 sala: sala.nombre_sala,
                 edificio: sala.edificio
             });
-
-
             const res = await fetch(`http://localhost:3000/api/turnos/ocupados?${params.toString()}`);
-            if (!res.ok) {
-                console.error("Error al obtener turnos ocupados", res.status, res.statusText);
-                return;
-            }
+            if (!res.ok) return;
+
             const data = await res.json();
-
-
             if (data.success) {
-                setTurnos(prevTurnos =>
-                    prevTurnos.map(t => {
-                        const ocupado = data.turnos_ocupados.find(o => o.id_turno == t.id_turno);
+                // Solo bloqueamos turnos cuya reserva esté activa o finalizada
+                setTurnos(prev =>
+                    prev.map(t => {
+                        const ocupado = data.turnos_ocupados.find(
+                            o =>
+                                o.id_turno === t.id_turno &&
+                                ["activa", "finalizada"].includes(o.estado?.toLowerCase())
+                        );
                         return ocupado
                             ? { ...t, disponible: false, estado: ocupado.estado }
                             : { ...t, disponible: true, estado: null };
                     })
                 );
             }
-        } catch (error) {
-            console.error("Error al obtener turnos ocupados:", error);
+        } catch (err) {
+            console.error("Error actualizando turnos:", err);
         }
     };
-
 
     function puedeReservar() {
         if (!userData?.participante || !sala?.tipo_sala) return false;
@@ -92,6 +105,7 @@ const TurnosPopup = ({ sala, onClose }) => {
         if (tipoSala === "grado" && tipoCarrera === "grado") return true;
         if (tipoSala === "postgrado" && tipoCarrera === "postgrado") return true;
         if (tipoSala === "docente" && rol === "docente") return true;
+
         return false;
     }
 
@@ -104,14 +118,12 @@ const TurnosPopup = ({ sala, onClose }) => {
         return (
             <div className="turnos-popup">
                 <h2>{sala.nombre_sala}</h2>
-                <p className="text-error" style={{ fontSize: "1.2rem", padding: "1rem" }}>
-                    No podés reservar esta sala porque es de tipo <strong>{sala.tipo_sala}</strong> y
-                    tu tipo de carrera es <strong>{userData.participante[0].tipo_carrera}</strong>.
+                <p className="text-error">
+                    No podés reservar esta sala porque es de tipo{" "}
+                    <strong>{sala.tipo_sala}</strong> y tu tipo de carrera es{" "}
+                    <strong>{userData.participante[0].tipo_carrera}</strong>.
                 </p>
-
-                <button className="cerrar-btn" onClick={onClose}>
-                    Cerrar
-                </button>
+                <button className="cerrar-btn" onClick={onClose}>Cerrar</button>
             </div>
         );
     }
@@ -130,104 +142,69 @@ const TurnosPopup = ({ sala, onClose }) => {
             {pantalla === "turnos" && (
                 <>
                     <h2>{`${sala.nombre_sala} - Elegí fecha y horario`}</h2>
+
                     <input
                         type="date"
                         className="date-picker"
                         min={new Date().toISOString().split("T")[0]}
                         value={selectedDate || ""}
-                        onChange={async (e) => {
+                        onChange={async e => {
                             const value = e.target.value;
                             if (!value) return setSelectedDate(null);
 
                             const d = new Date(value + "T00:00:00");
                             const day = d.getDay();
-
                             if (day === 0 || day === 6) {
-                                setSelectedDate(value);
-                                setErrorMsg("Sábados y domingos no están disponibles para reservar.");
-                                setTurnos([]);
-                                return;
-                            }
-
-                            setSelectedDate(value);
-                            setErrorMsg(null);
-
-                            let turnosBase = [];
-                            if (todosTurnos && Array.isArray(todosTurnos.turnos)) {
-                                turnosBase = todosTurnos.turnos.map(t => ({
-                                    ...t,
-                                    disponible: true,
-                                    estado: null
-                                }));
+                                const daysToAdd = day === 6 ? 2 : 1;
+                                d.setDate(d.getDate() + daysToAdd);
+                                setSelectedDate(d.toISOString().split("T")[0]);
+                                setErrorMsg("Sábados y Domingos no disponibles para reservas.");
                             } else {
-                                try {
-                                    const resT = await fetch('http://localhost:3000/api/turnos/');
-                                    if (resT.ok) {
-                                        const jsonT = await resT.json();
-                                        if (jsonT?.turnos) {
-                                            turnosBase = jsonT.turnos.map(t => ({
-                                                ...t,
-                                                disponible: true,
-                                                estado: null
-                                            }));
-                                        }
-                                    }
-                                } catch (err) {
-                                    console.error('No se pudo obtener turnos base:', err);
-                                }
+                                setSelectedDate(value);
+                                setErrorMsg(null);
                             }
 
-                            setTurnos(turnosBase);
                             await actualizarTurnos(value);
                         }}
-
-
                     />
+
                     {errorMsg && <div className="text-error">{errorMsg}</div>}
-                    {selectedDate && !errorMsg && (
+
+                    {selectedDate && (
                         <>
-                            <p className="text-error">
-                                IMPORTANTE: Las salas solo pueden reservarse por horas completas y por un máximo de 2 horas por día.
-                            </p>
-
                             <h3>Disponibilidad del día</h3>
-
                             <div className="hours-list">
-                                {turnos.map((t) => (
+                                {turnos.map(t => (
                                     <div
                                         key={t.id_turno}
                                         className={`hour-card ${t.disponible ? "disponible" : "ocupado"}`}
                                     >
                                         <span>{formatHour(t.hora_inicio)} - {formatHour(t.hora_fin)}</span>
-
                                         {t.disponible ? (
                                             <button className="reservar-btn" onClick={() => reservarTurno(t)}>
                                                 Reservar
                                             </button>
                                         ) : (
-                                            <span>Ocupado</span>
+                                            <span>{t.estado === "activa" ? "Ocupado" : t.estado}</span>
                                         )}
                                     </div>
                                 ))}
                             </div>
                         </>
                     )}
-
                 </>
             )}
+
             {pantalla === "confirmar" && turnoElegido && (
                 <ConfirmarReserva
                     turno={turnoElegido}
                     sala={sala}
                     fecha={selectedDate}
                     onBack={() => setPantalla("turnos")}
-                    onConfirm={() => {
-                        setMostrarExito(true);
-                    }}
+                    onConfirm={() => setMostrarExito(true)}
                     formatHour={formatHour}
                 />
             )}
-
         </div>
     );
 };
