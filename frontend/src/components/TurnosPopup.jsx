@@ -33,7 +33,7 @@ const TurnosPopup = ({ sala, onClose }) => {
     const { data: userData, isLoading } = useObtenerUsuario();
     const { data: todosTurnos } = useTodosLosTurnos();
 
-    // Cargar todos los turnos como base
+    // cargar todos los turnos como base
     useEffect(() => {
         if (todosTurnos) {
             const turnosDisponibles = todosTurnos.turnos.map(t => ({
@@ -44,7 +44,7 @@ const TurnosPopup = ({ sala, onClose }) => {
         }
     }, [todosTurnos]);
 
-    // Función para actualizar turnos ocupados
+    // función para actualizar turnos ocupados
     const actualizarTurnos = async (fecha) => {
         if (!fecha || !sala) return;
 
@@ -67,7 +67,7 @@ const TurnosPopup = ({ sala, onClose }) => {
             if (data.success) {
                 setTurnos(prevTurnos =>
                     prevTurnos.map(t => {
-                        const ocupado = data.turnos_ocupados.find(o => o.id_turno === t.id_turno);
+                        const ocupado = data.turnos_ocupados.find(o => o.id_turno == t.id_turno);
                         return ocupado
                             ? { ...t, disponible: false, estado: ocupado.estado }
                             : { ...t, disponible: true, estado: null };
@@ -141,28 +141,57 @@ const TurnosPopup = ({ sala, onClose }) => {
 
                             const d = new Date(value + "T00:00:00");
                             const day = d.getDay();
+
                             if (day === 0 || day === 6) {
-                                const daysToAdd = day === 6 ? 2 : 1;
-                                d.setDate(d.getDate() + daysToAdd);
-                                setSelectedDate(d.toISOString().split("T")[0]);
-                                setErrorMsg("Sábados y Domingos no disponibles para reservas.");
-                            } else {
                                 setSelectedDate(value);
-                                setErrorMsg(null);
+                                setErrorMsg("Sábados y domingos no están disponibles para reservar.");
+                                setTurnos([]);
+                                return;
                             }
 
-                            // Actualizar turnos ocupados para la fecha seleccionada
+                            setSelectedDate(value);
+                            setErrorMsg(null);
+
+                            let turnosBase = [];
+                            if (todosTurnos && Array.isArray(todosTurnos.turnos)) {
+                                turnosBase = todosTurnos.turnos.map(t => ({
+                                    ...t,
+                                    disponible: true,
+                                    estado: null
+                                }));
+                            } else {
+                                try {
+                                    const resT = await fetch('http://localhost:3000/api/turnos/');
+                                    if (resT.ok) {
+                                        const jsonT = await resT.json();
+                                        if (jsonT?.turnos) {
+                                            turnosBase = jsonT.turnos.map(t => ({
+                                                ...t,
+                                                disponible: true,
+                                                estado: null
+                                            }));
+                                        }
+                                    }
+                                } catch (err) {
+                                    console.error('No se pudo obtener turnos base:', err);
+                                }
+                            }
+
+                            setTurnos(turnosBase);
                             await actualizarTurnos(value);
-                            setPantalla("turnos");
                         }}
+
+
                     />
                     {errorMsg && <div className="text-error">{errorMsg}</div>}
-                    {selectedDate && (
+                    {selectedDate && !errorMsg && (
                         <>
                             <p className="text-error">
                                 IMPORTANTE: Las salas solo pueden reservarse por horas completas y por un máximo de 2 horas por día.
                             </p>
+
                             <h3>Disponibilidad del día</h3>
+
                             <div className="hours-list">
                                 {turnos.map((t) => (
                                     <div
@@ -170,6 +199,7 @@ const TurnosPopup = ({ sala, onClose }) => {
                                         className={`hour-card ${t.disponible ? "disponible" : "ocupado"}`}
                                     >
                                         <span>{formatHour(t.hora_inicio)} - {formatHour(t.hora_fin)}</span>
+
                                         {t.disponible ? (
                                             <button className="reservar-btn" onClick={() => reservarTurno(t)}>
                                                 Reservar
@@ -182,6 +212,7 @@ const TurnosPopup = ({ sala, onClose }) => {
                             </div>
                         </>
                     )}
+
                 </>
             )}
             {pantalla === "confirmar" && turnoElegido && (
