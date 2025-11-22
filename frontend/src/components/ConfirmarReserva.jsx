@@ -119,7 +119,7 @@ const ConfirmarReserva = ({
         {participantes.map((p, index) => (
           <div className="participante-row" key={index}>
             <input
-              type="number"
+              type="text"
               min="1"
               placeholder="Cédula"
               value={p.ci}
