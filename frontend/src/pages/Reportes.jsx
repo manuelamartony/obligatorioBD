@@ -85,7 +85,7 @@ const Reportes = () => {
     // backend devuelve { ocupacion_salas_por_edificio: [...] }
     const porcentajeRows = PorcentajeOcupacionPorSala?.ocupacion_salas_por_edificio?.map(s => s.edificio)
     const porcentajeCollums = ["Porcentaje Ocupación Sala"]
-    const porcentajeData = PorcentajeOcupacionPorSala?.ocupacion_salas_por_edificio?.map(s => [s.porcentaje_ocupacion])
+    const porcentajeData = PorcentajeOcupacionPorSala?.ocupacion_salas_por_edificio?.map(s => [s.porcentaje_ocupacion != null ? `${s.porcentaje_ocupacion}%` : "-"])
     // -------------------------------
     // 6) Cantidad de reservas y asistencias de profesores y alumnos
     // -------------------------------
@@ -105,13 +105,16 @@ const Reportes = () => {
     // -------------------------------
     const reservasCollums = ["Utilizadas", "No asistidas"]
     const reservasRows = ReservasUtilizadasOCanceladas?.reservas_utilizadas_vs_canceladas_noAsistidas?.map(() => "Porcentaje")
-    const dataRes = ReservasUtilizadasOCanceladas?.reservas_utilizadas_vs_canceladas_noAsistidas?.map(r => [r.porcentaje_utilizadas, r.porcentaje_no_utilizadas])
+    const dataRes = ReservasUtilizadasOCanceladas?.reservas_utilizadas_vs_canceladas_noAsistidas?.map(r => [
+        r.porcentaje_utilizadas != null ? `${r.porcentaje_utilizadas}%` : "-",
+        r.porcentaje_no_utilizadas != null ? `${r.porcentaje_no_utilizadas}%` : "-"
+    ])
     // -------------------------------
     // 9) Tasa cancelación por participante
     // -------------------------------
     const tasaRows = TasaCancelacionPorParticipante?.tasa_cancelacion_por_participante?.map(t => `${t.nombre} ${t.apellido}`)
     const tasaCollumns = ["Tasa Cancelacion"]
-    const tasaData = TasaCancelacionPorParticipante?.tasa_cancelacion_por_participante?.map(t => [t.tasa_cancelacion])
+    const tasaData = TasaCancelacionPorParticipante?.tasa_cancelacion_por_participante?.map(t => [t.tasa_cancelacion != null ? `${t.tasa_cancelacion}%` : "-"])
 
 
     return (
