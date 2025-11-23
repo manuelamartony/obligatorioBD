@@ -104,6 +104,7 @@ const Reportes = () => {
     // 8) Reservas utilizadas vs no Asistidas
     // -------------------------------
     const reservasCollums = ["Utilizadas", "No asistidas"]
+    const reservasRows = ReservasUtilizadasOCanceladas?.reservas_utilizadas_vs_canceladas_noAsistidas?.map(() => "Porcentaje")
     const dataRes = ReservasUtilizadasOCanceladas?.reservas_utilizadas_vs_canceladas_noAsistidas?.map(r => [r.porcentaje_utilizadas, r.porcentaje_no_utilizadas])
     // -------------------------------
     // 9) Tasa cancelación por participante
@@ -175,6 +176,7 @@ const Reportes = () => {
                 <h2>Reservas Utilizadas vs No asistidas</h2>
                 <TablaReporte
                     columns={reservasCollums}
+                    rows={reservasRows}
                     data={dataRes}
                 />
                 <h2>Tasa Cancelacion de Participantes</h2>
