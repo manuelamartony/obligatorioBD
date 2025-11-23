@@ -42,12 +42,20 @@ const Panel = () => {
                     </div>
                 </Link>
                 {user.esAdmin === 1 && (
-                    <Link to="reportes" className='link'>
-                        <div className="available-rooms">
-                            <hr />
-                            REPORTES
-                        </div>
-                    </Link>
+                    <>
+                        <Link to="reportes" className='link'>
+                            <div className="available-rooms">
+                                <hr />
+                                REPORTES
+                            </div>
+                        </Link>
+                        <Link to="salas" className='link'>
+                            <div className="available-rooms">
+                                <hr />
+                                SALAS
+                            </div>
+                        </Link>
+                    </>
                 )}
             </div>
         </div >

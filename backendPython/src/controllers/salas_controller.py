@@ -82,7 +82,7 @@ async def crear_sala(nombre_sala:str,edificio:str,capacidad:int,tipo_sala:TipoSa
         query="""INSERT INTO sala VALUES(
             %s,%s,%s,%s)"""
             
-        cursor.execute(query, (nombre_sala,edificio,capacidad,tipo_sala))
+        cursor.execute(query, (nombre_sala,edificio,capacidad,tipo_sala.value))
         conn.commit()
         return {
             "success": True,
@@ -149,7 +149,7 @@ async def modificar_sala(nombre_sala: str, edificio: str, capacidad: int, tipo_s
             WHERE nombre_sala = %s AND edificio = %s
         """
 
-        cursor.execute(query, (capacidad, tipo_sala, nombre_sala, edificio))
+        cursor.execute(query, (capacidad, tipo_sala.value, nombre_sala, edificio))
         conn.commit()
 
         if cursor.rowcount == 0:
