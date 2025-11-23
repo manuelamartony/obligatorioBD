@@ -51,22 +51,23 @@ const Salas = () => {
   };
 
   const handleDelete = async (nombre_sala, edificio) => {
-    if (!window.confirm(`¿Seguro que deseas eliminar la sala ${nombre_sala}?`)) return;
+    if (!window.confirm(`¿Seguro que deseas eliminar la sala ${nombre_sala}?`))
+      return;
     try {
-        const response = await fetch(
-            `http://localhost:3000/api/salas/borrar-sala?nombre_sala=${nombre_sala}&edificio=${edificio}`,
-            {
-                method: 'DELETE'
-            }
-        )
-        if (!response.ok) {
-            throw new Error("Error al eliminar sala");
+      const response = await fetch(
+        `http://localhost:3000/api/salas/borrar-sala?nombre_sala=${nombre_sala}&edificio=${edificio}`,
+        {
+          method: "DELETE",
         }
-        fetchData();
+      );
+      if (!response.ok) {
+        throw new Error("Error al eliminar sala");
+      }
+      fetchData();
     } catch (err) {
-        setError(err.message);
+      setError(err.message);
     }
-  }
+  };
 
   const columns = ["Nombre", "Edificio", "Capacidad", "Tipo", "Acciones"];
   const rows = salas.map((s) => s.nombre_sala);
@@ -75,7 +76,12 @@ const Salas = () => {
     s.edificio,
     s.capacidad,
     s.tipo_sala,
-    <button onClick={() => handleDelete(s.nombre_sala, s.edificio)} className="btn-delete">Eliminar</button>
+    <button
+      onClick={() => handleDelete(s.nombre_sala, s.edificio)}
+      className="btn-delete"
+    >
+      Eliminar
+    </button>,
   ]);
 
   if (isLoading) return <p>Cargando salas...</p>;
@@ -158,7 +164,7 @@ const Salas = () => {
         </div>
 
         <div className="salas-list-container">
-            <TablaReporte columns={columns} rows={rows} data={data} />
+          <TablaReporte columns={columns} rows={rows} data={data} />
         </div>
       </main>
     </div>
