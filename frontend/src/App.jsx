@@ -1,8 +1,7 @@
 "use client";
 
-
 import './styles/App.css'
-import { BrowserRouter, Routes, Route, createBrowserRouter, RouterProvider } from "react-router-dom";
+import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import Panel from './pages/Panel'
 import Home from './pages/Home'
 import Login, { loginAction } from './pages/Login'
@@ -10,8 +9,10 @@ import MisReservas from './pages/MisReservas';
 import NuevaReserva from './pages/NuevaReserva';
 import Reportes from './pages/Reportes';
 import Salas from './pages/Salas';
+import Participantes from './pages/Participantes';
 
 import ProtectedRoutes from './components/ProtectedRoutes';
+
 export const router = createBrowserRouter([
   {
     path: "/",
@@ -37,6 +38,7 @@ export const router = createBrowserRouter([
     children: [
       { path: "/my/panel/reportes", element: <Reportes /> },
       { path: "/my/panel/salas", element: <Salas /> },
+      { path: "/my/panel/participantes", element: <Participantes /> },
     ],
   },
 ]);

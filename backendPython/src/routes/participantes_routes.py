@@ -14,6 +14,10 @@ async def obtener_todos_usuarios(
 ):
     return await participantes_controller.obtener_todos_usuarios(rol, limit, offset)
 
+@router.get("/carreras")
+async def obtener_carreras():
+    return await participantes_controller.obtener_carreras()
+
 @router.get("/{ci}")
 async def obtener_usuario(ci: str):
     return await participantes_controller.obtener_usuario(ci)
@@ -23,8 +27,8 @@ async def obtener_rol_usuario(ci:int):
     return await participantes_controller.obtener_rol_usuario(ci)
 
 @router.post("/crear-usuario/{ci}")
-async def crear_usuario(ci:int,nombre:str,apellido:str,email:str):
-    return await participantes_controller.crear_usuario(ci,nombre,apellido,email)
+async def crear_usuario(ci:int, nombre:str, apellido:str, email:str, contrasena: str = None, rol: str = None, nombre_carrera: str = None):
+    return await participantes_controller.crear_usuario(ci, nombre, apellido, email, contrasena, rol, nombre_carrera)
 
 @router.delete("/borrar-usuario/{ci}")
 async def borrar_usuario(ci:int):

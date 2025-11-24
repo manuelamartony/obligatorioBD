@@ -128,14 +128,27 @@ async def obtener_rol_usuario(ci:int):
             conn.close()
 
             
-async def crear_usuario(ci:int,nombre:str,apellido:str,email:str):
+async def crear_usuario(ci:int, nombre:str, apellido:str, email:str, contrasena: str = None, rol: str = None, nombre_carrera: str = None):
     try:
         conn = get_connection()
         cursor = conn.cursor(dictionary = True)
-        query="""INSERT INTO usuario (ci, nombre, apellido, email) VALUES(%s,%s,%s,%s)"""
+        query="""INSERT INTO usuario (ci, nombre, apellido, email, esAdmin) VALUES(%s,%s,%s,%s,%s)"""
         
         
-        cursor.execute(query, (ci,nombre,apellido,email))
+        cursor.execute(query, (ci,nombre,apellido,email, False))
+        
+        if contrasena:
+            query_login = "INSERT INTO login (correo, contrasena) VALUES (%s, %s)"
+            cursor.execute(query_login, (email, contrasena))
+        
+        if rol and nombre_carrera:
+            # Generate id_alumno_programa (using timestamp + ci for uniqueness)
+            import time
+            id_alumno_programa = int(f"{ci}{int(time.time() * 1000) % 100000}")
+            
+            query_participante = "INSERT INTO participante_carrera (id_alumno_programa, ci, nombre_carrera, rol) VALUES (%s, %s, %s, %s)"
+            cursor.execute(query_participante, (id_alumno_programa, ci, nombre_carrera, rol))
+            
         conn.commit()
         return {
             "success": True,
@@ -144,7 +157,9 @@ async def crear_usuario(ci:int,nombre:str,apellido:str,email:str):
                 "ci": ci,
                 "nombre": nombre,
                 "apellido":apellido,
-                "email":email
+                "email":email,
+                "hasLogin": bool(contrasena),
+                "hasRole": bool(rol and nombre_carrera)
             }
         }
     except  Exception as error:
@@ -163,19 +178,31 @@ async def borrar_usuario(ci:int):
     try:
         conn = get_connection()
         cursor = conn.cursor(dictionary = True)
-        query="""DELETE FROM usuario
-WHERE ci=%s"""
         
+    
+        cursor.execute("SELECT email FROM usuario WHERE ci = %s", (ci,))
+        row = cursor.fetchone()
         
-        cursor.execute(query, (ci,))
+        if row:
+            email = row['email']
+      
+            cursor.execute("DELETE FROM login WHERE correo = %s", (email,))
+        
+       
+        cursor.execute("DELETE FROM participante_carrera WHERE ci = %s", (ci,))
+        
+       
+        cursor.execute("DELETE FROM usuario WHERE ci = %s", (ci,))
+        
         conn.commit()
         return {
             "success": True,
             "message": "Usuario eliminado correctamente",
-       
         }
-    except  Exception as error:
-        print(f'Error al crear participante: {error}')
+    except Exception as error:
+        print(f'Error al borrar participante: {error}')
+        if conn:
+            conn.rollback()
         raise HTTPException(
             status_code=500,
             detail="Error en el servidor"
@@ -228,3 +255,27 @@ async def modificar_usuario(ci: int, nombre: str = None, apellido: str = None, e
 
     except Exception as e:
         return {"success": False, "error": str(e)}
+
+async def obtener_carreras():
+    """Obtener todas las carreras disponibles"""
+    try:
+        conn = get_connection()
+        cursor = conn.cursor(dictionary=True)
+        
+        query = "SELECT nombre_carrera, tipo FROM carrera ORDER BY nombre_carrera"
+        cursor.execute(query)
+        carreras = cursor.fetchall()
+        
+        cursor.close()
+        conn.close()
+        
+        return {
+            "success": True,
+            "carreras": carreras
+        }
+    except Exception as error:
+        print(f'Error al obtener carreras: {error}')
+        raise HTTPException(
+            status_code=500,
+            detail="Error en el servidor"
+        )
