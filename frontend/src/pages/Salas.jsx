@@ -95,7 +95,7 @@ const Salas = () => {
           VOLVER
         </button>
         <h1 className="salas-title">GESTIÓN DE SALAS</h1>
-        <button className="pill-btn profile">MI PERFIL</button>
+   
       </header>
 
       <main className="salas-content">

@@ -1,12 +1,12 @@
 import React from "react";
 import "../styles/TablaReporte.css";
 
-const TablaReporte = ({ columns = [], rows = [], data = [] }) => {
+const TablaReporte = ({ columns = [], rows = [], data = [], firstColHeader = "" }) => {
     return (
         <table className="tabla-reporte">
             <thead>
                 <tr>
-                    <th style={{ borderRadius: 0 }}></th>
+                    <th style={{ borderRadius: 0 }}>{firstColHeader}</th>
                     {columns.map((col) => (
                         <th key={col}>{col}</th>
                     ))}

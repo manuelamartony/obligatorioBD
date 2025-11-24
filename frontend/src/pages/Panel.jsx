@@ -37,7 +37,6 @@ const Panel = () => {
                                 MIS RESERVAS
                             </div>
                         </Link>
-
                         <Link to="nueva-reserva" className='link'>
                             <div className="new-reserve">
                                 <hr />
@@ -58,6 +57,12 @@ const Panel = () => {
                             <div className="salas-btn">
                                 <hr />
                                 SALAS
+                            </div>
+                        </Link>
+                        <Link to="participantes" className='link'>
+                            <div className="salas-btn">
+                                <hr />
+                                PARTICIPANTES
                             </div>
                         </Link>
                     </>

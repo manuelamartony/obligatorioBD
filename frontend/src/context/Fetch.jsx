@@ -110,3 +110,11 @@ export const useObtenerUsuario = () => {
 export const useObtenerSalas = makeFetchJSONHook(
     "http://localhost:3000/api/salas/"
 );
+
+export const useObtenerParticipantes = makeFetchJSONHook(
+    "http://localhost:3000/api/participantes/"
+);
+
+export const useObtenerCarreras = makeFetchJSONHook(
+    "http://localhost:3000/api/participantes/carreras"
+);
