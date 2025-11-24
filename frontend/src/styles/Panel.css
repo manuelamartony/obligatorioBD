@@ -9,7 +9,11 @@
     background-color: #7dcfb6;
 }
 
-.my-reserves, .new-reserve, .available-rooms {
+.salas-btn {
+    background-color: #81d4fa;
+}
+
+.my-reserves, .new-reserve, .available-rooms, .salas-btn {
     font-size: 25px;
     font-weight: bold;
     width: 350px;

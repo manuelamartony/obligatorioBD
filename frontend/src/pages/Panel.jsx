@@ -27,27 +27,40 @@ const Panel = () => {
                     </button>
 
                     <img src={PowerButton} alt="" style={{ height: 35, width: 35, marginLeft: 5, cursor: 'pointer' }} onClick={logout} />
-
+            
                 </div>
-                <Link to="mis-reservas" className='link'>
-                    <div className="my-reserves">
-                        <hr />
-                        MIS RESERVAS
-                    </div>
-                </Link>
-                <Link to="nueva-reserva" className='link'>
-                    <div className="new-reserve">
-                        <hr />
-                        NUEVA RESERVA
-                    </div>
-                </Link>
+                {user.esAdmin === 0 && (
+                    <>
+                        <Link to="mis-reservas" className='link'>
+                            <div className="my-reserves">
+                                <hr />
+                                MIS RESERVAS
+                            </div>
+                        </Link>
+
+                        <Link to="nueva-reserva" className='link'>
+                            <div className="new-reserve">
+                                <hr />
+                                NUEVA RESERVA
+                            </div>
+                        </Link>
+                    </>
+                )}
                 {user.esAdmin === 1 && (
-                    <Link to="reportes" className='link'>
-                        <div className="available-rooms">
-                            <hr />
-                            REPORTES
-                        </div>
-                    </Link>
+                    <>
+                        <Link to="reportes" className='link'>
+                            <div className="available-rooms">
+                                <hr />
+                                REPORTES
+                            </div>
+                        </Link>
+                        <Link to="salas" className='link'>
+                            <div className="salas-btn">
+                                <hr />
+                                SALAS
+                            </div>
+                        </Link>
+                    </>
                 )}
             </div>
         </div >

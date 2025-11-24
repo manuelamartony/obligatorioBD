@@ -1,0 +1,132 @@
+/* Salas.css */
+
+.salas-page {
+  padding: 2.5rem 4rem 4rem 4rem;
+  min-height: 100vh;
+  background: #fff;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+}
+
+.salas-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 2rem;
+}
+
+.salas-title {
+  font-size: 3.2rem;
+  text-align: center;
+  margin: 0;
+  font-weight: 700;
+  font-family: 'Caprasimo', Georgia, 'Times New Roman', serif;
+  color: #111;
+}
+
+.salas-content {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* Form Styling */
+.salas-form-container {
+  background: #f8f9fa;
+  padding: 2rem;
+  border-radius: 20px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+  border: 1px solid #eee;
+}
+
+.salas-form-container h2 {
+  margin-top: 0;
+  margin-bottom: 1.5rem;
+  font-size: 1.8rem;
+  color: #333;
+  font-weight: 600;
+}
+
+.salas-form {
+  display: flex;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+  align-items: flex-end;
+}
+
+.form-group {
+  flex: 1;
+  min-width: 200px;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+  color: #555;
+  font-size: 0.95rem;
+}
+
+.form-input,
+.form-select {
+  width: 100%;
+  padding: 0.8rem 1rem;
+  border-radius: 12px;
+  border: 1px solid #ddd;
+  font-size: 1rem;
+  background: #fff;
+  transition: all 0.2s ease;
+  outline: none;
+}
+
+.form-input:focus,
+.form-select:focus {
+  border-color: #111;
+  box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.05);
+}
+
+.btn-create {
+  background: #111;
+  color: #fff;
+  border: none;
+  padding: 0.8rem 2rem;
+  border-radius: 28px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.2s ease, background 0.2s ease;
+  height: 46px; /* Match input height approx */
+}
+
+.btn-create:hover {
+  background: #333;
+  transform: translateY(-2px);
+}
+
+/* Table Actions */
+.btn-delete {
+  background: #ff4d4d;
+  color: white;
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: background 0.2s ease;
+}
+
+.btn-delete:hover {
+  background: #e60000;
+}
+
+/* Error Message */
+.error-msg {
+  color: #d32f2f;
+  background: #ffebee;
+  padding: 0.75rem;
+  border-radius: 8px;
+  margin-bottom: 1rem;
+  font-size: 0.9rem;
+  border: 1px solid #ffcdd2;
+}

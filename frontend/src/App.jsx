@@ -9,6 +9,7 @@ import Login, { loginAction } from './pages/Login'
 import MisReservas from './pages/MisReservas';
 import NuevaReserva from './pages/NuevaReserva';
 import Reportes from './pages/Reportes';
+import Salas from './pages/Salas';
 
 import ProtectedRoutes from './components/ProtectedRoutes';
 export const router = createBrowserRouter([
@@ -35,6 +36,7 @@ export const router = createBrowserRouter([
     element: <ProtectedRoutes roles={["admin"]} />,
     children: [
       { path: "/my/panel/reportes", element: <Reportes /> },
+      { path: "/my/panel/salas", element: <Salas /> },
     ],
   },
 ]);
