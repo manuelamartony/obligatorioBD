@@ -227,7 +227,7 @@ const Participantes = () => {
         </div>
 
         <div className="participantes-list-container">
-          <TablaReporte columns={columns} rows={rows} data={data} firstColHeader="CI" />
+          <TablaReporte columns={columns} rows={rows} data={data} />
         </div>
       </main>
     </div>

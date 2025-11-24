@@ -6,7 +6,11 @@ router = APIRouter()
 
 @router.get("/")
 async def obtener_salas():
-    return await salas_controller.obtener_todas_las_salas()
+    return await salas_controller.obtener_salas()
+
+@router.get("/edificios")
+async def obtener_edificios():
+    return await salas_controller.obtener_edificios()
 
 @router.get("/{sala}/disponibilidad")
 async def obtener_disponibilidad_sala(

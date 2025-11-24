@@ -1,12 +1,13 @@
 import React, { useState } from "react";
 import "../styles/Salas.css";
 import { useNavigate } from "react-router-dom";
-import { useObtenerSalas } from "../context/Fetch";
+import { useObtenerSalas, useObtenerEdificios } from "../context/Fetch";
 import TablaReporte from "../components/TablaReporte";
 
 const Salas = () => {
   const navigate = useNavigate();
   const { data: salasResponse, isLoading, fetchData } = useObtenerSalas();
+  const { data: edificiosResponse } = useObtenerEdificios();
   const [newSala, setNewSala] = useState({
     nombre_sala: "",
     edificio: "",
@@ -86,7 +87,7 @@ const Salas = () => {
 
   if (isLoading) return <p>Cargando salas...</p>;
 
-  const uniqueEdificios = [...new Set(salas.map((s) => s.edificio))];
+
 
   return (
     <div className="salas-page">
@@ -125,9 +126,9 @@ const Salas = () => {
                 className="form-select"
               >
                 <option value="">Seleccionar...</option>
-                {uniqueEdificios.map((edificio) => (
-                  <option key={edificio} value={edificio}>
-                    {edificio}
+                {edificiosResponse?.edificios?.map((edificio) => (
+                  <option key={edificio.nombre_edificio} value={edificio.nombre_edificio}>
+                    {edificio.nombre_edificio}
                   </option>
                 ))}
               </select>

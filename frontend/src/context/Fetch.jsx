@@ -118,3 +118,7 @@ export const useObtenerParticipantes = makeFetchJSONHook(
 export const useObtenerCarreras = makeFetchJSONHook(
     "http://localhost:3000/api/participantes/carreras"
 );
+
+export const useObtenerEdificios = makeFetchJSONHook(
+    "http://localhost:3000/api/salas/edificios"
+);
