@@ -160,7 +160,11 @@ const TurnosPopup = ({ sala, onClose, refetchReservas }) => {
                             const day = d.getDay();
                             if (day === 0 || day === 6) {
                                 setSelectedDate(null);
-                                setErrorMsg("No se pueden hacer reservas los sábados y domingos.");
+                                setErrorMsg(
+                                    <>
+                                        No se pueden hacer reservas los <strong>sábados</strong> y <strong>domingos</strong>.
+                                    </>
+                                );
                                 return;
                             }
 
