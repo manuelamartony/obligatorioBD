@@ -27,7 +27,7 @@ const Panel = () => {
                     </button>
 
                     <img src={PowerButton} alt="" style={{ height: 35, width: 35, marginLeft: 5, cursor: 'pointer' }} onClick={logout} />
-            
+
                 </div>
                 {user.esAdmin === 0 && (
                     <>
@@ -63,6 +63,12 @@ const Panel = () => {
                             <div className="salas-btn">
                                 <hr />
                                 PARTICIPANTES
+                            </div>
+                        </Link>
+                        <Link to="sanciones" className='link'>
+                            <div className="salas-btn">
+                                <hr />
+                                SANCIONES
                             </div>
                         </Link>
                     </>
