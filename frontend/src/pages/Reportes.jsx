@@ -138,6 +138,7 @@ const Reportes = () => {
                     columns={salasColumns}
                     rows={salasRows}
                     data={salasData}
+                    firstColHeader="Sala"
                 />
 
 
@@ -146,6 +147,7 @@ const Reportes = () => {
                     columns={turnosColumns}
                     rows={turnosRows}
                     data={turnosData}
+                    firstColHeader="Horario"
                 />
 
 
@@ -154,6 +156,7 @@ const Reportes = () => {
                     columns={promedioColumns}
                     rows={promedioRows}
                     data={promedioData}
+                    firstColHeader="Sala"
                 />
 
 
@@ -162,6 +165,7 @@ const Reportes = () => {
                     columns={reservasDiaColumns}
                     rows={reservasDiaRows}
                     data={reservasDiaData}
+                    firstColHeader="Día"
                 />
 
                 <h2>Porcentaje Ocupacion de Salas Por edificio</h2>
@@ -169,30 +173,36 @@ const Reportes = () => {
                     columns={porcentajeCollums}
                     rows={porcentajeRows}
                     data={porcentajeData}
+                    firstColHeader="Edificio"
                 />
                 <h2>Cantidad de Asistencias y Reservas por Alumnos y Profesores</h2>
                 <TablaReporte
                     columns={cantCollums}
                     rows={cantRows}
                     data={cantData}
+                    firstColHeader="Usuario"
                 />
                 <h2>Cantidad de sanciones por alumno o profesor</h2>
                 <TablaReporte
                     columns={sanCollums}
                     rows={sanRows}
                     data={cantDataSan}
+                    firstColHeader="Usuario"
                 />
                 <h2>Reservas Utilizadas vs No asistidas</h2>
                 <TablaReporte
                     columns={reservasCollums}
                     rows={reservasRows}
                     data={dataRes}
+                    firstColHeader="Métrica"
                 />
                 <h2>Tasa Cancelacion de Participantes</h2>
                 <TablaReporte
                     columns={tasaCollumns}
                     rows={tasaRows}
-                    data={tasaData} />
+                    data={tasaData} 
+                    firstColHeader="Usuario"
+                />
                 <h2>Cantidad de sanciones según carrera</h2>
                 <TablaReporte
                     columns={sanciCarrerasColumns}

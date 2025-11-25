@@ -6,7 +6,7 @@ const TablaReporte = ({ columns = [], rows = [], data = [], firstColHeader = "" 
         <table className="tabla-reporte">
             <thead>
                 <tr>
-                    <th style={{ borderRadius: 0 }}>{firstColHeader}</th>
+                    {firstColHeader && <th style={{ borderRadius: 0 }}>{firstColHeader}</th>}
                     {columns.map((col) => (
                         <th key={col}>{col}</th>
                     ))}
@@ -16,7 +16,7 @@ const TablaReporte = ({ columns = [], rows = [], data = [], firstColHeader = "" 
             <tbody>
                 {rows.map((row, rowIndex) => (
                     <tr key={row}>
-                        <td className="row-header">{row}</td>
+                        {firstColHeader && <td className="row-header">{row}</td>}
 
                         {columns.map((_, colIndex) => (
                             <td key={colIndex}>

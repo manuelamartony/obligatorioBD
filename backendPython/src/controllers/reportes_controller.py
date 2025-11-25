@@ -182,41 +182,7 @@ async def ocupacion_salas_por_edificio():
         if conn:
             conn.close()
 
-async def cantidad_reservas_asistencias_profesores_alumnos():
-    try:
-        conn = get_connection()
-        cursor = conn.cursor(dictionary=True)
-        query = """SELECT
-                    s.edificio,
-                    COUNT(t.id_turno) AS total_turnos_posibles,
-                    COUNT(r.id_reserva) AS turnos_ocupados,
-                    ROUND(
-                        (COUNT(r.id_reserva) * 100.0) / COUNT(t.id_turno),
-                        2
-                    ) AS porcentaje_ocupacion
-                FROM sala s
-                CROSS JOIN turno t
-                LEFT JOIN reserva r
-                    ON r.nombre_sala = s.nombre_sala
-                    AND r.id_turno = t.id_turno
-                    AND r.estado = 'activa'
-                GROUP BY s.edificio
-                ORDER BY porcentaje_ocupacion DESC"""
-        cursor.execute(query)
-        resultados = cursor.fetchall()
-        return {"success": True, "cantidad_reservas_asistencias_profesores_alumnos": resultados}
-    
-    except Exception as error:
-        print(f'Error en cantidad de reservas y asistencias por profesores y alumnos: {error}')
-        raise HTTPException(
-            status_code=500,
-            detail="Error en el servidor"
-        )
-    finally:
-        if cursor:
-            cursor.close()
-        if conn:
-            conn.close()
+
 
 async def cantidad_reservas_asistencias_profesores_alumnos():
     try:

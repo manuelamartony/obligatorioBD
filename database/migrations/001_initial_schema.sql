@@ -36,7 +36,8 @@ CREATE TABLE usuario (
                          nombre VARCHAR(50),
                          apellido VARCHAR(50),
                          email VARCHAR(320),
-                         esAdmin BOOLEAN
+                         esAdmin BOOLEAN,
+                         activo BOOLEAN DEFAULT TRUE
 );
 
 CREATE TABLE facultad (
@@ -74,6 +75,7 @@ CREATE TABLE sala (
                       edificio VARCHAR(100) NOT NULL,
                       capacidad INT,
                       tipo_sala ENUM('libre', 'postgrado','docente'),
+                      activo BOOLEAN DEFAULT TRUE,
                       PRIMARY KEY (nombre_sala, edificio),
                       FOREIGN KEY (edificio) REFERENCES edificio(nombre_edificio)
 );

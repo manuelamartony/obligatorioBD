@@ -8,24 +8,25 @@ async def obtener_todos_usuarios(rol: str = None, limit: int = 50, offset: int =
         cursor = conn.cursor(dictionary=True)
 
         query = """
-            SELECT DISTINCT p.ci, p.nombre, p.apellido, p.email
-            FROM usuario p
-            LEFT JOIN participante_carrera ppa ON p.ci = ppa.ci
+            SELECT u.ci, u.nombre, u.apellido, u.email, u.esAdmin, u.activo, pc.rol, pc.nombre_carrera
+            FROM usuario u
+            LEFT JOIN participante_carrera pc ON u.ci = pc.ci
+            WHERE u.activo = TRUE AND u.esAdmin = FALSE
         """
         params = []
 
         if rol:
-            query += ' WHERE ppa.rol = %s'
+            query += ' AND pc.rol = %s'
             params.append(rol)
 
-        query += ' ORDER BY apellido, nombre LIMIT %s OFFSET %s'
+        query += ' ORDER BY u.apellido, u.nombre LIMIT %s OFFSET %s'
         params.extend([limit, offset])
 
-        cursor.execute(query, params)
+        cursor.execute(query, tuple(params))
         participantes = cursor.fetchall()
 
         # Contar total
-        count_query = 'SELECT COUNT(DISTINCT p.ci) as total FROM usuario p'
+        count_query = 'SELECT COUNT(DISTINCT u.ci) as total FROM usuario u'
         count_params = []
         if rol:
             count_query += ' INNER JOIN participante_carrera ppa ON p.ci = ppa.ci WHERE ppa.rol = %s'
@@ -34,9 +35,6 @@ async def obtener_todos_usuarios(rol: str = None, limit: int = 50, offset: int =
         cursor.execute(count_query, count_params)
         total_row = cursor.fetchone()
         total = total_row['total'] if total_row else 0
-
-        cursor.close()
-        conn.close()
 
         return {
             "success": True,
@@ -52,6 +50,11 @@ async def obtener_todos_usuarios(rol: str = None, limit: int = 50, offset: int =
             status_code=500,
             detail="Error en el servidor"
         )
+    finally:
+        if cursor:
+            cursor.close()
+        if conn:
+            conn.close()
 
 async def obtener_usuario(ci:int):
     try:
@@ -142,9 +145,10 @@ async def crear_usuario(ci:int, nombre:str, apellido:str, email:str, contrasena:
             cursor.execute(query_login, (email, contrasena))
         
         if rol and nombre_carrera:
-            # Generate id_alumno_programa (using timestamp + ci for uniqueness)
-            import time
-            id_alumno_programa = int(f"{ci}{int(time.time() * 1000) % 100000}")
+            cursor.execute("SELECT MAX(id_alumno_programa) as max_id FROM participante_carrera")
+            row = cursor.fetchone()
+            max_id = row['max_id'] if row and row['max_id'] else 0
+            id_alumno_programa = max_id + 1
             
             query_participante = "INSERT INTO participante_carrera (id_alumno_programa, ci, nombre_carrera, rol) VALUES (%s, %s, %s, %s)"
             cursor.execute(query_participante, (id_alumno_programa, ci, nombre_carrera, rol))
@@ -179,25 +183,47 @@ async def borrar_usuario(ci:int):
         conn = get_connection()
         cursor = conn.cursor(dictionary = True)
         
-    
-        cursor.execute("SELECT email FROM usuario WHERE ci = %s", (ci,))
-        row = cursor.fetchone()
+        # Check for dependencies (reservations or sanctions)
+        cursor.execute("SELECT 1 FROM reserva_participante WHERE ci = %s LIMIT 1", (ci,))
+        has_reservations = cursor.fetchone()
         
-        if row:
-            email = row['email']
-      
-            cursor.execute("DELETE FROM login WHERE correo = %s", (email,))
+        cursor.execute("SELECT 1 FROM sancion_participante WHERE ci = %s LIMIT 1", (ci,))
+        has_sanctions = cursor.fetchone()
         
-       
-        cursor.execute("DELETE FROM participante_carrera WHERE ci = %s", (ci,))
-        
-       
-        cursor.execute("DELETE FROM usuario WHERE ci = %s", (ci,))
+        if has_reservations or has_sanctions:
+            # Soft Delete
+            cursor.execute("UPDATE usuario SET activo = FALSE WHERE ci = %s", (ci,))
+            # Also soft delete login if exists (optional, but good practice to prevent login)
+            # For now, we'll just keep the login active or maybe we should delete it?
+            # Let's delete the login to prevent access
+            cursor.execute("SELECT email FROM usuario WHERE ci = %s", (ci,))
+            row = cursor.fetchone()
+            if row:
+                cursor.execute("DELETE FROM login WHERE correo = %s", (row['email'],))
+                
+            message = "Usuario desactivado correctamente (Soft Delete)"
+        else:
+            # Hard Delete (existing logic)
+            # Get email first to delete from login
+            cursor.execute("SELECT email FROM usuario WHERE ci = %s", (ci,))
+            row = cursor.fetchone()
+            
+            if row:
+                email = row['email']
+                # Delete from login table if exists
+                cursor.execute("DELETE FROM login WHERE correo = %s", (email,))
+            
+            # Delete from participante_carrera table
+            cursor.execute("DELETE FROM participante_carrera WHERE ci = %s", (ci,))
+            
+            # Finally delete from usuario table
+            cursor.execute("DELETE FROM usuario WHERE ci = %s", (ci,))
+            message = "Usuario eliminado permanentemente"
         
         conn.commit()
         return {
             "success": True,
-            "message": "Usuario eliminado correctamente",
+            "message": message,
         }
     except Exception as error:
         print(f'Error al borrar participante: {error}')
@@ -255,6 +281,11 @@ async def modificar_usuario(ci: int, nombre: str = None, apellido: str = None, e
 
     except Exception as e:
         return {"success": False, "error": str(e)}
+    finally:
+        if cursor:
+            cursor.close()
+        if conn:
+            conn.close()
 
 async def obtener_carreras():
     """Obtener todas las carreras disponibles"""
@@ -266,9 +297,6 @@ async def obtener_carreras():
         cursor.execute(query)
         carreras = cursor.fetchall()
         
-        cursor.close()
-        conn.close()
-        
         return {
             "success": True,
             "carreras": carreras
@@ -279,3 +307,8 @@ async def obtener_carreras():
             status_code=500,
             detail="Error en el servidor"
         )
+    finally:
+        if cursor:
+            cursor.close()
+        if conn:
+            conn.close()
