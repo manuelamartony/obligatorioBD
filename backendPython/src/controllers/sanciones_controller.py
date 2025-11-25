@@ -119,35 +119,45 @@ async def quitar_sancion_a_usuario(ci:int,fecha_inicio:str,fecha_fin:str):
             conn.close()
             
 
-async def modificar_tiempo_sancion(ci:int,fecha_inicio:str,fecha_fin:str):
+async def modificar_tiempo_sancion(ci: int, fecha_inicio_original: str, nueva_fecha_inicio: str, nueva_fecha_fin: str):
     try:
         conn = get_connection()
-        cursor = conn.cursor(dictionary = True)
-        
-        query = """UPDATE sancion_participante SET fecha_fin = %s
-        WHERE ci = %s AND fecha_inicio = %s"""
-        cursor.execute(query, (ci,fecha_inicio,fecha_fin))
+        cursor = conn.cursor(dictionary=True)
+
+        query = """
+            UPDATE sancion_participante
+            SET fecha_inicio = %s,
+                fecha_fin = %s
+            WHERE ci = %s
+              AND fecha_inicio = %s
+        """
+
+        cursor.execute(query, (
+            nueva_fecha_inicio,
+            nueva_fecha_fin,
+            ci,
+            fecha_inicio_original
+        ))
+
         conn.commit()
+
         return {
             "success": True,
-            "message": "Duración de la sanción actualizada correctamente.",
+            "message": "Sanción actualizada correctamente",
             "data": {
                 "ci": ci,
-                "fecha_inicio": fecha_inicio,
-                "nueva_fecha_fin": fecha_fin
-            }}
-        
-        
-        
+                "fecha_inicio_original": fecha_inicio_original,
+                "nueva_fecha_inicio": nueva_fecha_inicio,
+                "nueva_fecha_fin": nueva_fecha_fin
+            }
+        }
+
     except Exception as error:
-        print(f'Error en todas las salas: {error}')
-        raise HTTPException(
-            status_code=500,
-            detail="Error en el servidor"
-        )
+        print(f"Error modificando sanción: {error}")
+        raise HTTPException(status_code=500, detail="Error en el servidor")
+
     finally:
-        if cursor:
-            cursor.close()
-        if conn:
-            conn.close()
+        cursor.close()
+        conn.close()
+
             

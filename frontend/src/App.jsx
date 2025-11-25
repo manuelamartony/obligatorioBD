@@ -12,6 +12,7 @@ import Salas from './pages/Salas';
 import Participantes from './pages/Participantes';
 
 import ProtectedRoutes from './components/ProtectedRoutes';
+import Sanciones from './pages/Sanciones';
 
 export const router = createBrowserRouter([
   {
@@ -39,6 +40,7 @@ export const router = createBrowserRouter([
       { path: "/my/panel/reportes", element: <Reportes /> },
       { path: "/my/panel/salas", element: <Salas /> },
       { path: "/my/panel/participantes", element: <Participantes /> },
+      { path: "/my/panel/sanciones", element: <Sanciones /> }
     ],
   },
 ]);
