@@ -163,16 +163,32 @@ async def crear_reserva(request: CrearReservaRequest):
 
         cursor = conn.cursor(dictionary=True)
 
-        # Normalizar fecha
+        
         fecha_date = request.fecha.split('T')[0] if 'T' in request.fecha else request.fecha
 
+        
+        cursor.execute(
+            """SELECT DAYOFWEEK(%s) as dia_semana""",
+            (fecha_date,)
+        )
+        dia_semana = cursor.fetchone()["dia_semana"]
+        
+        
+        if dia_semana == 1 or dia_semana == 7:
+            conn.rollback()
+            cursor.close()
+            conn.close()
+            raise HTTPException(
+                status_code=400,
+                detail="No se pueden hacer reservas los sábados y domingos"
+            )
       
         try:
             ci_creador = int(request.ci.strip())
         except:
             raise HTTPException(status_code=400, detail="El CI del creador es inválido")
 
-        # Verificar que el creador existe
+        
         cursor.execute('SELECT ci FROM usuario WHERE ci = %s', (ci_creador,))
         if cursor.fetchone() is None:
             conn.rollback()
@@ -188,23 +204,23 @@ async def crear_reserva(request: CrearReservaRequest):
             except:
                 raise HTTPException(status_code=400, detail="Uno o más CIs de participantes son inválidos")
 
-        # Conversión timedelta → horas
+        
         def timedelta_a_horas(td):
             return td.total_seconds() / 3600
 
-        # Obtener duración del turno actual
+        
         cursor.execute(
             """SELECT hora_inicio, hora_fin FROM turno WHERE id_turno = %s""",
             (request.id_turno,)
         )
         turno = cursor.fetchone()
 
-        hora_inicio = turno["hora_inicio"]   # timedelta
-        hora_fin = turno["hora_fin"]         # timedelta
+        hora_inicio = turno["hora_inicio"]   
+        hora_fin = turno["hora_fin"]         
 
         duracion_turno = timedelta_a_horas(hora_fin - hora_inicio)
 
-        # Sumar horas ya reservadas en ese día
+        
         cursor.execute(
             """
             SELECT t.hora_inicio, t.hora_fin
@@ -220,8 +236,8 @@ async def crear_reserva(request: CrearReservaRequest):
 
         horas_acumuladas = 0
         for r in reservas_dia:
-            hi = r["hora_inicio"]  # timedelta
-            hf = r["hora_fin"]     # timedelta
+            hi = r["hora_inicio"]  
+            hf = r["hora_fin"]     
             horas_acumuladas += timedelta_a_horas(hf - hi)
 
         if horas_acumuladas + duracion_turno > 2:
