@@ -37,19 +37,32 @@ const ConfirmarReserva = ({
     const cedula = participantes[index].ci.trim();
     if (!cedula) return;
 
+    // Validar que no sea la cédula del usuario actual
+    if (cedula === newCi) {
+      const nuevo = [...participantes];
+      nuevo[index].estado = "invalido";
+      nuevo[index].errorMsg = "No puedes agregarte a ti mismo como participante";
+      setParticipantes(nuevo);
+      return;
+    }
+
     const nuevo = [...participantes];
     nuevo[index].estado = "validando";
+    nuevo[index].errorMsg = "";
     setParticipantes(nuevo);
 
     try {
       const res = await fetch(`http://localhost:3000/api/auth/me?ci=${cedula}`);
       if (res.ok) {
         nuevo[index].estado = "valido";
+        nuevo[index].errorMsg = "";
       } else {
         nuevo[index].estado = "invalido";
+        nuevo[index].errorMsg = "Cédula no encontrada";
       }
     } catch {
       nuevo[index].estado = "invalido";
+      nuevo[index].errorMsg = "Error al validar";
     }
 
     setParticipantes([...nuevo]);
@@ -160,6 +173,12 @@ const ConfirmarReserva = ({
             >
               ✕
             </button>
+
+            {p.errorMsg && (
+              <div style={{ color: "red", fontSize: "12px", marginTop: "5px", width: "100%" }}>
+                {p.errorMsg}
+              </div>
+            )}
           </div>
         ))}
       </div>

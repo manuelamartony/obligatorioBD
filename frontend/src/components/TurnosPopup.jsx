@@ -150,20 +150,26 @@ const TurnosPopup = ({ sala, onClose, refetchReservas }) => {
                         value={selectedDate || ""}
                         onChange={async e => {
                             const value = e.target.value;
-                            if (!value) return setSelectedDate(null);
+                            if (!value) {
+                                setSelectedDate(null);
+                                setErrorMsg(null);
+                                return;
+                            }
 
                             const d = new Date(value + "T00:00:00");
                             const day = d.getDay();
                             if (day === 0 || day === 6) {
-                                const daysToAdd = day === 6 ? 2 : 1;
-                                d.setDate(d.getDate() + daysToAdd);
-                                setSelectedDate(d.toISOString().split("T")[0]);
-                                setErrorMsg("Sábados y Domingos no disponibles para reservas.");
-                            } else {
-                                setSelectedDate(value);
-                                setErrorMsg(null);
+                                setSelectedDate(null);
+                                setErrorMsg(
+                                    <>
+                                        No se pueden hacer reservas los <strong>sábados</strong> y <strong>domingos</strong>.
+                                    </>
+                                );
+                                return;
                             }
 
+                            setSelectedDate(value);
+                            setErrorMsg(null);
                             await actualizarTurnos(value);
                         }}
                     />
@@ -192,6 +198,8 @@ const TurnosPopup = ({ sala, onClose, refetchReservas }) => {
                             </div>
                         </>
                     )}
+
+                    <button className="cerrar-btn" onClick={onClose}>Cerrar</button>
                 </>
             )}
 

@@ -5,7 +5,7 @@ const ReservaExitosaPopup = ({ onClose }) => {
     return (
         <div className="popup-exito">
             <div className="popup-card">
-                <h2>¡Reserva creada con éxito! 🎉</h2>
+                <h2>¡Reserva creada con éxito!</h2>
 
                 <p>Tu reserva fue registrada correctamente.</p>
 
