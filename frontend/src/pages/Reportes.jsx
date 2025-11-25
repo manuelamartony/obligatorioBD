@@ -10,7 +10,8 @@ import {
     useCantidadAsistenciasProfesoresAlumnos,
     useCantidadSancionesProfesAlumnos,
     useReservasUtilizadasOCanceladas,
-    useTasaCancelacionPorParticipante
+    useTasaCancelacionPorParticipante,
+    useSancionesSegunCarrera
 } from '../context/Fetch'
 
 import TablaReporte from '../components/TablaReporte'
@@ -27,9 +28,11 @@ const Reportes = () => {
     const { data: CantidadSancionesProfesAlumnos, isLoading: sancionesLoading } = useCantidadSancionesProfesAlumnos()
     const { data: ReservasUtilizadasOCanceladas, isLoading: reservasLoading } = useReservasUtilizadasOCanceladas()
     const { data: TasaCancelacionPorParticipante, isLoading: tasaLoading } = useTasaCancelacionPorParticipante()
+    const { data: SancionesSegunCarrera, isLoading: sanciCarrerasLoading } = useSancionesSegunCarrera()
+    console.log(SancionesSegunCarrera);
 
     const anyLoading = salasLoading || turnosLoading || promedioLoading || reservasDiaLoading ||
-        porcentajeLoading || asistenciasLoading || sancionesLoading || reservasLoading || tasaLoading
+        porcentajeLoading || asistenciasLoading || sancionesLoading || reservasLoading || tasaLoading || sanciCarrerasLoading
 
     if (anyLoading) return <p>Cargando reportes...</p>
 
@@ -112,6 +115,12 @@ const Reportes = () => {
     const tasaRows = TasaCancelacionPorParticipante?.tasa_cancelacion_por_participante?.map(t => `${t.nombre} ${t.apellido}`)
     const tasaCollumns = ["Tasa Cancelacion"]
     const tasaData = TasaCancelacionPorParticipante?.tasa_cancelacion_por_participante?.map(t => [t.tasa_cancelacion])
+    // -------------------------------
+    // 10) Cantidad de sancion es segun carrera
+    // -------------------------------
+    const sanciCarrerasRows = SancionesSegunCarrera?.sanciones?.map(s => `${s.nombre_carrera}`)
+    const sanciCarrerasColumns = ["Cantidad"]
+    const sanciCarrerasData = SancionesSegunCarrera?.sanciones?.map(s => [s.cant])
 
 
     return (
@@ -184,6 +193,11 @@ const Reportes = () => {
                     columns={tasaCollumns}
                     rows={tasaRows}
                     data={tasaData} />
+                <h2>Cantidad de sanciones según carrera</h2>
+                <TablaReporte
+                    columns={sanciCarrerasColumns}
+                    rows={sanciCarrerasRows}
+                    data={sanciCarrerasData} />
             </main>
         </div>
     )
