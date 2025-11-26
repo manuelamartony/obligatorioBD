@@ -2,7 +2,7 @@
 **Proyecto obligatorio – Base de Datos 1 – Segundo Semestre 2025**  
 **Integrantes: Franco Manfredi · Manuela Martony · Manuel Lorenzo · Martín de León**
 
-Este proyecto implementa un sistema completo para la **gestión de reservas de salas de estudio** en la Universidad Católica del Uruguay (UCU), sustituyendo el proceso manual en papel por una plataforma moderna basada en web.
+Este proyecto implementa un sistema completo para la **gestión de reservas de salas de estudio** en la Universidad Católica del Uruguay, sustituyendo el proceso manual en papel por una plataforma moderna basada en web.
 
 El sistema permite reservar salas, registrar asistencia, aplicar sanciones automáticas por inasistencia, consultar reportes sobre el uso de los espacios y funcionalidades de administrador. Incluye frontend en **React**, backend en **Python (sin ORM)** y base de datos **MySQL**.
 
@@ -18,11 +18,9 @@ El sistema permite reservar salas, registrar asistencia, aplicar sanciones autom
 - Ver asistencia y estados
 
 ### Administrador
-- Todo lo anterior, más:
-  - Gestión de salas
-  - Activación/desactivación de salas y usuarios
-  - Visualización general de reservas
-  - Módulo de reportes
+- Gestión de salas
+- Activación/desactivación de salas y participantes
+- Módulo de reportes
 
 ---
 
@@ -125,8 +123,6 @@ http://localhost:3000
 ## Backend
 - Python (sin ORM)
 - MySQL Connector
-- Validaciones manuales
-- Manejo explícito de transacciones
 - Arquitectura modular por controladores y rutas
 
 ## Frontend
@@ -137,9 +133,6 @@ http://localhost:3000
 
 ## Base de Datos
 - MySQL
-- Modelo altamente normalizado
-- Fields `activo` para usuario y sala
-- Integridad referencial completa
 
 ---
 
